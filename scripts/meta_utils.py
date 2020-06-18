@@ -2,7 +2,9 @@ import argparse
 import json
 import os
 import requests
+import pandas as pd
 import sys
+import warnings
 
 from bs4 import BeautifulSoup
 
@@ -29,15 +31,14 @@ def scrape_meta(request, meta_name):
     except:
         print("Scraping metadata failed on", str(meta_name))
 
-def produce_doi_meta(doi, outpath=None):
+def produce_acs_meta(acs_doi):
     """
-    parse_doi_meta ingests a doi link and an outpath and produces a formatted json metadata file. Intended for
+    parse_acs_meta ingests a doi link and produces a json metadata file. Intended for
     'best practices' use in OpenBench data curation. Currently limited support for links that resolve to ACS.
     :param doi: a string containing the url for a DOI "Digital Object Signifier"
-    :param outpath: A filepath to the directory you want to store output in ... no write if outpath is None
     """
 
-    with requests.get(doi) as r:
+    with requests.get(acs_doi) as r:
 
         title = scrape_meta(r, 'dc.Title')
         authors = scrape_meta(r, 'dc.Creator')
@@ -51,18 +52,55 @@ def produce_doi_meta(doi, outpath=None):
                  'publisher': publisher[0],
                  'date': date[0]}
 
+    return meta_dict
+
+def produce_dataset_meta(data_path, smiles_col, activity_col=None, regression_col=None):
+
+    df = pd.read_csv(data_path)
+    raw_rows = df.shape[0]
+
+    if smiles_col not in list(df.columns):
+        warnings.warn("The smiles_col you provided (" + smiles_col + ")is not in the dataset")
+
+    meta_dict = {'raw_rows': raw_rows,
+                 'smiles_col': smiles_col,
+                 'activity_col': activity_col,
+                 'regression_col': regression_col}
+
+    return(meta_dict)
+
+
+def write_meta(meta_dict, outpath=None):
+
+    #Compose filename from meta_dict
+    first_author_last_name = str(meta_dict.get('authors')[0].split(' ')[-1])
+    year = str(meta_dict.get('date').split(' ')[-1])
+
+    filename = first_author_last_name + '_et_al_' + year + "_meta.json"
+
     if outpath:
         if not os.path.isdir(outpath):
             os.makedirs(outpath)
 
-        filename = str(authors[0].split(' ')[-1]) + '_et_al_' + str(date[0].split(' ')[-1]) + "_meta.json"
         fullpath = os.path.join(outpath, filename)
         print('Writing', filename, 'output to:', fullpath)
 
         with open(fullpath, "w") as outfile:
             json.dump(meta_dict, outfile, indent = 4)
+        return fullpath
+    else:
+        print(meta_data)
+        print('No outpath specified. Not writing', filename)
 
-    return meta_dict
+def add_meta_data(meta_path, new_data_dict):
+
+    with open(meta_path, "r") as infile:
+
+        meta = json.load(infile)
+        new_meta = {**meta, **new_data_dict}
+
+    with open(meta_path, "w") as outfile:
+        json.dump(new_meta, outfile, indent = 4)
 
 if __name__ == '__main__':
 
@@ -71,6 +109,14 @@ if __name__ == '__main__':
                         help="DOI url you want to parse for metadata")
     parser.add_argument('-o', '--outpath', type=str, default=None,
                         help="path to which metadata will be written")
+    parser.add_argument('-d', '--datapath', type=str, default=None,
+                        help="path to data source for paper")
+    parser.add_argument('-s', '--smiles_col', type=str, default=None,
+                        help="column name for smiles col")
+    parser.add_argument('-a', '--activity_col', type=str, default=None,
+                        help="column name for activity col")
+    parser.add_argument('-r', '--regression_col', type=str, default=None,
+                        help="column name for regression col")
     args = parser.parse_args()
 
     print("Producing dataset metadata for:", args.doi)
@@ -78,4 +124,9 @@ if __name__ == '__main__':
     if args.outpath:
         print("Metadata will be written to:", args.outpath)
 
-    produce_doi_meta(args.doi, args.outpath)
+    article_meta = produce_acs_meta(args.doi)
+    fullpath = write_meta(article_meta, args.outpath)
+
+    if args.datapath:
+        dataset_meta = produce_dataset_meta(args.datapath, args.smiles_col, args.activity_col, args.regression_col)
+        add_meta_data(fullpath, dataset_meta)

@@ -8,5 +8,9 @@
     ],
     "doi": "https://doi.org/10.1021/ci300124c",
     "publisher": "American Chemical Society",
-    "date": "June 6, 2012"
+    "date": "June 6, 2012",
+    "raw_rows": 2053,
+    "smiles_col": "smiles",
+    "activity_col": "p_np",
+    "regression_col": null
 }
