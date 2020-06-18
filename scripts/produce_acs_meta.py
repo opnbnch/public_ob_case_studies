@@ -17,7 +17,7 @@ def scrape_meta(request, meta_name):
     content_list = []
 
     try:
-        soup = BeautifulSoup(r.text, "html.parser")
+        soup = BeautifulSoup(request.text, "html.parser")
         for meta in soup.find_all("meta", {"name": meta_name}):
             content_list.append(meta.get("content"))
 
@@ -52,13 +52,14 @@ def produce_doi_meta(doi, outpath=None):
                  'date': date[0]}
 
     if outpath:
-        os.makedirs(outpath)
+        if not os.path.isdir(outpath):
+            os.makedirs(outpath)
 
         filename = str(authors[0].split(' ')[-1]) + '_et_al_' + str(date[0].split(' ')[-1]) + "_meta.json"
         fullpath = os.path.join(outpath, filename)
         print('Writing', filename, 'output to:', fullpath)
 
-        with open(full_path, "w") as outfile:
+        with open(fullpath, "w") as outfile:
             json.dump(meta_dict, outfile, indent = 4)
 
     return meta_dict
