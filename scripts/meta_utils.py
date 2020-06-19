@@ -68,7 +68,10 @@ def produce_dataset_meta(data_path, smiles_col, class_col=None, value_col=None):
 
     for col in [x for x in [smiles_col, class_col, value_col] if x]:
         if col not in list(df.columns):
-            warnings.warn(col + " is not in the dataset", Warning)
+            warnings.warn(col + " is not a column in your dataset. You may have made a typo.", Warning)
+
+    if not class_col and not value_col:
+        warnings.warn('You have neither a value nor class column. This makes for poor training data!', Warning)
 
     meta_dict = {'data_path': data_path,
                  'raw_rows': raw_rows,
@@ -126,7 +129,7 @@ def add_meta(meta_path, new_data_dict):
 def read_meta(path):
     """
     Read the metadata for a given path
-    :param path: str - filepath to directory where metadata resides 
+    :param path: str - filepath to directory where metadata resides
     """
 
     files = os.listdir(path)
