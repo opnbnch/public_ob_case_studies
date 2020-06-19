@@ -16,5 +16,9 @@
     "raw_rows": 2053,
     "smiles_col": "smiles",
     "class_col": "p_np",
-    "value_col": null
+    "value_col": null,
+    "std_data_path": "case_studies/Martins_BBB_case_study/std_martins_et_al_2012.csv",
+    "std_smiles_col": "std_smiles",
+    "std_version": "v1.0.0 (06-18-2020)",
+    "std_utc_fix": 1592593530
 }
