@@ -146,7 +146,7 @@ def add_meta(meta_path, new_data_dict):
 def read_meta(path):
     """
     Read the metadata for a given path
-    :param path: str - filepath to directory where metadata resides
+    :str path: filepath to directory where metadata resides
     """
 
     files = os.listdir(path)
