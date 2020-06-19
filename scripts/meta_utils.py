@@ -8,6 +8,8 @@ import warnings
 
 from bs4 import BeautifulSoup
 
+version = 'v1.0.0 (06-18-2020)'
+
 def scrape_article_meta(request, meta_name):
     """
     scrape_meta is a worker function for scraping metadata from DOI links
@@ -46,7 +48,8 @@ def produce_article_meta(doi):
         publisher = scrape_article_meta(r, 'dc.Publisher')
         date = scrape_article_meta(r, 'dc.Date')
 
-    meta_dict = {'title': title[0],
+    meta_dict = {'meta_version': version,
+                 'title': title[0],
                  'authors': authors,
                  'doi': doi_link,
                  'publisher': publisher[0],
@@ -70,7 +73,7 @@ def produce_dataset_meta(data_path, smiles_col, class_col=None, value_col=None):
         if col not in list(df.columns):
             warnings.warn(col + " is not a column in your dataset. You may have made a typo.", Warning)
 
-    if not class_col and not value_col:
+    if class_col is None and value_col is None:
         warnings.warn('You have neither a value nor class column. This makes for poor training data!', Warning)
 
     meta_dict = {'data_path': data_path,
@@ -91,12 +94,12 @@ def write_meta(meta_dict, outpath=None, filename = None):
     """
 
     #Compose filename from meta_dict
-    if not filename:
+    if filename is None:
         first_author_last_name = str(meta_dict.get('authors')[0].split(' ')[-1])
         year = str(meta_dict.get('date').split(' ')[-1])
         filename = first_author_last_name + '_et_al_' + year + "_metadata.json"
 
-    if outpath:
+    if outpath is not None:
         if not os.path.isdir(outpath):
             os.makedirs(outpath)
 
@@ -164,6 +167,5 @@ if __name__ == '__main__':
     article_meta = produce_article_meta(args.doi)
     fullpath = write_meta(article_meta, outpath)
 
-    if args.datapath:
-        dataset_meta = produce_dataset_meta(args.datapath, args.smiles_col, args.class_col, args.value_col)
-        add_meta(fullpath, dataset_meta)
+    dataset_meta = produce_dataset_meta(args.datapath, args.smiles_col, args.class_col, args.value_col)
+    add_meta(fullpath, dataset_meta)
