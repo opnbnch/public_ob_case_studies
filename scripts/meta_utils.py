@@ -4,11 +4,12 @@ import os
 import requests
 import pandas as pd
 import sys
+import time
 import warnings
 
 from bs4 import BeautifulSoup
 
-version = 'v1.0.0 (06-18-2020)'
+__version__ = 'v1.0.0 (06-18-2020)'
 
 def scrape_article_meta(request, meta_name):
     """
@@ -48,12 +49,13 @@ def produce_article_meta(doi):
         publisher = scrape_article_meta(r, 'dc.Publisher')
         date = scrape_article_meta(r, 'dc.Date')
 
-    meta_dict = {'meta_version': version,
-                 'title': title[0],
+    meta_dict = {'title': title[0],
                  'authors': authors,
                  'doi': doi_link,
                  'publisher': publisher[0],
-                 'date': date[0]}
+                 'date': date[0],
+                 'meta_version': __version__,
+                 'meta_utc_fix': int(time.time())}
 
     return meta_dict
 
@@ -104,7 +106,10 @@ def write_meta(meta_dict, outpath=None, filename = None):
             os.makedirs(outpath)
 
         fullpath = os.path.join(outpath, filename)
+        fp_meta = {'meta_path': fullpath}
         print('Writing', filename, 'output to:', fullpath)
+
+        meta_dict = {**meta_dict, **fp_meta}
 
         with open(fullpath, "w") as outfile:
             json.dump(meta_dict, outfile, indent = 4)
@@ -149,7 +154,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('doi', type=str,
                         help="DOI url you want to parse for metadata")
-    parser.add_argument('datapath', type=str, default=None,
+    parser.add_argument('datapath', type=str,
                             help="path to data source for paper")
     parser.add_argument('-s', '--smiles_col', type=str, default=None,
                         help="column name for smiles col")
