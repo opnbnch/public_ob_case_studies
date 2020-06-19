@@ -31,14 +31,14 @@ def scrape_meta(request, meta_name):
     except:
         print("Scraping metadata failed on", str(meta_name))
 
-def produce_acs_meta(acs_doi):
+def produce_article_meta(doi):
     """
-    parse_acs_meta ingests a doi link and produces a json metadata file. Intended for
-    'best practices' use in OpenBench data curation. Currently limited support for links that resolve to ACS.
+    parse_acs_meta ingests a doi link and produces a metadata dict. Intended for 'best practices'
+    use in OpenBench data curation. Currently limited support for links that resolve to ACS.
     :param doi: a string containing the url for a DOI "Digital Object Signifier"
     """
 
-    with requests.get(acs_doi) as r:
+    with requests.get(doi) as r:
 
         title = scrape_meta(r, 'dc.Title')
         authors = scrape_meta(r, 'dc.Creator')
@@ -54,7 +54,14 @@ def produce_acs_meta(acs_doi):
 
     return meta_dict
 
-def produce_dataset_meta(data_path, smiles_col, activity_col=None, regression_col=None):
+def produce_dataset_meta(data_path, smiles_col, class_col=None, value_col=None):
+    """
+    produce_dataset_meta ingests a datapth and column names and produces a metadata dict.
+    :param data_path: str - path to a csv to ingest
+    :param smiles_col: str - column name for col containing SMILES strings
+    :param class_col: str - column name for col containing experimental property classes
+    :param value_col: str - column name for col containing experimental values
+    """
 
     df = pd.read_csv(data_path)
     raw_rows = df.shape[0]
@@ -64,19 +71,22 @@ def produce_dataset_meta(data_path, smiles_col, activity_col=None, regression_co
 
     meta_dict = {'raw_rows': raw_rows,
                  'smiles_col': smiles_col,
-                 'activity_col': activity_col,
-                 'regression_col': regression_col}
+                 'class_col': class_col,
+                 'value_col': value_col}
 
     return(meta_dict)
 
 
-def write_meta(meta_dict, outpath=None):
+def write_meta(meta_dict, outpath=None, filename = None):
+    """
+    write_meta writes a metadata dictionary to json at a specified path 
+    """
 
     #Compose filename from meta_dict
-    first_author_last_name = str(meta_dict.get('authors')[0].split(' ')[-1])
-    year = str(meta_dict.get('date').split(' ')[-1])
-
-    filename = first_author_last_name + '_et_al_' + year + "_meta.json"
+    if not filename:
+        first_author_last_name = str(meta_dict.get('authors')[0].split(' ')[-1])
+        year = str(meta_dict.get('date').split(' ')[-1])
+        filename = first_author_last_name + '_et_al_' + year + "_metadata.json"
 
     if outpath:
         if not os.path.isdir(outpath):
@@ -87,12 +97,13 @@ def write_meta(meta_dict, outpath=None):
 
         with open(fullpath, "w") as outfile:
             json.dump(meta_dict, outfile, indent = 4)
-        return fullpath
     else:
         print(meta_data)
         print('No outpath specified. Not writing', filename)
 
-def add_meta_data(meta_path, new_data_dict):
+    return fullpath
+
+def add_meta(meta_path, new_data_dict):
 
     with open(meta_path, "r") as infile:
 
@@ -113,10 +124,10 @@ if __name__ == '__main__':
                         help="path to data source for paper")
     parser.add_argument('-s', '--smiles_col', type=str, default=None,
                         help="column name for smiles col")
-    parser.add_argument('-a', '--activity_col', type=str, default=None,
-                        help="column name for activity col")
-    parser.add_argument('-r', '--regression_col', type=str, default=None,
-                        help="column name for regression col")
+    parser.add_argument('-c', '--class_col', type=str, default=None,
+                        help="column name for class col")
+    parser.add_argument('-r', '--value_col', type=str, default=None,
+                        help="column name for value col")
     args = parser.parse_args()
 
     print("Producing dataset metadata for:", args.doi)
@@ -124,9 +135,9 @@ if __name__ == '__main__':
     if args.outpath:
         print("Metadata will be written to:", args.outpath)
 
-    article_meta = produce_acs_meta(args.doi)
+    article_meta = produce_article_meta(args.doi)
     fullpath = write_meta(article_meta, args.outpath)
 
     if args.datapath:
-        dataset_meta = produce_dataset_meta(args.datapath, args.smiles_col, args.activity_col, args.regression_col)
+        dataset_meta = produce_dataset_meta(args.datapath, args.smiles_col, args.class_col, args.value_col)
         add_meta_data(fullpath, dataset_meta)
