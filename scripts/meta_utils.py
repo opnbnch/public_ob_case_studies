@@ -8,7 +8,7 @@ import warnings
 
 from bs4 import BeautifulSoup
 
-def scrape_meta(request, meta_name):
+def scrape_article_meta(request, meta_name):
     """
     scrape_meta is a worker function for scraping metadata from DOI links
     :param request: a requests request
@@ -40,11 +40,11 @@ def produce_article_meta(doi):
 
     with requests.get(doi) as r:
 
-        title = scrape_meta(r, 'dc.Title')
-        authors = scrape_meta(r, 'dc.Creator')
-        doi_link = "https://doi.org/" + str(scrape_meta(r, 'dc.Identifier')[0])
-        publisher = scrape_meta(r, 'dc.Publisher')
-        date = scrape_meta(r, 'dc.Date')
+        title = scrape_article_meta(r, 'dc.Title')
+        authors = scrape_article_meta(r, 'dc.Creator')
+        doi_link = "https://doi.org/" + str(scrape_article_meta(r, 'dc.Identifier')[0])
+        publisher = scrape_article_meta(r, 'dc.Publisher')
+        date = scrape_article_meta(r, 'dc.Date')
 
     meta_dict = {'title': title[0],
                  'authors': authors,
@@ -122,6 +122,21 @@ def add_meta(meta_path, new_data_dict):
 
     with open(meta_path, "w") as outfile:
         json.dump(new_meta, outfile, indent = 4)
+
+def read_meta(path):
+    """
+    Read the metadata for a given path
+    :param path: str - filepath to directory where metadata resides 
+    """
+
+    files = os.listdir(path)
+    metadata_file = [file for file in files if 'metadata.json' in file][0]
+    metadata_full = os.path.join(path, metadata_file)
+
+    with open(metadata_full, 'r') as f:
+        meta = json.load(f)
+
+    return meta
 
 if __name__ == '__main__':
 
