@@ -66,10 +66,12 @@ def produce_dataset_meta(data_path, smiles_col, class_col=None, value_col=None):
     df = pd.read_csv(data_path)
     raw_rows = df.shape[0]
 
-    if smiles_col not in list(df.columns):
-        warnings.warn("The smiles_col you provided (" + smiles_col + ")is not in the dataset")
+    for col in [x for x in [smiles_col, class_col, value_col] if x]:
+        if col not in list(df.columns):
+            warnings.warn(col + " is not in the dataset", Warning)
 
-    meta_dict = {'raw_rows': raw_rows,
+    meta_dict = {'data_path': data_path,
+                 'raw_rows': raw_rows,
                  'smiles_col': smiles_col,
                  'class_col': class_col,
                  'value_col': value_col}
@@ -79,7 +81,10 @@ def produce_dataset_meta(data_path, smiles_col, class_col=None, value_col=None):
 
 def write_meta(meta_dict, outpath=None, filename = None):
     """
-    write_meta writes a metadata dictionary to json at a specified path 
+    write_meta writes a metadata dictionary to json at a specified path
+    :param meta_dict: dict - The metadata dict to write
+    :param outpath: str - path to output directory
+    :param filename: str - specific filename to write to
     """
 
     #Compose filename from meta_dict
@@ -104,6 +109,11 @@ def write_meta(meta_dict, outpath=None, filename = None):
     return fullpath
 
 def add_meta(meta_path, new_data_dict):
+    """
+    add_meta merges new data into metadata file and writes
+    :param meta_path: str - current metadata file
+    :param new_data_dict: dict - data to be added to metadata json
+    """
 
     with open(meta_path, "r") as infile:
 
@@ -118,10 +128,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('doi', type=str,
                         help="DOI url you want to parse for metadata")
-    parser.add_argument('-o', '--outpath', type=str, default=None,
-                        help="path to which metadata will be written")
-    parser.add_argument('-d', '--datapath', type=str, default=None,
-                        help="path to data source for paper")
+    parser.add_argument('datapath', type=str, default=None,
+                            help="path to data source for paper")
     parser.add_argument('-s', '--smiles_col', type=str, default=None,
                         help="column name for smiles col")
     parser.add_argument('-c', '--class_col', type=str, default=None,
@@ -130,14 +138,14 @@ if __name__ == '__main__':
                         help="column name for value col")
     args = parser.parse_args()
 
-    print("Producing dataset metadata for:", args.doi)
+    outpath = os.path.dirname(args.datapath)
 
-    if args.outpath:
-        print("Metadata will be written to:", args.outpath)
+    print("Producing dataset metadata for:", args.doi)
+    print("Metadata will be written to:", outpath)
 
     article_meta = produce_article_meta(args.doi)
-    fullpath = write_meta(article_meta, args.outpath)
+    fullpath = write_meta(article_meta, outpath)
 
     if args.datapath:
         dataset_meta = produce_dataset_meta(args.datapath, args.smiles_col, args.class_col, args.value_col)
-        add_meta_data(fullpath, dataset_meta)
+        add_meta(fullpath, dataset_meta)
