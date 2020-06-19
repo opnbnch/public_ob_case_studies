@@ -1,0 +1,24 @@
+{
+    "title": "A Bayesian Approach to in Silico Blood-Brain Barrier Penetration Modeling",
+    "authors": [
+        "Ines Filipa  Martins",
+        "Ana L.  Teixeira",
+        "Luis  Pinheiro",
+        "Andre O.  Falcao"
+    ],
+    "doi": "https://doi.org/10.1021/ci300124c",
+    "publisher": "American Chemical Society",
+    "date": "June 6, 2012",
+    "meta_version": "v1.0.0 (06-18-2020)",
+    "meta_utc_fix": 1592551731,
+    "meta_path": "../case_studies/Martins_BBB_case_study/Martins_et_al_2012_metadata.json",
+    "data_path": "../case_studies/Martins_BBB_case_study/martins_et_al_2012.csv",
+    "raw_rows": 2053,
+    "smiles_col": "smiles",
+    "class_col": "p_np",
+    "value_col": null,
+    "std_data_path": "../case_studies/Martins_BBB_case_study/std_martins_et_al_2012.csv",
+    "std_smiles_col": "std_smiles",
+    "std_version": "v1.0.0 (06-18-2020)",
+    "std_utc_fix": 1592552358
+}
