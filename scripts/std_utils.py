@@ -1,9 +1,7 @@
 import argparse
-import json
 import molvs
 import os
 import pandas as pd
-import sys
 import time
 
 from functools import partial
@@ -18,7 +16,7 @@ __version__ = 'v1.0.0 (06-18-2020)'
 def read_data(path):
     """
     read_data reads the relevant columns from a dataframe given the path
-    :param path: str - path to a
+    :str path: str - path to dir where data lives
     """
 
     meta = meta_utils.read_meta(path)
@@ -31,17 +29,19 @@ def read_data(path):
     column_subset = [col for col in [smiles_col, class_col, value_col] if col]
 
     # subset to columns of interest
-    df = pd.read_csv(data_path).loc[::,column_subset]
+    df = pd.read_csv(data_path).loc[::, column_subset]
 
     return(df)
 
+
 def std_mol_from_smiles(smiles):
     """
-    Adapted from https://github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/struct_utils.py
+    Adapted from:
+    github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/struct_utils.py
     Following some rules set out here: https://doi.org/10.1021/ci100176x
-    Generate a standardized RDKit Mol object for the larges fragment of the molecule specified by smiles.
-    :param removeCharges: if True, add hydrogens as needed to eliminate charges.
-    :return std_mol: A mol datatype generated from orig_smiles
+    Generate a standardized RDKit Mol object for the larges fragment
+    of the molecule specified by smiles.
+    :str smiles: SMILES formatted string
     """
 
     cmpd_mol = Chem.MolFromSmiles(smiles)
@@ -52,36 +52,42 @@ def std_mol_from_smiles(smiles):
         stdizer = molvs.standardize.Standardizer(prefer_organic=True)
         return stdizer.fragment_parent(cmpd_mol)
 
+
 def std_smiles_from_smiles(smiles):
     """
-    Adapted from https://github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/struct_utils.py
-    Generate a standardized SMILES string for the largest fragment of the molecule specified by smiles.
-    :param smiles: str - SMILES formatted string
+    Adapted from:
+    github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/struct_utils.py
+    Generate a standardized SMILES string for the largest fragment
+    of the molecule specified by smiles.
+    :str smiles: SMILES formatted string
     """
 
     try:
         std_mol = std_mol_from_smiles(smiles)
         return Chem.MolToSmiles(std_mol)
-    except:
+    except Exception:
         return 'invalid_smiles'
+
 
 def std_ik_from_smiles(smiles):
     """
     Generate a standardized inchi key for a given molecule specified by smiles
-    :param smiles: str - SMILES formatted string
+    :str smiles: SMILES formatted string
     """
 
     try:
         std_mol = std_mol_from_smiles(smiles)
         return Chem.inchi.MolToInchiKey(std_mol)
-    except:
+    except Exception:
         return "invalid_smiles"
+
 
 def _list_smiles_from_smiles(smi_list):
     """
     Private function for multiprocessing in multi_smiles_to_smiles
     """
     return [std_smiles_from_smiles(smi) for smi in smi_list]
+
 
 def _list_ik_from_smiles(smi_list):
     """
@@ -90,11 +96,11 @@ def _list_ik_from_smiles(smi_list):
     return [std_ik_from_smiles(smi) for smi in smi_list]
 
 
-def multi_smiles_to_smiles(smi_list, workers = 8):
+def multi_smiles_to_smiles(smi_list, workers=8):
     """
     Parallelize smiles standardization on CPU
-    :param smi_list: list of SMILES strings
-    :param workers: number of cores to devote to job
+    :list smi_list: list of SMILES strings
+    :int workers: number of cores to devote to job
     """
 
     func = partial(_list_smiles_from_smiles)
@@ -102,22 +108,24 @@ def multi_smiles_to_smiles(smi_list, workers = 8):
     if workers > 1:
         # Multi-process if you have workers for it.
         batchsize = 200
-        batches = [smi_list[i:i+batchsize] for i in range(0, len(smi_list), batchsize)]
+        batches = [smi_list[i:i+batchsize]
+                   for i in range(0, len(smi_list), batchsize)]
 
         with pool.Pool(workers) as p:
             std_smiles = p.map(func, batches)
-            std_smiles = [y for x in std_smiles for y in x] #Flatten results
+            std_smiles = [y for x in std_smiles for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
         std_smiles = _list_smiles_from_smiles(smi_list)
 
     return std_smiles
 
+
 def multi_ik_from_smiles(smi_list, workers=8):
     """
     Parallelize inchi key generation on CPU
-    :param smi_list: list of SMILES strings
-    :param workers: number of cores to devote to job
+    :list smi_list: list of SMILES strings
+    :int workers: number of cores to devote to job
     """
 
     func = partial(_list_ik_from_smiles)
@@ -125,23 +133,25 @@ def multi_ik_from_smiles(smi_list, workers=8):
     if workers > 1:
         # Multi-process if you have workers for it.
         batchsize = 200
-        batches = [smi_list[i:i+batchsize] for i in range(0, len(smi_list), batchsize)]
+        batches = [smi_list[i:i+batchsize]
+                   for i in range(0, len(smi_list), batchsize)]
 
         with pool.Pool(workers) as p:
             std_ik = p.map(func, batches)
-            std_ik = [y for x in std_ik for y in x] #Flatten results
+            std_ik = [y for x in std_ik for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
         std_ik = _list_ik_from_smiles(smi_list)
 
     return std_ik
 
-def df_add_std_smiles(df, smiles_col, workers = 8):
+
+def df_add_std_smiles(df, smiles_col, workers=8):
     """
     df_add_std_smiles adds a standardized smiles column to a df
-    :param df: pandas DataFrame of interest
-    :param smiles_col: str - name of smiles column
-    :param workers: int - number of CPUs to devote
+    :pd.DataFrame df: df of interest
+    :str smiles_col: name of smiles column
+    :int workers: number of CPUs to devote
     """
 
     df_smiles = list(df[smiles_col])
@@ -149,12 +159,13 @@ def df_add_std_smiles(df, smiles_col, workers = 8):
 
     return df
 
-def df_ik(df, smiles_col, workers = 8):
+
+def df_ik(df, smiles_col, workers=8):
     """
     df_add_ik adds an inchi key column to a df
-    :param df: pandas DataFrame of interest
-    :param smiles_col: str - name of smiles column
-    :param workers: int - number of CPUs to devote
+    :pd.DataFrame df: df of interest
+    :str smiles_col: name of smiles column
+    :int workers: number of CPUs to devote
     """
 
     df_smiles = list(df[smiles_col])
@@ -162,15 +173,16 @@ def df_ik(df, smiles_col, workers = 8):
 
     return df
 
+
 def write_std(df, outpath, filename=None):
     """
     write_std writes a standardized csv at a specified path
-    :param df: pandas DataFrame class - The dataframe to write
-    :param outpath: str - path to output directory
-    :param filename: str - specific filename to write to
+    :pd.DataFrame df: The dataframe to write
+    :str outpath: path to output directory
+    :str filename: specific filename to write to
     """
 
-    #Compose filename from meta_dict
+    # Compose filename from meta_dict
     if filename is None:
         meta = meta_utils.read_meta(outpath)
         old_name = os.path.basename(meta.get('data_path'))
@@ -181,7 +193,7 @@ def write_std(df, outpath, filename=None):
 
     fullpath = os.path.join(outpath, filename)
 
-    df.to_csv(fullpath, index = False)
+    df.to_csv(fullpath, index=False)
 
     return fullpath
 
@@ -190,7 +202,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str,
-                            help="path to directory with data and meta of interest")
+                        help="path to directory with data of interest")
     args = parser.parse_args()
 
     meta = meta_utils.read_meta(args.path)
@@ -209,4 +221,4 @@ if __name__ == '__main__':
     print("Standard df will be written to:", std_data_path)
     print("Updated metadata at:", meta_path)
 
-    meta_utils.add_meta(meta_path, std_meta) #Update metadata
+    meta_utils.add_meta(meta_path, std_meta)  # Update metadata
