@@ -1,14 +1,12 @@
-import argparse
 import molvs
 import os
 import pandas as pd
-import time
 
 from functools import partial
 from multiprocessing import pool
 from rdkit import Chem
 
-import meta_utils
+import utils.meta_utils as meta_utils
 
 __version__ = 'v1.0.0 (06-18-2020)'
 
@@ -160,7 +158,7 @@ def df_add_std_smiles(df, smiles_col, workers=8):
     return df
 
 
-def df_ik(df, smiles_col, workers=8):
+def df_add_ik(df, smiles_col, workers=8):
     """
     df_add_ik adds an inchi key column to a df
     :pd.DataFrame df: df of interest
@@ -196,29 +194,3 @@ def write_std(df, outpath, filename=None):
     df.to_csv(fullpath, index=False)
 
     return fullpath
-
-
-if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('path', type=str,
-                        help="path to directory with data of interest")
-    args = parser.parse_args()
-
-    meta = meta_utils.read_meta(args.path)
-    smiles_col = meta.get('smiles_col')
-    meta_path = meta.get('meta_path')
-
-    df = read_data(args.path)
-    std_df = df_ik(df_add_std_smiles(df, smiles_col), 'std_smiles')
-    std_data_path = write_std(std_df, args.path)
-
-    std_meta = {'std_data_path': std_data_path,
-                'std_smiles_col': 'std_smiles',
-                'std_version': __version__,
-                'std_utc_fix': int(time.time())}
-
-    print("Standard df will be written to:", std_data_path)
-    print("Updated metadata at:", meta_path)
-
-    meta_utils.add_meta(meta_path, std_meta)  # Update metadata
