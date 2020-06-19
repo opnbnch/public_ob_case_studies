@@ -10,7 +10,7 @@
     "publisher": "American Chemical Society",
     "date": "June 6, 2012",
     "meta_version": "v1.0.0 (06-18-2020)",
-    "meta_utc_fix": 1592593110,
+    "meta_utc_fix": 1592594771,
     "meta_path": "case_studies/Martins_BBB_case_study/Martins_et_al_2012_metadata.json",
     "data_path": "case_studies/Martins_BBB_case_study/martins_et_al_2012.csv",
     "raw_rows": 2053,
@@ -20,5 +20,5 @@
     "std_data_path": "case_studies/Martins_BBB_case_study/std_martins_et_al_2012.csv",
     "std_smiles_col": "std_smiles",
     "std_version": "v1.0.0 (06-18-2020)",
-    "std_utc_fix": 1592593530
+    "std_utc_fix": 1592594988
 }
