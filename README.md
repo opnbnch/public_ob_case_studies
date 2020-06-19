@@ -6,7 +6,7 @@ OpenBench strives to be the home for open, high quality ADME-Tox datasets and th
 
 To understand why OpenBench exists, read [the manifesto.](https://opnbnch.substack.com/p/a-paradise-deferred)
 
-For more insight into **case studies**, check out the `case_studies` directory. 
+For more insight into **case studies**, check out the [`case_studies`](./case_studies) directory. 
 
 Tooling for data aggregation and cleaning is on it's way. 
 
