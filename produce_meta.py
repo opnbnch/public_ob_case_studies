@@ -1,7 +1,8 @@
 import argparse
 import os
 
-from utils.meta_utils import produce_article_meta, produce_dataset_meta, write_meta, add_meta
+from utils.meta_utils import produce_article_meta, produce_dataset_meta
+from utils.meta_utils import write_meta, add_meta
 
 if __name__ == '__main__':
 

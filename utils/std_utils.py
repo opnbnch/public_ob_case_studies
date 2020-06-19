@@ -1,7 +1,6 @@
 import molvs
 import os
 import pandas as pd
-import time
 
 from functools import partial
 from multiprocessing import pool

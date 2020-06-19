@@ -1,9 +1,9 @@
 import argparse
-import os
 import time
 
 from utils.meta_utils import read_meta, add_meta
-from utils.std_utils import read_data, df_add_ik, df_add_std_smiles, write_std, __version__
+from utils.std_utils import read_data, write_std, __version__
+from utils.std_utils import df_add_ik, df_add_std_smiles
 
 if __name__ == '__main__':
 
