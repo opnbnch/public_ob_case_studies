@@ -32,3 +32,6 @@ if __name__ == '__main__':
                   'san_utc_fix': int(time.time())}
 
     add_meta(meta_path, class_meta)
+
+    print('Sanitized df will be written to:', san_data_path)
+    print('Updated metadata at:', meta_path)
