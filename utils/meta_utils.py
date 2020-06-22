@@ -61,8 +61,7 @@ def produce_article_meta(doi):
     return meta_dict
 
 
-def produce_dataset_meta(data_path, smiles_col,
-                         class_col=None, value_col=None):
+def produce_dataset_meta(data_path):
     """
     Ingest a datapth and column names and produces a metadata dict.
     :str data_path: path to a csv to ingest
@@ -74,20 +73,8 @@ def produce_dataset_meta(data_path, smiles_col,
     df = pd.read_csv(data_path)
     raw_rows = df.shape[0]
 
-    for col in [x for x in [smiles_col, class_col, value_col] if x]:
-        if col not in list(df.columns):
-            warnings.warn(col + " is not a column in your dataset. \
-                You may have made a typo.", Warning)
-
-    if class_col is None and value_col is None:
-        warnings.warn('You have neither a value nor class column. \
-            This makes for poor training data!', Warning)
-
     meta_dict = {'data_path': data_path,
-                 'raw_rows': raw_rows,
-                 'smiles_col': smiles_col,
-                 'class_col': class_col,
-                 'value_col': value_col}
+                 'raw_rows': raw_rows}
 
     return(meta_dict)
 
