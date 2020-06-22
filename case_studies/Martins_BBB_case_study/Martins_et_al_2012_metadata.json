@@ -20,5 +20,15 @@
     "std_data_path": "case_studies/Martins_BBB_case_study/std_martins_et_al_2012.csv",
     "std_smiles_col": "std_smiles",
     "std_version": "v1.0.0 (06-18-2020)",
-    "std_utc_fix": 1592594988
+    "std_utc_fix": 1592594988,
+    "san_data_path": "case_studies/Martins_BBB_case_study/san_martins_et_al_2012.csv",
+    "std_class_col": "std_class",
+    "class_version": "v1.0.0 (06-22-2020)",
+    "class_map": {
+        "p_np": {
+            "p": 1,
+            "n": 0
+        }
+    },
+    "san_utc_fix": 1592866530
 }

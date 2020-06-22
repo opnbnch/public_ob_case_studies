@@ -14,7 +14,7 @@ __version__ = 'v1.0.0 (06-18-2020)'
 def read_data(path):
     """
     read_data reads the relevant columns from a dataframe given the path
-    :str path: str - path to dir where data lives
+    :str path: path to dir where data lives
     """
 
     meta = meta_utils.read_meta(path)
@@ -31,6 +31,17 @@ def read_data(path):
 
     return(df)
 
+def read_std_data(path):
+    """
+    Read the relevant columns from a dataframe given the path
+    :str path: path to dir where data lives
+    """
+
+    meta = meta_utils.read_meta(path)
+    data_path = os.path.join(path, os.path.basename(meta.get('std_data_path')))
+    df = pd.read_csv(data_path)
+
+    return(df)
 
 def std_mol_from_smiles(smiles):
     """
