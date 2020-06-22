@@ -23,6 +23,7 @@ def df_add_std_class(df, class_map):
 
     return std_df
 
+
 def get_class_values(df, class_col):
     """
     return unique class values for the class_col
@@ -32,35 +33,12 @@ def get_class_values(df, class_col):
 
     return list(set(df[class_col].values))
 
-def get_user_classes(classes, options):
-    """
-    Gets the user input for how classes should be standardized.
-    Resricted by options, and creates a dict for easy lookup later.
-    :set classes: set of unique classes
-    :set options: set of possible options for renaming
-    """
-    s = list(options)
-    options_str = ', '.join(str(i) for i in s)
-
-    user_classes = dict()
-    for cur in classes:
-        name = input('Assign class ' + str(cur) +
-                     ' one of the following values: ' + options_str + ': ')
-        while name not in options:
-            print('Assignment must be on of ' + options_str)
-            name = input('Assign class ' + str(cur) + ''
-                         ' one of the following values: ' + options_str + ': ')
-        options.remove(name)
-        s = list(options)
-        options_str = ', '.join(str(i) for i in s)
-        user_classes[cur] = name
-    return user_classes
 
 def _ask_for_assignment(value, options):
     """
     ask the user for an assignment to the option in question
     :str value: The value that needs to be assigned
-    :list options: list of options for assignment 
+    :list options: list of options for assignment
     """
 
     try:
