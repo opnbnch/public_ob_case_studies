@@ -7,6 +7,11 @@ __version__ = 'v1.0.0 (06-22-2020)'
 
 
 def df_add_std_class(df, class_map):
+    """
+    df_add_std_class adds standardized binary class to a df
+    :pd.DataFrame df: df of interest
+    :str class_map: mapping of old class to new class 
+    """
 
     class_col = list(class_map.keys())[0]
 
