@@ -3,7 +3,7 @@ import time
 
 from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_std_data
-from utils.class_utils import class_mapping_dict, df_add_std_class
+from utils.class_utils import get_class_map, df_add_std_class
 from utils.class_utils import write_san, __version__
 
 if __name__ == '__main__':
@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     df = read_std_data(args.path)
 
-    class_map = class_mapping_dict(df, class_col)
+    class_map = get_class_map(df, class_col)
     san_df = df_add_std_class(df, class_map)
 
     san_data_path = write_san(san_df, args.path)
