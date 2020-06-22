@@ -74,7 +74,10 @@ def produce_dataset_meta(data_path):
     raw_rows = df.shape[0]
 
     meta_dict = {'data_path': data_path,
-                 'raw_rows': raw_rows}
+                 'raw_rows': raw_rows,
+                 'smiles_col': None,
+                 'value_col': None,
+                 'class_col': None}
 
     return(meta_dict)
 
