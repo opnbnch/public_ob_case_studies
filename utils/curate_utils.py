@@ -26,9 +26,7 @@ def majority_class_filter(group):
         class_vals = group.std_class.values
         counts = Counter(class_vals)
         top_two = counts.most_common(2)
-        if len(top_two) == 1:
-            return int(top_two[0][0])
-        if top_two[0][1] > top_two[1][1]:
+        if len(top_two) == 1 or (top_two[0][1] > top_two[1][1]):
             return int(top_two[0][0])
         else:
             return None
