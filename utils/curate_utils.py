@@ -2,7 +2,6 @@ from collections import Counter
 
 __version__ = 'v1.0.0 (06-22-2020)'
 
-
 def df_filter_invalid_smi(df, smiles_col):
     """
     remove rows with invalid smiles from the dataframe
