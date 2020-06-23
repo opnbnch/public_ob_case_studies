@@ -183,7 +183,7 @@ def df_add_ik(df, smiles_col, workers=8):
     return df
 
 
-def write_std(df, outpath, filename=None):
+def write_std(df, outpath, prefix='std_'):
     """
     write_std writes a standardized csv at a specified path
     :pd.DataFrame df: The dataframe to write
@@ -192,10 +192,9 @@ def write_std(df, outpath, filename=None):
     """
 
     # Compose filename from meta_dict
-    if filename is None:
-        meta = meta_utils.read_meta(outpath)
-        old_name = os.path.basename(meta.get('data_path'))
-        filename = 'std_' + old_name
+    meta = meta_utils.read_meta(outpath)
+    old_name = os.path.basename(meta.get('data_path'))
+    filename = prefix + old_name
 
     if not os.path.isdir(outpath):
         os.makedirs(outpath)
