@@ -1,4 +1,3 @@
-from collections import Counter
 
 
 __version__ = 'v1.0.0 (06-22-2020)'
@@ -49,28 +48,9 @@ def df_filter_invalid_smi(df, smiles_col):
     return df.loc[lambda x:x[smiles_col] != 'invalid_smiles']
 
 
-def majority_class_filter(group):
-    """
-    Only accept a replicate group if there is a strict majority
-    for the same class.
-    :pd.DataFrame group: group of replicates
-    """
-
-    if group.shape[0] == 1:
-        return int(group.index[0])
-    else:
-        class_vals = group.std_class.values
-        counts = Counter(class_vals)
-        top_two = counts.most_common(2)
-        if len(top_two) == 1 or (top_two[0][1] > top_two[1][1]):
-            return int(top_two[0][0])
-        else:
-            return None
-
-
 def unanimous_class_filter(group):
     """
-    Only accept a replicate group if they all have the same class
+    Only accept a replicate group if they all have the same clas
     :pd.DataFrame group: group of replicates
     """
 
