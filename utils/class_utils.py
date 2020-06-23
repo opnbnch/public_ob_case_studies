@@ -49,7 +49,8 @@ def _ask_for_assignment(value, options):
 def get_class_map(df, class_col):
     """
     Assign class column to appropriate values
-    :str path: path to dir where data lives
+    :pd.DataFrame df: df with class to map
+    :str class_col: name of column containing class of interest 
     """
 
     class_values = get_class_values(df, class_col)
