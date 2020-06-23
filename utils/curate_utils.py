@@ -1,5 +1,41 @@
 
+
 __version__ = 'v1.0.0 (06-22-2020)'
+
+
+def ask_for_filter(dispatcher):
+
+    """
+    Ask for user input on filter function
+    """
+
+    options = list(dispatcher.keys())
+
+    text1 =  \
+        """
+        How do you want to resolve class for multiple replicates?
+        """
+
+    retry = \
+        """
+        The method you specified is not among the options in {}. Try again:
+        """
+
+    print(text1)
+
+    try:
+        fn_name = input('Please select one option:{}: '
+                        .format(options)).strip()
+    except Exception:
+        fn_name = -1
+
+    while fn_name not in options:
+        try:
+            fn_name = input(retry.format(options)).strip()
+        except Exception:
+            fn_name = -1
+
+    return dispatcher[fn_name]
 
 
 def df_filter_invalid_smi(df, smiles_col):
