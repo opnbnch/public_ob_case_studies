@@ -12,7 +12,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str,
                         help="path to directory with data to standardize")
+    parser.add_argument('filter_fn', type=str,
+                        help='unanimous or majority filter function')
     args = parser.parse_args()
+
+    filters = ['unanimous', 'majority']
+    if args.filter_fn not in filters:
+        raise SyntaxError('You must specify one of the following filter '
+                          'functions: ' + str(filters))
 
     meta = read_meta(args.path)
     meta_path = meta.get('meta_path')
