@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     if args.filter_fn in filters.keys():
         filter = filters[args.filter_fn]
-    if args.filter_fn not in filters.keys():
+    else:
         print('Filter specified is not valid.')
     if not args.filter_fn or args.filter_fn not in filters.keys():
         filter = ask_for_filter(filters)
