@@ -35,7 +35,7 @@ if __name__ == '__main__':
                     'curated_indices': idx_keep_dict,
                     'curated_version': __version__,
                     'curated_utc_fix': int(time.time())}
-                    
+
     add_meta(meta_path, curated_meta)  # Update metadata
 
     print("Curated df will be written to:", curated_data_path)
