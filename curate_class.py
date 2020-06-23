@@ -19,10 +19,12 @@ if __name__ == '__main__':
                         help='unanimous or majority filter function')
     args = parser.parse_args()
 
+    if args.filter_fn in filters.keys():
+        filter = filters[args.filter_fn]
     if args.filter_fn not in filters.keys():
         print('Filter specified is not valid.')
     if not args.filter_fn or args.filter_fn not in filters.keys():
-        args.filter_fn = ask_for_filter(filters)
+        filter = ask_for_filter(filters)
 
     meta = read_meta(args.path)
     meta_path = meta.get('meta_path')
@@ -34,7 +36,7 @@ if __name__ == '__main__':
     curated_data = df_filter_invalid_smi(std_data, std_smiles_col)
     idx_keep_dict = get_keep_indices(curated_data,
                                      std_key_col,
-                                     args.filter_fn)
+                                     filter)
     curated_data = df_filter_replicates(curated_data, idx_keep_dict)
 
     curated_data_path = write_std(curated_data, args.path, prefix='curated_')
