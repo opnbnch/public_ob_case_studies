@@ -25,7 +25,7 @@ if __name__ == '__main__':
         add_meta(meta_path, {'class_col': args.class_col})
 
     df = read_data(args.path)
-    std_df = df_add_ik(df_add_std_smiles(df, 'smiles'), 'std_smiles')
+    std_df = df_add_ik(df_add_std_smiles(df, args.smiles_col), 'std_smiles')
 
     if args.class_col:
 
@@ -40,7 +40,6 @@ if __name__ == '__main__':
 
     std_data_path = write_std(std_df, args.path)
     std_meta = {'std_data_path': std_data_path,
-                'smiles_col': args.smiles_col,
                 'std_smiles_col': 'std_smiles',
                 'std_version': __version__,
                 'std_utc_fix': int(time.time())}
