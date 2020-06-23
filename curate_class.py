@@ -10,18 +10,21 @@ from utils.curate_utils import __version__
 
 if __name__ == '__main__':
 
+    filters = {'unanimous': unanimous_class_filter,
+               'majority': majority_class_filter}
+    choice_list = list(filters.keys())
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str,
                         help="path to directory with data to standardize")
-    parser.add_argument('filter_fn', type=str,
+    parser.add_argument('filter_fn', type=str, choices=choice_list,
                         help='unanimous or majority filter function')
     args = parser.parse_args()
 
-    filters = {'unanimous': unanimous_class_filter,
-               'majority': majority_class_filter}
+    """
     if args.filter_fn not in filters.keys():
         raise SyntaxError('You must specify one of the following filter '
                           'functions: ' + str(', '.join(filters.keys())))
+    """
 
     meta = read_meta(args.path)
     meta_path = meta.get('meta_path')
