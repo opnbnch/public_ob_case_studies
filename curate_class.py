@@ -4,15 +4,27 @@ import time
 from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_std_data, write_std
 from utils.curate_utils import df_filter_invalid_smi, df_filter_replicates
-from utils.curate_utils import unanimous_class_filter, get_keep_indices
+from utils.curate_utils import unanimous_class_filter, majority_class_filter
+from utils.curate_utils import get_keep_indices
 from utils.curate_utils import __version__
 
 if __name__ == '__main__':
 
+    filters = {'unanimous': unanimous_class_filter,
+               'majority': majority_class_filter}
+    choice_list = list(filters.keys())
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str,
                         help="path to directory with data to standardize")
+    parser.add_argument('filter_fn', type=str, choices=choice_list,
+                        help='unanimous or majority filter function')
     args = parser.parse_args()
+
+    """
+    if args.filter_fn not in filters.keys():
+        raise SyntaxError('You must specify one of the following filter '
+                          'functions: ' + str(', '.join(filters.keys())))
+    """
 
     meta = read_meta(args.path)
     meta_path = meta.get('meta_path')
@@ -24,7 +36,7 @@ if __name__ == '__main__':
     curated_data = df_filter_invalid_smi(std_data, std_smiles_col)
     idx_keep_dict = get_keep_indices(curated_data,
                                      std_key_col,
-                                     filter_fn=unanimous_class_filter)
+                                     filter_fn=filters[args.filter_fn])
     curated_data = df_filter_replicates(curated_data, idx_keep_dict)
 
     curated_data_path = write_std(curated_data, args.path, prefix='curated_')
