@@ -1,6 +1,8 @@
 
 import utils.meta_utils as meta_utils
 
+__version__ = 'v1.0.0 (06-22-2020)'
+
 def df_filter_invalid_smi(df, smiles_col):
     """
     remove rows with invalid smiles from the dataframe
@@ -17,13 +19,13 @@ def unanimous_class_filter(group):
     """
 
     if group.shape[0] == 1:
-        return group.index[0]
+        return int(group.index[0])
     else:
         class_vals = group.std_class.values
         if len(set(class_vals)) > 1:
             return None
         else:
-            return group.index[0]
+            return int(group.index[0])
 
 def get_keep_indices(df, key_col, filter_fn):
     """
@@ -45,7 +47,7 @@ def get_keep_indices(df, key_col, filter_fn):
 
     return idx_keep_dict
 
-def df_filter_class_replicates(df, idx_keep_dict):
+def df_filter_replicates(df, idx_keep_dict):
     """
     Filter out replicates in a data frame
     :pd.DataFrame df: dataframe with replicates
@@ -58,7 +60,5 @@ def df_filter_class_replicates(df, idx_keep_dict):
     non_none_list = [non_none_dict.update({elem[0]: elem[1]})
                         for elem in idx_keep_dict.items()
                         if elem[1] is not None]
-
-    print(non_none_dict)
 
     return df.loc[list(non_none_dict.values()), ::]
