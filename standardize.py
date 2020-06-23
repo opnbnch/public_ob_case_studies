@@ -41,6 +41,7 @@ if __name__ == '__main__':
     std_data_path = write_std(std_df, args.path)
     std_meta = {'std_data_path': std_data_path,
                 'std_smiles_col': 'std_smiles',
+                'std_key_col': 'inchi_key', 
                 'std_version': __version__,
                 'std_utc_fix': int(time.time())}
     add_meta(meta_path, std_meta)  # Update metadata
