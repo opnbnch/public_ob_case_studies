@@ -3,8 +3,6 @@ import os
 
 import utils.meta_utils as meta_utils
 
-__version__ = 'v1.0.0 (06-22-2020)'
-
 
 def df_add_std_class(df, class_map):
     """
@@ -96,27 +94,3 @@ def get_class_map(df, class_col):
         options.remove(std_val)
 
     return {class_col: user_classes}
-
-
-def write_san(df, outpath, filename=None):
-    """
-    write_san writes a sanitized csv at a specified path
-    :pd.DataFrame df: The dataframe to write
-    :str outpath: path to output directory
-    :str filename: specific filename to write to
-    """
-
-    # Compose filename from meta_dict
-    if filename is None:
-        meta = meta_utils.read_meta(outpath)
-        old_name = os.path.basename(meta.get('data_path'))
-        filename = 'san_' + old_name
-
-    if not os.path.isdir(outpath):
-        os.makedirs(outpath)
-
-    fullpath = os.path.join(outpath, filename)
-
-    df.to_csv(fullpath, index=False)
-
-    return fullpath
