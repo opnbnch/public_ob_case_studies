@@ -17,7 +17,6 @@ if __name__ == '__main__':
     meta = read_meta(args.path)
     meta_path = meta.get('meta_path')
     std_smiles_col = meta.get('std_smiles_col')
-    std_data_path = meta.get('std_data_path')
     std_key_col = meta.get('std_key_col')
 
     std_data = read_std_data(args.path)
@@ -31,7 +30,7 @@ if __name__ == '__main__':
     curated_data_path = write_std(curated_data, args.path, prefix='curated_')
 
     curated_meta = {'curated_data_path': curated_data_path,
-                    'curated_rows': curated_data.shape[0],
+                    'curated_rows': int(curated_data.shape[0]),
                     'curated_indices': idx_keep_dict,
                     'curated_version': __version__,
                     'curated_utc_fix': int(time.time())}
