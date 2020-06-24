@@ -3,19 +3,19 @@ import time
 
 from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_std_data, write_std
-from utils.curate_utils import df_filter_invalid_smi, df_filter_replicates
 
-from utils.curate_utils import unanimous_class_filter, majority_class_filter
-from utils.curate_utils import get_keep_indices
-from utils.curate_utils import ask_for_filter, filters, __version__,
+from utils.curate_utils import df_filter_invalid_smi, df_filter_replicates
+from utils.curate_utils import get_keep_indices, __version__
+from utils.curate_utils import ask_for_filter, process_filter_input, filters
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str,
-                        help="path to directory with data to standardize")
+                        help='path to directory with data to curate')
     parser.add_argument('-f', '--filter_fn', type=str, default=None,
-                        help='unanimous or majority filter function')
+                        choices=list(filters.keys()),
+                        help='specify a filter function for curation')
     args = parser.parse_args()
 
     filter_fn = process_filter_input(args.filter, filters)
@@ -37,6 +37,7 @@ if __name__ == '__main__':
 
     curated_meta = {'curated_data_path': curated_data_path,
                     'curated_rows': int(curated_data.shape[0]),
+                    'curation_function': filter_fn.__name__,
                     'curated_indices': idx_keep_dict,
                     'curated_version': __version__,
                     'curated_utc_fix': int(time.time())}
