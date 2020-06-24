@@ -1,14 +1,18 @@
-
+import pandas as pd
+import numpy as np
 
 __version__ = 'v1.0.0 (06-22-2020)'
 
-filters = {'unanimous': unanimous_class_filter,
-           'majority': majority_class_filter}
 
 def process_filter_input(filter_arg, filters):
+    """
+    Process filter input from the command line
+    :str filter_arg: filter argument provided in command line
+    :dict filters: dict holding all availabe filter methods
+    """
 
-
-    if filter_arg in list(filters.keys()):
+    # Only check for existence, because choices in argparse enforce value
+    if filter_arg:
         filter_fn = filters[filter_arg]
     else:
         print('Filter unspecified or invalid.')
@@ -16,10 +20,11 @@ def process_filter_input(filter_arg, filters):
 
     return filter_fn
 
-def ask_for_filter(dispatcher):
 
+def ask_for_filter(dispatcher):
     """
     Ask for user input on filter function
+    :dict filters: dict holding all availabe filter methods
     """
 
     options = list(dispatcher.keys())
@@ -61,7 +66,7 @@ def df_filter_invalid_smi(df, smiles_col):
     return df.loc[lambda x:x[smiles_col] != 'invalid_smiles']
 
 
-def unanimous_class_filter(group):
+def _unanimous_class_filter(group):
     """
     Only accept a replicate group if they all have the same clas
     :pd.DataFrame group: group of replicates
@@ -75,6 +80,27 @@ def unanimous_class_filter(group):
             return None
         else:
             return int(group.index[0])
+
+
+def _simple_majority_filter(group):
+    """
+    Only accept a replicate group with a clear majority in one class
+    :pd.DataFrame group: group of replicates
+    """
+
+    if group.shape[0] == 1:
+        return int(group.index[0])
+    else:
+        votes = pd.DataFrame(group.std_class.value_counts())
+
+        max_vote = np.max(votes.std_class)
+        vote_num = votes.shape[0]
+
+        if max_vote / vote_num <= .5:
+            return None
+        else:
+            maj_class = votes.loc[lambda x:x.std_class == max_vote].index[0]
+            return int(group.loc[lambda x:x.std_class == maj_class].index[0])
 
 
 def get_keep_indices(df, key_col, filter_fn):
@@ -113,3 +139,7 @@ def df_filter_replicates(df, idx_keep_dict):
             non_none_dict.update({elem[0]: elem[1]})
 
     return df.loc[list(non_none_dict.values()), ::]
+
+
+filters = {'unanimous': _unanimous_class_filter,
+           'majority': _simple_majority_filter}
