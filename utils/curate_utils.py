@@ -2,6 +2,19 @@
 
 __version__ = 'v1.0.0 (06-22-2020)'
 
+filters = {'unanimous': unanimous_class_filter,
+           'majority': majority_class_filter}
+
+def process_filter_input(filter_arg, filters):
+
+
+    if filter_arg in list(filters.keys()):
+        filter_fn = filters[filter_arg]
+    else:
+        print('Filter unspecified or invalid.')
+        filter_fn = ask_for_filter(filters)
+
+    return filter_fn
 
 def ask_for_filter(dispatcher):
 
