@@ -8,7 +8,7 @@ def produce_meta(doi, data_path):
     """
     Produces initial meta data for a database to be cleaned and curated
     :str doi: ACS doi URL
-    :str data_path: filepath to dataset to be cleaned and curated 
+    :str data_path: filepath to dataset to be cleaned and curated
     """
 
     print("Producing dataset metadata for:", doi)
