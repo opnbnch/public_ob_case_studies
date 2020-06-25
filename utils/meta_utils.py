@@ -3,7 +3,6 @@ import os
 import requests
 import pandas as pd
 import time
-import warnings
 
 from bs4 import BeautifulSoup
 
@@ -34,7 +33,7 @@ def write_meta(meta_dict, outpath=None, filename=None):
     :str filename: specific filename to write to
     """
 
-    # Compose filename from meta_dict if none provided 
+    # Compose filename from meta_dict if none provided
     if filename is None:
         first_author_last_name = str(meta_dict.get('authors')[0]
                                               .split(' ')[-1])
