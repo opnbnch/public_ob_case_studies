@@ -3,7 +3,7 @@ import time
 
 from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_data, write_std, __version__
-from utils.std_utils import df_add_ik, df_add_std_smiles
+from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
 
 
@@ -11,7 +11,7 @@ def standardize(path, smiles_col, class_col=None):
     """
     :str path: a directory containing metadata and data to be standardized
     :str smiles_col: the name of that data's smiles column
-    :str class_col: the name of that data's class column 
+    :str class_col: the name of that data's class column
     """
 
 
@@ -30,6 +30,8 @@ def standardize(path, smiles_col, class_col=None):
     df = read_data(data_path)  # Now read in the raw data ...
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
+
+    invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
 
     # If a class col is specified,
     if class_col:
@@ -50,6 +52,7 @@ def standardize(path, smiles_col, class_col=None):
     std_meta = {'std_data_path': std_data_path,
                 'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',
+                'invalid_smiles': invalids,
                 'std_version': __version__,
                 'std_utc_fix': int(time.time())}
 

@@ -11,37 +11,13 @@ import utils.meta_utils as meta_utils
 __version__ = 'v1.0.0 (06-18-2020)'
 
 
-def read_data(path):
+def read_data(data_path):
     """
     read_data reads the relevant columns from a dataframe given the path
-    :str path: path to dir where data lives
+    :str path: path to data
     """
+    return pd.read_csv(data_path)
 
-    meta = meta_utils.read_meta(path)
-
-    data_path = os.path.join(path, os.path.basename(meta.get('data_path')))
-
-    smiles_col = meta.get('smiles_col')
-    class_col = meta.get('class_col')
-    value_col = meta.get('value_col')
-    column_subset = [col for col in [smiles_col, class_col, value_col] if col]
-
-    # subset to columns of interest
-    df = pd.read_csv(data_path).loc[::, column_subset]
-
-    return(df)
-
-def read_std_data(path):
-    """
-    Read the relevant columns from a dataframe given the path
-    :str path: path to dir where data lives
-    """
-
-    meta = meta_utils.read_meta(path)
-    data_path = os.path.join(path, os.path.basename(meta.get('std_data_path')))
-    df = pd.read_csv(data_path)
-
-    return(df)
 
 def std_mol_from_smiles(smiles):
     """
@@ -62,7 +38,7 @@ def std_mol_from_smiles(smiles):
         return stdizer.fragment_parent(cmpd_mol)
 
 
-def std_smiles_from_smiles(smiles):
+def _std_smiles_from_smiles(smiles):
     """
     Adapted from:
     github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/struct_utils.py
@@ -78,7 +54,7 @@ def std_smiles_from_smiles(smiles):
         return 'invalid_smiles'
 
 
-def std_ik_from_smiles(smiles):
+def _std_ik_from_smiles(smiles):
     """
     Generate a standardized inchi key for a given molecule specified by smiles
     :str smiles: SMILES formatted string
@@ -95,24 +71,25 @@ def _list_smiles_from_smiles(smi_list):
     """
     Private function for multiprocessing in multi_smiles_to_smiles
     """
-    return [std_smiles_from_smiles(smi) for smi in smi_list]
+    return [_std_smiles_from_smiles(smi) for smi in smi_list]
 
 
 def _list_ik_from_smiles(smi_list):
     """
     Private function for multiprocessing in multi_smiles_to_ik
     """
-    return [std_ik_from_smiles(smi) for smi in smi_list]
+    return [_std_ik_from_smiles(smi) for smi in smi_list]
 
 
 def multi_smiles_to_smiles(smi_list, workers=8):
     """
     Parallelize smiles standardization on CPU
+    Concept adapted from Atom AMPL: https://github.com/ATOMconsortium/AMPL/
     :list smi_list: list of SMILES strings
     :int workers: number of cores to devote to job
     """
 
-    func = partial(_list_smiles_from_smiles)
+    func = _list_smiles_from_smiles
 
     if workers > 1:
         # Multi-process if you have workers for it.
@@ -125,7 +102,7 @@ def multi_smiles_to_smiles(smi_list, workers=8):
             std_smiles = [y for x in std_smiles for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
-        std_smiles = _list_smiles_from_smiles(smi_list)
+        std_smiles = func(smi_list)
 
     return std_smiles
 
@@ -137,7 +114,7 @@ def multi_ik_from_smiles(smi_list, workers=8):
     :int workers: number of cores to devote to job
     """
 
-    func = partial(_list_ik_from_smiles)
+    func = _list_ik_from_smiles
 
     if workers > 1:
         # Multi-process if you have workers for it.
@@ -150,7 +127,7 @@ def multi_ik_from_smiles(smi_list, workers=8):
             std_ik = [y for x in std_ik for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
-        std_ik = _list_ik_from_smiles(smi_list)
+        std_ik = func(smi_list)
 
     return std_ik
 
@@ -182,8 +159,24 @@ def df_add_ik(df, smiles_col, workers=8):
 
     return df
 
+def get_invalid_smiles(df, base_smiles_col, std_smiles_col):
+    """
+    Return invalid smiles indices for a given data frame
+    :pd.DataFrame df:
+    :str base_smiles_col: name for base smiles column
+    :str std_smiles_col: name for std smiles column
+    """
 
-def write_std(df, outpath, prefix='std_'):
+    invalids = df.loc[lambda x:x[std_smiles_col] == 'invalid_smiles']
+
+    invalid_dict = {}
+    for row in invalids.iterrows():
+        invalid_dict.update({row[1][base_smiles_col]: row[0]})
+
+    return invalid_dict
+
+
+def write_std(df, path, prefix='std_'):
     """
     write_std writes a standardized csv at a specified path
     :pd.DataFrame df: The dataframe to write
@@ -191,8 +184,10 @@ def write_std(df, outpath, prefix='std_'):
     :str filename: specific filename to write to
     """
 
-    # Compose filename from meta_dict
-    meta = meta_utils.read_meta(outpath)
+    # Compose filename from prefix and data path
+    meta = meta_utils.read_meta(path)
+
+    outpath = os.path.dirname(path)
     old_name = os.path.basename(meta.get('data_path'))
     filename = prefix + old_name
 
