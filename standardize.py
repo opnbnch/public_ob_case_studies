@@ -7,7 +7,13 @@ from utils.std_utils import df_add_ik, df_add_std_smiles
 from utils.class_utils import get_class_map, df_add_std_class
 
 
-def standardize(path, smiles_col, class_col):
+def standardize(path, smiles_col, class_col=None):
+    """
+    :str path: a directory containing metadata and data to be standardized
+    :str smiles_col: the name of that data's smiles column
+    :str class_col: the name of that data's class column 
+    """
+
 
     # First read meta and store relevant paths into variables.
     meta = read_meta(path)
