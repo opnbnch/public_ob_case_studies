@@ -25,7 +25,7 @@ def read_meta(path):
     return meta
 
 
-def write_meta(meta_dict, outpath=None, filename=None):
+def init_meta(meta_dict, outpath=None, filename=None):
     """
     write_meta writes a metadata dictionary to json at a specified path
     :dict meta_dict: The metadata dict to write
@@ -46,7 +46,7 @@ def write_meta(meta_dict, outpath=None, filename=None):
 
         fullpath = os.path.join(outpath, filename)
         fp_meta = {'meta_path': fullpath}
-        print('Writing', filename, 'output to:', fullpath)
+        print('Writing metadata output to:', fullpath)
 
         meta_dict = {**meta_dict, **fp_meta}
 
@@ -121,9 +121,11 @@ def produce_dataset_meta(data_path):
 
     df = pd.read_csv(data_path)
     raw_rows = df.shape[0]
+    column_names = list(df.columns)
 
     meta_dict = {'data_path': data_path,
-                 'raw_rows': raw_rows,
+                 'data_row_num': raw_rows,
+                 'data_columns': column_names,
                  'smiles_col': None,
                  'value_col': None,
                  'class_col': None}
