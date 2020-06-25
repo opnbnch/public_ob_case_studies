@@ -6,6 +6,7 @@ from utils.std_utils import read_data, write_std, __version__
 from utils.std_utils import df_add_ik, df_add_std_smiles
 from utils.class_utils import get_class_map, df_add_std_class
 
+
 def standardize(path, smiles_col, class_col):
 
     # First read meta and store relevant paths into variables.
@@ -20,9 +21,9 @@ def standardize(path, smiles_col, class_col):
     if class_col:
         add_meta(meta_path, {'class_col': class_col})
 
-    df = read_data(data_path) # Now read in the raw data ...
-    std_df = df_add_std_smiles(df, smiles_col) # Add standardized SMILES ...
-    std_df = df_add_ik(std_df, 'std_smiles') # And InChI keys
+    df = read_data(data_path)  # Now read in the raw data ...
+    std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
+    std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
 
     # If a class col is specified,
     if class_col:
@@ -39,7 +40,7 @@ def standardize(path, smiles_col, class_col):
         add_meta(meta_path, class_meta)
 
     # Write standardized data and store meta
-    std_data_path = write_std(std_df, path, prefix = 'std_')
+    std_data_path = write_std(std_df, path, prefix='std_')
     std_meta = {'std_data_path': std_data_path,
                 'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',
