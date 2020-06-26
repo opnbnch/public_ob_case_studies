@@ -1,4 +1,3 @@
-
 import os
 
 import utils.meta_utils as meta_utils
@@ -50,7 +49,7 @@ def get_class_map(df, class_col):
     """
     Assign class column to appropriate values
     :pd.DataFrame df: df with class to map
-    :str class_col: name of column containing class of interest 
+    :str class_col: name of column containing class of interest
     """
 
     class_values = get_class_values(df, class_col)

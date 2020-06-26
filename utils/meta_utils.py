@@ -3,11 +3,60 @@ import os
 import requests
 import pandas as pd
 import time
-import warnings
 
 from bs4 import BeautifulSoup
 
 __version__ = 'v1.0.0 (06-18-2020)'
+
+
+def read_meta(path):
+    """
+    Read the metadata for a given path
+    :str path: filepath to directory where metadata resides
+    """
+
+    files = os.listdir(path)
+    metadata_file = [file for file in files if 'metadata.json' in file][0]
+    metadata_path = os.path.join(path, metadata_file)
+
+    with open(metadata_path, 'r') as f:
+        meta = json.load(f)
+
+    return meta
+
+
+def init_meta(meta_dict, outpath=None, filename=None):
+    """
+    write_meta writes a metadata dictionary to json at a specified path
+    :dict meta_dict: The metadata dict to write
+    :str outpath: path to output directory
+    :str filename: specific filename to write to
+    """
+
+    # Compose filename from meta_dict if none provided
+    if filename is None:
+        first_author_last_name = str(meta_dict.get('authors')[0]
+                                              .split(' ')[-1])
+        year = str(meta_dict.get('date').split(' ')[-1])
+        filename = first_author_last_name + '_et_al_' + year + "_metadata.json"
+
+    if outpath is not None:
+        if not os.path.isdir(outpath):
+            os.makedirs(outpath)
+
+        fullpath = os.path.join(outpath, filename)
+        fp_meta = {'meta_path': fullpath}
+        print('Writing metadata output to:', fullpath)
+
+        meta_dict = {**meta_dict, **fp_meta}
+
+        with open(fullpath, "w") as outfile:
+            json.dump(meta_dict, outfile, indent=4)
+    else:
+        print(meta_dict)
+        print('No outpath specified. Not writing', filename)
+
+    return fullpath
 
 
 def scrape_article_meta(request, meta_name):
@@ -72,48 +121,16 @@ def produce_dataset_meta(data_path):
 
     df = pd.read_csv(data_path)
     raw_rows = df.shape[0]
+    column_names = list(df.columns)
 
     meta_dict = {'data_path': data_path,
-                 'raw_rows': raw_rows,
+                 'data_row_num': raw_rows,
+                 'data_columns': column_names,
                  'smiles_col': None,
                  'value_col': None,
                  'class_col': None}
 
     return(meta_dict)
-
-
-def write_meta(meta_dict, outpath=None, filename=None):
-    """
-    write_meta writes a metadata dictionary to json at a specified path
-    :dict meta_dict: The metadata dict to write
-    :str outpath: path to output directory
-    :str filename: specific filename to write to
-    """
-
-    # Compose filename from meta_dict
-    if filename is None:
-        first_author_last_name = str(meta_dict.get('authors')[0]
-                                              .split(' ')[-1])
-        year = str(meta_dict.get('date').split(' ')[-1])
-        filename = first_author_last_name + '_et_al_' + year + "_metadata.json"
-
-    if outpath is not None:
-        if not os.path.isdir(outpath):
-            os.makedirs(outpath)
-
-        fullpath = os.path.join(outpath, filename)
-        fp_meta = {'meta_path': fullpath}
-        print('Writing', filename, 'output to:', fullpath)
-
-        meta_dict = {**meta_dict, **fp_meta}
-
-        with open(fullpath, "w") as outfile:
-            json.dump(meta_dict, outfile, indent=4)
-    else:
-        print(meta_dict)
-        print('No outpath specified. Not writing', filename)
-
-    return fullpath
 
 
 def add_meta(meta_path, new_data_dict):
@@ -130,19 +147,3 @@ def add_meta(meta_path, new_data_dict):
 
     with open(meta_path, "w") as outfile:
         json.dump(new_meta, outfile, indent=4)
-
-
-def read_meta(path):
-    """
-    Read the metadata for a given path
-    :str path: filepath to directory where metadata resides
-    """
-
-    files = os.listdir(path)
-    metadata_file = [file for file in files if 'metadata.json' in file][0]
-    metadata_full = os.path.join(path, metadata_file)
-
-    with open(metadata_full, 'r') as f:
-        meta = json.load(f)
-
-    return meta
