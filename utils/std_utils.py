@@ -199,3 +199,13 @@ def write_std(df, path, prefix='std_'):
     df.to_csv(fullpath, index=False)
 
     return fullpath
+
+def subset_data(df, subset_cols):
+    """
+    For a given dataset, get the columns you want in the order you want them
+    :pd.DataFrame df: a pandas DF
+    :list subset_cols: a list of column names strings
+    """
+    subset = [x for x in subset_cols if x in df.columns]
+
+    return df.loc[::, subset_cols]
