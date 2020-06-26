@@ -4,9 +4,9 @@ import time
 from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_data, write_std
 
-from utils.curate_utils import df_filter_invalid_smi, df_filter_replicates
-from utils.curate_utils import get_keep_indices, __version__
-from utils.curate_utils import ask_for_filter, process_filter_input, filters
+from utils.resolve_utils import df_filter_invalid_smi, df_filter_replicates
+from utils.resolve_utils import get_keep_indices, __version__
+from utils.resolve_utils import ask_for_filter, process_filter_input, filters
 
 def resolve_class(path, filter_fn=None):
 
