@@ -22,16 +22,19 @@ def standardize(path, smiles_col, class_col=None):
 
     # Add the smiles col into the meta for later use ...
     add_meta(meta_path, {'smiles_col': smiles_col})
+    subset = [smiles_col]
 
     # Likewise with the class col if one is specified
     if class_col:
         add_meta(meta_path, {'class_col': class_col})
+        subset.append(class_col)
 
-    df = read_data(data_path)  # Now read in the raw data ...
+    df = read_data(data_path).loc[::, subset]  # Now read in the raw data ...
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
 
     invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
+    print(invalids)
 
     # If a class col is specified,
     if class_col:
