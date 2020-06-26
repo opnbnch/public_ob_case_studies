@@ -34,7 +34,6 @@ def standardize(path, smiles_col, class_col=None):
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
 
     invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
-    print(invalids)
 
     # If a class col is specified,
     if class_col:
