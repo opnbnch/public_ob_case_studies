@@ -1,12 +1,15 @@
-name: opnbnch
+name: opnbnchmark
 
 channels:
   - conda-forge
   - rdkit
 
 dependencies:
+  - bs4>=4.9.1
+  - ipykernel>=5.3.0
+  - molvs>=0.1.1
   - numpy>=1.18.1
   - pandas>=1.0.3
   - pip>=20.0.2
   - rdkit>=2020.03.1.0
-  - molvs>=0.1.1
+  - requests>=2.24.0
