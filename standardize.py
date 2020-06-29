@@ -76,16 +76,14 @@ def standardize(path, smiles_col, class_col=None):
 
     # List of columns to retain for final csv
     default_cols = ['std_smiles', 'std_class']
-    # TEST: remove
-    print(default_cols)
-    curated_cols, discarded_cols = get_curated_cols(std_df, default_cols)
+    curated_cols, removed = get_curated_cols(std_df, default_cols)
     # curated_data_path = write_curated_cols(curated_cols)
     #
     # # TODO: Add a version?
     # # TODO: get discarded_cols
     # curated_meta = {'curated_data_path': curated_data_path
     #                 'retained_columns': curated_cols
-    #                 'discarded_columns': discarded_cols
+    #                 'removed_columns': removed
     #                 'curated_utc_fix': int(time.time())}
     #
     # add_meta(meta_path, curated_meta)

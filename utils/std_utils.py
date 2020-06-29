@@ -240,9 +240,14 @@ def get_curated_cols(std_df, default_cols):
         """
     default_question = default_q.format('[' + ', '.join(default_cols) + ']')
     keep_default = get_yes_no(default_question)
+    
+    if keep_default:
+        return default_cols, list(set(std_df.columns) - set(default_cols))
+    else:
+        cols = list(std_df.columns)
+        
+        # TEST: remove
+        return None
 
-    # TEST: remove
-    return None, None
-    #retained = subset_data(std_df, cols_to_keep)
     
 
