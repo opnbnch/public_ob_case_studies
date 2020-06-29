@@ -6,6 +6,16 @@ from utils.std_utils import read_data, write_std, __version__
 from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
 
+"""
+TODO: After standardization ask:
+1) Retain default columns?
+    -yes/no
+2) if no:
+    [List of cols] type names of ones to keep
+        -reject improper names
+        -write new df
+        -save that df
+"""
 
 def standardize(path, smiles_col, class_col=None):
     """
