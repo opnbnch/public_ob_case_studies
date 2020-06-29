@@ -5,6 +5,7 @@ from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_data, write_std, __version__
 from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
+from utils.std_utils import get_curated_cols
 
 """
 TODO: After standardization ask:
@@ -72,23 +73,26 @@ def standardize(path, smiles_col, class_col=None):
 
     # Print write paths
     print("Standard df will be written to:", std_data_path)
-    
+
     # List of columns to retain for final csv
-    curated_cols, discarded_cols = get_curated_cols(std_data_path)
-    curated_data_path = write_curated_cols(curated_cols)
-
-    # TODO: Add a version?
-    # TODO: get discarded_cols
-    curated_meta = {'curated_data_path': curated_data_path
-                    'retained_columns': curated_cols
-                    'discarded_columns': discarded_cols
-                    'curated_utc_fix': int(time.time())}
-
-    add_meta(meta_path, curated_meta)
-
-    # Print curated data paths
-    print("Curated df will be written to:", curated_data_path)
-    print("Updated metadata at:", meta_path)
+    default_cols = ['std_smiles', 'std_class']
+    # TEST: remove
+    print(default_cols)
+    curated_cols, discarded_cols = get_curated_cols(std_df, default_cols)
+    # curated_data_path = write_curated_cols(curated_cols)
+    #
+    # # TODO: Add a version?
+    # # TODO: get discarded_cols
+    # curated_meta = {'curated_data_path': curated_data_path
+    #                 'retained_columns': curated_cols
+    #                 'discarded_columns': discarded_cols
+    #                 'curated_utc_fix': int(time.time())}
+    #
+    # add_meta(meta_path, curated_meta)
+    #
+    # # Print curated data paths
+    # print("Curated df will be written to:", curated_data_path)
+    # print("Updated metadata at:", meta_path)
 
 
 if __name__ == '__main__':

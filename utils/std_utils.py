@@ -206,6 +206,43 @@ def subset_data(df, subset_cols):
     :pd.DataFrame df: a pandas DF
     :list subset_cols: a list of column names strings
     """
+
     subset = [x for x in subset_cols if x in df.columns]
 
     return df.loc[::, subset_cols]
+
+def get_yes_no(prompt):
+    """
+    Turn a user input into a yes/no mapped respectively to True/False
+    :str prompt: question to prompt the user with
+    """
+
+    acc = ['yes', 'y', 'true', 'accept', 't', '1']
+    rej = ['no', 'n', 'false', 'reject', 'f', '0']
+
+    ans = input(prompt)
+    while ans.lower() not in acc + rej:
+        print('\tNot a valid response. Please enter yes or no.')
+        ans = input(prompt)
+    if ans in acc: return True
+    return False
+
+def get_curated_cols(std_df, default_cols):
+    text1 = \
+        """
+        Let's curate which columns to keep in the final dataset.
+        """
+    print(text1)
+    
+    default_q = \
+        """
+        Do you want to only keep the default columns? {}:
+        """
+    default_question = default_q.format('[' + ', '.join(default_cols) + ']')
+    keep_default = get_yes_no(default_question)
+
+    # TEST: remove
+    return None, None
+    #retained = subset_data(std_df, cols_to_keep)
+    
+
