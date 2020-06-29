@@ -72,6 +72,22 @@ def standardize(path, smiles_col, class_col=None):
 
     # Print write paths
     print("Standard df will be written to:", std_data_path)
+    
+    # List of columns to retain for final csv
+    curated_cols, discarded_cols = get_curated_cols(std_data_path)
+    curated_data_path = write_curated_cols(curated_cols)
+
+    # TODO: Add a version?
+    # TODO: get discarded_cols
+    curated_meta = {'curated_data_path': curated_data_path
+                    'retained_columns': curated_cols
+                    'discarded_columns': discarded_cols
+                    'curated_utc_fix': int(time.time())}
+
+    add_meta(meta_path, curated_meta)
+
+    # Print curated data paths
+    print("Curated df will be written to:", curated_data_path)
     print("Updated metadata at:", meta_path)
 
 
