@@ -1,6 +1,6 @@
 # opnbnch
 
-OpenBench strives to be the home for open, high quality ADME-Tox datasets and the gathering place for _in silico_ ADME-Tox discussion online. This repository is meant to host tools, datasets, and research, including supporting materials for the [OpenBench Weekly](https://opnbnch.substack.com/welcome) newsletter.
+OpenBench strives to be the home for open, high quality ADME-Tox datasets and the gathering place for _in silico_ ADME-Tox discussion online. This repository is meant to host tools, datasets, and research, including supporting materials for the [ADME Talks](https://opnbnch.substack.com/welcome) newsletter.
 
 To understand why OpenBench exists, read [the manifesto.](https://opnbnch.substack.com/p/a-paradise-deferred)
 
