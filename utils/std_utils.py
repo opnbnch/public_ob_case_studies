@@ -227,6 +227,34 @@ def get_yes_no(prompt):
     if ans in acc: return True
     return False
 
+def get_subset_cols(cols):
+    """
+    Get a subset of columns to keep and columns to discard by repeatedly prompting
+    for user input.
+    :list cols: a list of all column names strings
+    """
+    all_cols = cols.copy()
+    kept_cols = []
+
+    prompt = \
+        """
+        Type columns (space-separated) to keep from the following. 
+        Enter "all" to keep all. Enter nothing to stop.
+        \n\t{}:
+        """
+    ans = input(prompt.format('[' + ', '.join(cols) + ']'))
+    while len(cols) > 0 and ans != '' and ans.lower() != 'all' :
+        ans_list = ans.split()
+        valid = [cur for cur in ans_list if cur in cols]
+        for cur in valid:
+            kept_cols.append(cur)
+            cols.remove(cur)
+        ans = input(prompt.format('[' + ', '.join(cols) + ']'))
+
+    if ans == 'all':
+        return all_cols, []
+    return kept_cols, cols
+
 def get_curated_cols(std_df, default_cols):
     text1 = \
         """
@@ -244,10 +272,5 @@ def get_curated_cols(std_df, default_cols):
     if keep_default:
         return default_cols, list(set(std_df.columns) - set(default_cols))
     else:
-        cols = list(std_df.columns)
-        
-        # TEST: remove
-        return None
-
-    
-
+        all_cols = list(std_df.columns)
+        return get_subset_cols(all_cols)
