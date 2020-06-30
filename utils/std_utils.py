@@ -244,11 +244,11 @@ def get_subset_cols(cols):
     prompt = \
         """
         Type columns (space-separated) to keep from the following.
-        Enter "all" to keep all. Enter nothing to stop.
+        Enter "all" to keep all. Enter "done" to stop.
         \n\t{}:
         """
     ans = input(prompt.format('[' + ', '.join(cols) + ']'))
-    while len(cols) > 0 and ans != '' and ans.lower() != 'all':
+    while len(cols) > 0 and ans.lower() != 'done' and ans.lower() != 'all':
         ans_list = ans.split()
         valid = [cur for cur in ans_list if cur in cols]
         for cur in valid:
@@ -261,7 +261,7 @@ def get_subset_cols(cols):
     return kept_cols, cols
 
 
-def get_curated_cols(std_df, default_cols):
+def select_cols(std_df, default_cols):
     """
     Get input from the user to keep either default columns or
     their own subset of columns.
