@@ -208,8 +208,9 @@ def subset_data(df, subset_cols):
     """
 
     subset = [x for x in subset_cols if x in df.columns]
+    print('OUR SUBSET:', subset)
 
-    return df.loc[::, subset_cols]
+    return df.loc[::, subset]
 
 def get_yes_no(prompt):
     """

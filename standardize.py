@@ -5,17 +5,13 @@ from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_data, write_std, __version__
 from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
-from utils.std_utils import get_curated_cols
+from utils.std_utils import get_curated_cols, subset_data
 
 """
-TODO: After standardization ask:
-1) Retain default columns?
-    -yes/no
-2) if no:
-    [List of cols] type names of ones to keep
-        -reject improper names
-        -write new df
-        -save that df
+TODO: 
+1) Ensure they keep at least 1 column
+2) Ensure we handle keeping 'all' correctly in metadata
+3) The path is messed up somehow
 """
 
 def standardize(path, smiles_col, class_col=None):
@@ -77,20 +73,20 @@ def standardize(path, smiles_col, class_col=None):
     # List of columns to retain for final csv
     default_cols = ['std_smiles', 'std_class']
     curated_cols, removed = get_curated_cols(std_df, default_cols)
-    # curated_data_path = write_curated_cols(curated_cols)
-    #
-    # # TODO: Add a version?
-    # # TODO: get discarded_cols
-    # curated_meta = {'curated_data_path': curated_data_path
-    #                 'retained_columns': curated_cols
-    #                 'removed_columns': removed
-    #                 'curated_utc_fix': int(time.time())}
-    #
-    # add_meta(meta_path, curated_meta)
-    #
-    # # Print curated data paths
-    # print("Curated df will be written to:", curated_data_path)
-    # print("Updated metadata at:", meta_path)
+    cur_df = subset_data(std_df, curated_cols)
+    curated_data_path = write_std(cur_df, path, prefix='curated_')
+
+    # TODO: Add a version?
+    curated_meta = {'curated_data_path': curated_data_path,
+                    'retained_columns': curated_cols,
+                    'removed_columns': removed,
+                    'curated_utc_fix': int(time.time())}
+
+    add_meta(meta_path, curated_meta)
+
+    # Print curated data paths
+    print("Curated df will be written to:", curated_data_path)
+    print("Updated metadata at:", meta_path)
 
 
 if __name__ == '__main__':
