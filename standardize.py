@@ -7,12 +7,6 @@ from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
 from utils.std_utils import get_curated_cols, subset_data
 
-"""
-TODO: 
-1) Ensure they keep at least 1 column
-2) Ensure we handle keeping 'all' correctly in metadata
-3) The path is messed up somehow
-"""
 
 def standardize(path, smiles_col, class_col=None):
     """
@@ -20,7 +14,6 @@ def standardize(path, smiles_col, class_col=None):
     :str smiles_col: the name of that data's smiles column
     :str class_col: the name of that data's class column
     """
-
 
     # First read meta and store relevant paths into variables.
     meta = read_meta(path)
@@ -56,10 +49,9 @@ def standardize(path, smiles_col, class_col=None):
 
         add_meta(meta_path, class_meta)
 
-
     std_meta = {'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',
-                'invalid_smiles': invalids,}
+                'invalid_smiles': invalids}
 
     add_meta(meta_path, std_meta)
 

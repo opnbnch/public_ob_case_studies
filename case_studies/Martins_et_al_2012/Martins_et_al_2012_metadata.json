@@ -25,8 +25,8 @@
     "class_col": "p_np",
     "class_map": {
         "p_np": {
-            "p": 1,
-            "n": 0
+            "n": 1,
+            "p": 0
         }
     },
     "std_class_col": "std_class",
@@ -49,14 +49,13 @@
     "std_version": "v1.0.0 (06-18-2020)",
     "std_utc_fix": 1593476693,
     "curated_data_path": "case_studies/Martins_et_al_2012/curated_martins_et_al_2012.csv",
-    "retained_columns": [
-        "std_smiles",
-        "std_class"
-    ],
+    "retained_columns": [],
     "removed_columns": [
-        "p_np",
+        "smiles",
+        "std_class",
+        "std_smiles",
         "inchi_key",
-        "smiles"
+        "p_np"
     ],
-    "curated_utc_fix": 1593477193
+    "curated_utc_fix": 1593479336
 }

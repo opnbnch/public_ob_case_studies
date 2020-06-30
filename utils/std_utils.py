@@ -2,7 +2,6 @@ import molvs
 import os
 import pandas as pd
 
-from functools import partial
 from multiprocessing import pool
 from rdkit import Chem
 
@@ -159,6 +158,7 @@ def df_add_ik(df, smiles_col, workers=8):
 
     return df
 
+
 def get_invalid_smiles(df, base_smiles_col, std_smiles_col):
     """
     Return invalid smiles indices for a given data frame
@@ -200,6 +200,7 @@ def write_std(df, path, prefix='std_'):
 
     return fullpath
 
+
 def subset_data(df, subset_cols):
     """
     For a given dataset, get the columns you want in the order you want them
@@ -208,9 +209,9 @@ def subset_data(df, subset_cols):
     """
 
     subset = [x for x in subset_cols if x in df.columns]
-    print('OUR SUBSET:', subset)
 
     return df.loc[::, subset]
+
 
 def get_yes_no(prompt):
     """
@@ -225,13 +226,15 @@ def get_yes_no(prompt):
     while ans.lower() not in acc + rej:
         print('\tNot a valid response. Please enter yes or no.')
         ans = input(prompt)
-    if ans in acc: return True
+    if ans in acc:
+        return True
     return False
+
 
 def get_subset_cols(cols):
     """
-    Get a subset of columns to keep and columns to discard by repeatedly prompting
-    for user input.
+    Get a subset of columns to keep and columns to discard by
+    repeatedly prompting for user input.
     :list cols: a list of all column names strings
     """
     all_cols = cols.copy()
@@ -239,12 +242,12 @@ def get_subset_cols(cols):
 
     prompt = \
         """
-        Type columns (space-separated) to keep from the following. 
+        Type columns (space-separated) to keep from the following.
         Enter "all" to keep all. Enter nothing to stop.
         \n\t{}:
         """
     ans = input(prompt.format('[' + ', '.join(cols) + ']'))
-    while len(cols) > 0 and ans != '' and ans.lower() != 'all' :
+    while len(cols) > 0 and ans != '' and ans.lower() != 'all':
         ans_list = ans.split()
         valid = [cur for cur in ans_list if cur in cols]
         for cur in valid:
@@ -256,20 +259,21 @@ def get_subset_cols(cols):
         return all_cols, []
     return kept_cols, cols
 
+
 def get_curated_cols(std_df, default_cols):
     text1 = \
         """
         Let's curate which columns to keep in the final dataset.
         """
     print(text1)
-    
+
     default_q = \
         """
         Do you want to only keep the default columns? {}:
         """
     default_question = default_q.format('[' + ', '.join(default_cols) + ']')
     keep_default = get_yes_no(default_question)
-    
+
     if keep_default:
         return default_cols, list(set(std_df.columns) - set(default_cols))
     else:
