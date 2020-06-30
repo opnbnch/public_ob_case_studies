@@ -271,7 +271,7 @@ def select_cols(std_df, default_cols):
 
     text1 = \
         """
-        Let's curate which columns to keep in the final dataset.
+        Let's decide which columns to keep in the final dataset.
         """
     print(text1)
 

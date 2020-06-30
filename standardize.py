@@ -57,18 +57,18 @@ def standardize(path, smiles_col, class_col=None):
 
     # List of columns to retain for final csv
     default_cols = ['std_smiles', 'std_class']
-    curated_cols, removed = select_cols(std_df, default_cols)
-    cur_df = subset_data(std_df, curated_cols)
+    kept_cols, removed = select_cols(std_df, default_cols)
+    cur_df = subset_data(std_df, kept_cols)
     std_data_path = write_std(cur_df, path, prefix='std_')
 
     # Write standardized data and store meta
-    curated_meta = {'std_data_path': std_data_path,
-                    'retained_columns': curated_cols,
+    kept_meta = {'std_data_path': std_data_path,
+                    'retained_columns': kept_cols,
                     'removed_columns': removed,
                     'std_version': __version__,
                     'std_utc_fix': int(time.time())}
 
-    add_meta(meta_path, curated_meta)
+    add_meta(meta_path, kept_meta)
 
     # Print write paths
     print("Standard df will be written to:", std_data_path)
