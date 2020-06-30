@@ -10,7 +10,7 @@
     "publisher": "American Chemical Society",
     "date": "June 6, 2012",
     "meta_version": "v1.0.0 (06-18-2020)",
-    "meta_utc_fix": 1593469729,
+    "meta_utc_fix": 1593476092,
     "meta_path": "case_studies/Martins_et_al_2012/Martins_et_al_2012_metadata.json",
     "data_path": "case_studies/Martins_et_al_2012/martins_et_al_2012.csv",
     "data_row_num": 2053,
@@ -23,7 +23,14 @@
     "smiles_col": "smiles",
     "value_col": null,
     "class_col": "p_np",
-    "std_data_path": "case_studies/std_martins_et_al_2012.csv",
+    "class_map": {
+        "p_np": {
+            "p": 1,
+            "n": 0
+        }
+    },
+    "std_class_col": "std_class",
+    "std_data_path": "case_studies/Martins_et_al_2012/std_martins_et_al_2012.csv",
     "std_smiles_col": "std_smiles",
     "std_key_col": "inchi_key",
     "invalid_smiles": {
@@ -40,23 +47,16 @@
         "c1(cc(N\\C(=[NH]\\c2cccc(c2)CC)C)ccc1)CC": 686
     },
     "std_version": "v1.0.0 (06-18-2020)",
-    "std_utc_fix": 1593475340,
-    "class_map": {
-        "p_np": {
-            "n": 1,
-            "p": 0
-        }
-    },
-    "std_class_col": "std_class",
-    "curated_data_path": "case_studies/curated_martins_et_al_2012.csv",
+    "std_utc_fix": 1593476693,
+    "curated_data_path": "case_studies/Martins_et_al_2012/curated_martins_et_al_2012.csv",
     "retained_columns": [
         "std_smiles",
         "std_class"
     ],
     "removed_columns": [
         "p_np",
-        "smiles",
-        "inchi_key"
+        "inchi_key",
+        "smiles"
     ],
-    "curated_utc_fix": 1593475343
+    "curated_utc_fix": 1593477193
 }

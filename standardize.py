@@ -56,36 +56,30 @@ def standardize(path, smiles_col, class_col=None):
 
         add_meta(meta_path, class_meta)
 
-    # Write standardized data and store meta
-    std_data_path = write_std(std_df, path, prefix='std_')
-    std_meta = {'std_data_path': std_data_path,
-                'std_smiles_col': 'std_smiles',
+
+    std_meta = {'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',
-                'invalid_smiles': invalids,
-                'std_version': __version__,
-                'std_utc_fix': int(time.time())}
+                'invalid_smiles': invalids,}
 
     add_meta(meta_path, std_meta)
-
-    # Print write paths
-    print("Standard df will be written to:", std_data_path)
 
     # List of columns to retain for final csv
     default_cols = ['std_smiles', 'std_class']
     curated_cols, removed = get_curated_cols(std_df, default_cols)
     cur_df = subset_data(std_df, curated_cols)
-    curated_data_path = write_std(cur_df, path, prefix='curated_')
+    std_data_path = write_std(cur_df, path, prefix='std_')
 
-    # TODO: Add a version?
-    curated_meta = {'curated_data_path': curated_data_path,
+    # Write standardized data and store meta
+    curated_meta = {'std_data_path': std_data_path,
                     'retained_columns': curated_cols,
                     'removed_columns': removed,
+                    'std_version': __version__,
                     'curated_utc_fix': int(time.time())}
 
     add_meta(meta_path, curated_meta)
 
-    # Print curated data paths
-    print("Curated df will be written to:", curated_data_path)
+    # Print write paths
+    print("Standard df will be written to:", std_data_path)
     print("Updated metadata at:", meta_path)
 
 

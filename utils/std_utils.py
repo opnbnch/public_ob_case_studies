@@ -187,7 +187,7 @@ def write_std(df, path, prefix='std_'):
     # Compose filename from prefix and data path
     meta = meta_utils.read_meta(path)
 
-    outpath = os.path.dirname(path)
+    outpath = os.path.dirname(meta.get('data_path'))
     old_name = os.path.basename(meta.get('data_path'))
     filename = prefix + old_name
 
