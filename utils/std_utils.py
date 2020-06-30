@@ -237,6 +237,7 @@ def get_subset_cols(cols):
     repeatedly prompting for user input.
     :list cols: a list of all column names strings
     """
+
     all_cols = cols.copy()
     kept_cols = []
 
@@ -261,6 +262,13 @@ def get_subset_cols(cols):
 
 
 def get_curated_cols(std_df, default_cols):
+    """
+    Get input from the user to keep either default columns or
+    their own subset of columns.
+    :pd.DataFrame df: a pandas DF
+    :list default_cols: list of default columns to keep
+    """
+
     text1 = \
         """
         Let's curate which columns to keep in the final dataset.
