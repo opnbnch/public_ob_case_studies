@@ -290,7 +290,10 @@ def select_cols(std_df, default_cols):
 
 
 def get_col_type():
-    col_type = {}
+    """
+    Get input from the user to discern the data type
+    and the name of the data column.
+    """
     col_types = ['class_col', 'value_col']
     text1 = \
         """
@@ -303,9 +306,18 @@ def get_col_type():
         Please select one of the following column types: {}:
         """
 
-    col_key = input(prompt.format('[' + ', '.join(col_types) + ']'))
-    while col_key.lower() not in col_types:
+    col_key = input(prompt.format('[' + ', '.join(col_types) + ']')).lower()
+    while col_key not in col_types:
         print('\tPlease enter a valid column type.')
-        col_key = input(prompt.format('[' + ', '.join(col_types) + ']'))
+        col_key = input(prompt.format(
+            '[' + ', '.join(col_types) + ']')).lower()
 
-    return None
+    prompt = \
+        """
+        Please enter the name of the {} column.
+        """
+    col_val = input(prompt.format(col_key))
+    while col_val == '':
+        print('\tPlease enter a valid column name.')
+        col_val = input(prompt.format(col_key))
+    return col_key, col_val

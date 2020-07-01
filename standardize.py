@@ -13,7 +13,6 @@ def standardize(path, smiles_col):
     """
     :str path: a directory containing metadata and data to be standardized
     :str smiles_col: the name of that data's smiles column
-    :str class_col: the name of that data's class column
     """
 
     # First read meta and store relevant paths into variables.
@@ -25,11 +24,14 @@ def standardize(path, smiles_col):
     add_meta(meta_path, {'smiles_col': smiles_col})
     subset = [smiles_col]
 
-    col_type = get_col_type()
+    col_type, col_name = get_col_type()
     # Likewise with the class col if one is specified
-    if col_type.keys()[0] == 'class_col':
-        add_meta(meta_path, {'class_col': class_col})
-        subset.append(class_col)
+    if col_type == 'class_col':
+        add_meta(meta_path, {'class_col': col_name})
+        subset.append(col_name)
+    elif col_type == 'value_col':
+        add_meta(meta_path, {'class_col': col_name})
+        subset.append(col_name)
 
     df = read_data(data_path).loc[::, subset]  # Now read in the raw data ...
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
@@ -38,15 +40,15 @@ def standardize(path, smiles_col):
     invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
 
     # If a class col is specified,
-    if class_col:
+    if col_type == 'class_col':
 
         # Ask the user for a mapping from their class to integers
-        class_map = get_class_map(std_df, class_col)
+        class_map = get_class_map(std_df, col_name)
         std_df = df_add_std_class(std_df, class_map)
 
         # Store and write class meta
         class_meta = {'class_map': class_map,
-                      'class_col': class_col,
+                      'class_col': col_name,
                       'std_class_col': 'std_class'}
 
         add_meta(meta_path, class_meta)
@@ -65,10 +67,10 @@ def standardize(path, smiles_col):
 
     # Write standardized data and store meta
     kept_meta = {'std_data_path': std_data_path,
-                    'retained_columns': kept_cols,
-                    'removed_columns': removed,
-                    'std_version': __version__,
-                    'std_utc_fix': int(time.time())}
+                 'retained_columns': kept_cols,
+                 'removed_columns': removed,
+                 'std_version': __version__,
+                 'std_utc_fix': int(time.time())}
 
     add_meta(meta_path, kept_meta)
 
@@ -84,10 +86,6 @@ if __name__ == '__main__':
                         help="path to directory with data to standardize")
     parser.add_argument('smiles_col', type=str,
                         help="name of string where SMILES are stored.")
-    #parser.add_argument('--class_col', '-c', type=str, default=None,
-     #                   help='when used, standardize class column')
-    #parser.add_argument('--value_col', '-v', type=str, default=None,
-     #                   help='when used, standardize regression column')
     args = parser.parse_args()
 
     standardize(args.path, args.smiles_col)

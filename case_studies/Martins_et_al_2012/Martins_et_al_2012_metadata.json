@@ -47,7 +47,7 @@
         "c1(cc(N\\C(=[NH]\\c2cccc(c2)CC)C)ccc1)CC": 686
     },
     "std_version": "v1.0.0 (06-18-2020)",
-    "std_utc_fix": 1593559747,
+    "std_utc_fix": 1593624584,
     "curated_data_path": "case_studies/Martins_et_al_2012/curated_martins_et_al_2012.csv",
     "retained_columns": [
         "std_smiles",
@@ -55,8 +55,8 @@
     ],
     "removed_columns": [
         "inchi_key",
-        "smiles",
-        "p_np"
+        "p_np",
+        "smiles"
     ],
     "curated_utc_fix": 1593535581
 }
