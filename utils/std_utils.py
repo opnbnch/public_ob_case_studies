@@ -336,7 +336,7 @@ def get_col_types(free_cols):
 
     text1 = \
         """
-        Which column(s) store our or classes or values?
+        Which column(s) store our classes or values?
         """
     print(text1)
 
