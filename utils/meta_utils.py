@@ -6,7 +6,7 @@ import time
 
 from bs4 import BeautifulSoup
 
-__version__ = 'v1.0.0 (06-18-2020)'
+__version__ = 'v1.1.0 (07-01-2020)'
 
 
 def read_meta(path):

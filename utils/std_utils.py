@@ -2,13 +2,12 @@ import molvs
 import os
 import pandas as pd
 
-from functools import partial
 from multiprocessing import pool
 from rdkit import Chem
 
 import utils.meta_utils as meta_utils
 
-__version__ = 'v1.0.0 (06-18-2020)'
+__version__ = 'v1.0.0 (07-01-2020)'
 
 
 def read_data(data_path):
@@ -159,6 +158,7 @@ def df_add_ik(df, smiles_col, workers=8):
 
     return df
 
+
 def get_invalid_smiles(df, base_smiles_col, std_smiles_col):
     """
     Return invalid smiles indices for a given data frame
@@ -187,7 +187,7 @@ def write_std(df, path, prefix='std_'):
     # Compose filename from prefix and data path
     meta = meta_utils.read_meta(path)
 
-    outpath = os.path.dirname(path)
+    outpath = os.path.dirname(meta.get('data_path'))
     old_name = os.path.basename(meta.get('data_path'))
     filename = prefix + old_name
 
@@ -200,12 +200,163 @@ def write_std(df, path, prefix='std_'):
 
     return fullpath
 
+
 def subset_data(df, subset_cols):
     """
     For a given dataset, get the columns you want in the order you want them
     :pd.DataFrame df: a pandas DF
     :list subset_cols: a list of column names strings
     """
+
     subset = [x for x in subset_cols if x in df.columns]
 
-    return df.loc[::, subset_cols]
+    return df.loc[::, subset]
+
+
+def get_yes_no(prompt):
+    """
+    Turn a user input into a yes/no mapped respectively to True/False
+    :str prompt: question to prompt the user with
+    """
+
+    acc = ['yes', 'y', 'true', 'accept', 't', '1']
+    rej = ['no', 'n', 'false', 'reject', 'f', '0']
+
+    ans = input(prompt)
+    while ans.lower() not in acc + rej:
+        print('\tNot a valid response. Please enter yes or no.')
+        ans = input(prompt)
+    if ans in acc:
+        return True
+    return False
+
+
+def get_subset_cols(cols):
+    """
+    Get a subset of columns to keep and columns to discard by
+    repeatedly prompting for user input.
+    :list cols: a list of all column names strings
+    """
+
+    all_cols = cols.copy()
+    kept_cols = []
+
+    prompt = \
+        """
+        Type columns (space-separated) to keep from the following.
+        Enter "all" to keep all. Enter "done" to stop.
+        \n\t{}:
+        """
+    ans = input(prompt.format('[' + ', '.join(cols) + ']'))
+    while len(cols) > 0 and ans.lower() != 'done' and ans.lower() != 'all':
+        ans_list = ans.split()
+        valid = [cur for cur in ans_list if cur in cols]
+        for cur in valid:
+            kept_cols.append(cur)
+            cols.remove(cur)
+        ans = input(prompt.format('[' + ', '.join(cols) + ']'))
+
+    if ans == 'all':
+        return all_cols, []
+    return kept_cols, cols
+
+
+def select_cols(std_df, default_cols):
+    """
+    Get input from the user to keep either default columns or
+    their own subset of columns.
+    :pd.DataFrame df: a pandas DF
+    :list default_cols: list of default columns to keep
+    """
+
+    text1 = \
+        """
+        Let's decide which columns to keep in the final dataset.
+        """
+    print(text1)
+
+    default_q = \
+        """
+        Do you want to only keep the default columns? {}:
+        """
+    default_question = default_q.format('[' + ', '.join(default_cols) + ']')
+    keep_default = get_yes_no(default_question)
+
+    if keep_default:
+        return default_cols, list(set(std_df.columns) - set(default_cols))
+    else:
+        all_cols = list(std_df.columns)
+        return get_subset_cols(all_cols)
+
+
+def get_valid_col(prompt, valid_cols, optional=False):
+    """
+    General helper function to get a single value
+    from a list of values.
+    :str prompt: Prompt to give to the user
+    :list valid_cols: columns the user can choose from
+    :bool optional: If selection is optional
+    """
+
+    col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+    while col not in valid_cols:
+        if optional and col == 'none':
+            return None
+        print('\tEnter a valid column name.')
+        col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+    return col
+
+
+def get_smiles_col(free_cols):
+    """
+    Get input from the user to assign the
+    smiles column.
+    :list free_cols: list of unassigned df columns
+    """
+
+    text1 = \
+        """
+        Let's select the SMILES column in the file.
+        """
+    print(text1)
+
+    prompt = \
+        """
+        Please select the SMILES column from the list: {}:
+        """
+    return get_valid_col(prompt, free_cols)
+
+
+def get_col_types(free_cols):
+    """
+    Get input from the user to discern the data type
+    and the name of the data column.
+    :list free_cols: list of unassigned df columns
+    """
+
+    text1 = \
+        """
+        Which column(s) store our classes or values?
+        """
+    print(text1)
+
+    prompt = \
+        """
+        Please select the class column from the list: {}:
+        Enter "none" if there is not a class column.
+        """
+    class_col = get_valid_col(prompt, free_cols, True)
+
+    if class_col is not None:
+        free_cols.remove(class_col)
+
+    prompt = \
+        """
+        Please select the value column from the list: {}:
+        Enter "none" if there is not a value column.
+        """
+    value_col = get_valid_col(prompt, free_cols, True)
+
+    if value_col is not None:
+        free_cols.remove(value_col)
+    return class_col, value_col
