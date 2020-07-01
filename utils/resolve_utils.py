@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-__version__ = 'v1.0.0 (06-22-2020)'
+__version__ = 'v1.0.0 (07-01-2020)'
 
 
 def process_filter_input(filter_arg, filters):
