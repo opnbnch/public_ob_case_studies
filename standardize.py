@@ -24,14 +24,10 @@ def standardize(path, smiles_col):
     add_meta(meta_path, {'smiles_col': smiles_col})
     subset = [smiles_col]
 
+    # Get column type and name and add into meta
     col_type, col_name = get_col_type()
-    # Likewise with the class col if one is specified
-    if col_type == 'class_col':
-        add_meta(meta_path, {'class_col': col_name})
-        subset.append(col_name)
-    elif col_type == 'value_col':
-        add_meta(meta_path, {'class_col': col_name})
-        subset.append(col_name)
+    add_meta(meta_path, {'class_col': col_name})
+    subset.append(col_name)
 
     df = read_data(data_path).loc[::, subset]  # Now read in the raw data ...
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
