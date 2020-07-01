@@ -289,35 +289,74 @@ def select_cols(std_df, default_cols):
         return get_subset_cols(all_cols)
 
 
-def get_col_type():
+def get_valid_col(prompt, valid_cols, optional=False):
     """
-    Get input from the user to discern the data type
-    and the name of the data column.
+    General helper function to get a single value
+    from a list of values.
+    :str prompt: Prompt to give to the user
+    :list valid_cols: columns the user can choose from
+    :bool optional: If selection is optional
     """
-    col_types = ['class_col', 'value_col']
+
+    col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+    while col not in valid_cols:
+        if optional and col == 'none':
+            return None
+        print('\tEnter a valid column name.')
+        col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+    return col
+
+
+def get_smiles_col(free_cols):
+    """
+    Get input from the user to assign the
+    smiles column.
+    :list free_cols: list of unassigned df columns
+    """
+
     text1 = \
         """
-        What type of data do we have in the file?
+        Let's select the SMILES column in the file.
         """
     print(text1)
 
     prompt = \
         """
-        Please select one of the following column types: {}:
+        Please select the SMILES column from the list: {}:
         """
+    return get_valid_col(prompt, free_cols)
 
-    col_key = input(prompt.format('[' + ', '.join(col_types) + ']')).lower()
-    while col_key not in col_types:
-        print('\tPlease enter a valid column type.')
-        col_key = input(prompt.format(
-            '[' + ', '.join(col_types) + ']')).lower()
+
+def get_col_types(free_cols):
+    """
+    Get input from the user to discern the data type
+    and the name of the data column.
+    :list free_cols: list of unassigned df columns
+    """
+
+    text1 = \
+        """
+        Which column(s) store our or classes or values?
+        """
+    print(text1)
 
     prompt = \
         """
-        Please enter the name of the {} column.
+        Please select the class column from the list: {}:
+        Enter "none" if there is not a class column.
         """
-    col_val = input(prompt.format(col_key))
-    while col_val == '':
-        print('\tPlease enter a valid column name.')
-        col_val = input(prompt.format(col_key))
-    return col_key, col_val
+    class_col = get_valid_col(prompt, free_cols, True)
+
+    if class_col is not None:
+        free_cols.remove(class_col)
+
+    prompt = \
+        """
+        Please select the value column from the list: {}:
+        Enter "none" if there is not a value column.
+        """
+    value_col = get_valid_col(prompt, free_cols, True)
+
+    if value_col is not None:
+        free_cols.remove(value_col)
+    return class_col, value_col

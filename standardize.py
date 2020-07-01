@@ -6,13 +6,12 @@ from utils.std_utils import read_data, write_std, __version__
 from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
 from utils.std_utils import select_cols, subset_data
-from utils.std_utils import get_col_type
+from utils.std_utils import get_col_types, get_smiles_col
 
 
-def standardize(path, smiles_col):
+def standardize(path):
     """
     :str path: a directory containing metadata and data to be standardized
-    :str smiles_col: the name of that data's smiles column
     """
 
     # First read meta and store relevant paths into variables.
@@ -20,16 +19,25 @@ def standardize(path, smiles_col):
     meta_path = meta.get('meta_path')
     data_path = meta.get('data_path')
 
+    df = read_data(data_path)  # Now read in the raw data ...
+    free_cols = list(df.columns)
+
     # Add the smiles col into the meta for later use ...
+    smiles_col = get_smiles_col(free_cols)
+    free_cols.remove(smiles_col)
+
     add_meta(meta_path, {'smiles_col': smiles_col})
-    subset = [smiles_col]
+    #subset = [smiles_col]
 
     # Get column type and name and add into meta
-    col_type, col_name = get_col_type()
-    add_meta(meta_path, {'class_col': col_name})
-    subset.append(col_name)
+    class_col, value_col = get_col_types(free_cols)
+    print('CLASS_COL', class_col, 'VALUE_COL', value_col)
+    if class_col is not None:
+        add_meta(meta_path, {'class_col': class_col})
+    if value_col is not None:
+        add_meta(meta_path, {'value_col': value_col})
+    #subset.append(col_name)
 
-    df = read_data(data_path).loc[::, subset]  # Now read in the raw data ...
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
 
@@ -80,8 +88,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str,
                         help="path to directory with data to standardize")
-    parser.add_argument('smiles_col', type=str,
-                        help="name of string where SMILES are stored.")
     args = parser.parse_args()
 
-    standardize(args.path, args.smiles_col)
+    standardize(args.path)
