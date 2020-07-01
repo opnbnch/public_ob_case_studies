@@ -84,6 +84,8 @@ if __name__ == '__main__':
                         help="name of string where SMILES are stored.")
     parser.add_argument('--class_col', '-c', type=str, default=None,
                         help='when used, standardize class column')
+    parser.add_argument('--regress_col', '-r', type=str, default=None,
+                        help='when used, standardize regression column')
     args = parser.parse_args()
 
-    standardize(args.path, args.smiles_col, args.class_col)
+    standardize(args.path, args.smiles_col, args.class_col, args.regress_col)
