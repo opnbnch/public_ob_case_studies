@@ -287,3 +287,25 @@ def select_cols(std_df, default_cols):
     else:
         all_cols = list(std_df.columns)
         return get_subset_cols(all_cols)
+
+
+def get_col_type():
+    col_type = {}
+    col_types = ['class_col', 'value_col']
+    text1 = \
+        """
+        What type of data do we have in the file?
+        """
+    print(text1)
+
+    prompt = \
+        """
+        Please select one of the following column types: {}:
+        """
+
+    col_key = input(prompt.format('[' + ', '.join(col_types) + ']'))
+    while col_key.lower() not in col_types:
+        print('\tPlease enter a valid column type.')
+        col_key = input(prompt.format('[' + ', '.join(col_types) + ']'))
+
+    return None

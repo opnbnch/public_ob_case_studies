@@ -6,9 +6,10 @@ from utils.std_utils import read_data, write_std, __version__
 from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
 from utils.std_utils import select_cols, subset_data
+from utils.std_utils import get_col_type
 
 
-def standardize(path, smiles_col, class_col=None):
+def standardize(path, smiles_col):
     """
     :str path: a directory containing metadata and data to be standardized
     :str smiles_col: the name of that data's smiles column
@@ -24,8 +25,9 @@ def standardize(path, smiles_col, class_col=None):
     add_meta(meta_path, {'smiles_col': smiles_col})
     subset = [smiles_col]
 
+    col_type = get_col_type()
     # Likewise with the class col if one is specified
-    if class_col:
+    if col_type.keys()[0] == 'class_col':
         add_meta(meta_path, {'class_col': class_col})
         subset.append(class_col)
 
@@ -82,10 +84,10 @@ if __name__ == '__main__':
                         help="path to directory with data to standardize")
     parser.add_argument('smiles_col', type=str,
                         help="name of string where SMILES are stored.")
-    parser.add_argument('--class_col', '-c', type=str, default=None,
-                        help='when used, standardize class column')
-    parser.add_argument('--regress_col', '-r', type=str, default=None,
-                        help='when used, standardize regression column')
+    #parser.add_argument('--class_col', '-c', type=str, default=None,
+     #                   help='when used, standardize class column')
+    #parser.add_argument('--value_col', '-v', type=str, default=None,
+     #                   help='when used, standardize regression column')
     args = parser.parse_args()
 
-    standardize(args.path, args.smiles_col, args.class_col, args.regress_col)
+    standardize(args.path, args.smiles_col)
