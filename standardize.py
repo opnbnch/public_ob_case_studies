@@ -27,16 +27,13 @@ def standardize(path):
     free_cols.remove(smiles_col)
 
     add_meta(meta_path, {'smiles_col': smiles_col})
-    #subset = [smiles_col]
 
     # Get column type and name and add into meta
     class_col, value_col = get_col_types(free_cols)
-    print('CLASS_COL', class_col, 'VALUE_COL', value_col)
     if class_col is not None:
         add_meta(meta_path, {'class_col': class_col})
     if value_col is not None:
         add_meta(meta_path, {'value_col': value_col})
-    #subset.append(col_name)
 
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
@@ -44,15 +41,15 @@ def standardize(path):
     invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
 
     # If a class col is specified,
-    if col_type == 'class_col':
+    if class_col is not None:
 
         # Ask the user for a mapping from their class to integers
-        class_map = get_class_map(std_df, col_name)
+        class_map = get_class_map(std_df, class_col)
         std_df = df_add_std_class(std_df, class_map)
 
         # Store and write class meta
         class_meta = {'class_map': class_map,
-                      'class_col': col_name,
+                      'class_col': class_col,
                       'std_class_col': 'std_class'}
 
         add_meta(meta_path, class_meta)
