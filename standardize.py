@@ -57,11 +57,9 @@ def standardize(path):
 
         relation_col = get_rel_col(free_cols)
         if relation_col is not None:
-            valid_relations = ['<', '>', '>=', '<=', '=']
 
             # Get user mapping for relation operators
-            relation_map = get_relation_map(std_df,
-                                            relation_col, valid_relations)
+            relation_map = get_relation_map(std_df, relation_col)
             std_df = df_add_std_relation(std_df, relation_map)
 
             # Store and write relation meta
