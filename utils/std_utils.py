@@ -298,12 +298,12 @@ def get_valid_col(prompt, valid_cols, optional=False):
     :bool optional: If selection is optional
     """
 
-    col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+    col = input(prompt.format('[' + ', '.join(valid_cols) + ']'))
     while col not in valid_cols:
         if optional and col == 'none':
             return None
         print('\tEnter a valid column name.')
-        col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+        col = input(prompt.format('[' + ', '.join(valid_cols) + ']'))
     return col
 
 
