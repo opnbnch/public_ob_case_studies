@@ -380,3 +380,15 @@ def get_col_types(free_cols):
     if value_col is not None:
         free_cols.remove(value_col)
     return class_col, value_col
+
+
+def df_add_value(df, value_col):
+    """
+    Add the value column to a df.
+    :pd.DataFrame df: The dataframe of interest
+    :str value_col: value column in DF
+    """
+
+    df['value_col'] = df[value_col]
+
+    return df

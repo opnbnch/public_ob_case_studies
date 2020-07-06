@@ -5,7 +5,7 @@ from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_data, write_std, __version__
 from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
-from utils.std_utils import select_cols, subset_data
+from utils.std_utils import select_cols, subset_data, df_add_value
 from utils.std_utils import get_col_types, get_smiles_col, get_rel_col
 from utils.relation_utils import get_relation_map, df_add_std_relation
 
@@ -70,7 +70,7 @@ def standardize(path):
             add_meta(meta_path, relation_meta)
             default_cols.append('std_relation')
 
-        # TODO: ADD std_values
+        std_df = df_add_value(std_df, value_col)
         add_meta(meta_path, {'value_col': value_col})
         default_cols.append('value_col')
 
