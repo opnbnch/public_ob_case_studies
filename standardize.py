@@ -7,6 +7,7 @@ from utils.std_utils import df_add_ik, df_add_std_smiles, get_invalid_smiles
 from utils.class_utils import get_class_map, df_add_std_class
 from utils.std_utils import select_cols, subset_data
 from utils.std_utils import get_col_types, get_smiles_col
+from utils.std_utils import get_rel_col
 
 
 def standardize(path):
@@ -33,7 +34,9 @@ def standardize(path):
     if class_col is not None:
         add_meta(meta_path, {'class_col': class_col})
     if value_col is not None:
+        relation_col = get_rel_col(free_cols)
         add_meta(meta_path, {'value_col': value_col})
+        add_meta(meta_path, {'relation_col': relation_col})
 
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys

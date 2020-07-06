@@ -327,6 +327,26 @@ def get_smiles_col(free_cols):
     return get_valid_col(prompt, free_cols)
 
 
+def get_rel_col(free_cols):
+    """
+    Get input from the user to discern the relation
+    column if data contains values.
+    :list free_cols: list of unassigned df columns
+    """
+
+    prompt = \
+        """
+        Please select the relationship column from the list: {}:
+        Enter "none" if there is not a relationship column.
+        """
+
+    rel_col = get_valid_col(prompt, free_cols, True)
+
+    if rel_col is not None:
+        free_cols.remove(rel_col)
+    return rel_col
+
+
 def get_col_types(free_cols):
     """
     Get input from the user to discern the data type

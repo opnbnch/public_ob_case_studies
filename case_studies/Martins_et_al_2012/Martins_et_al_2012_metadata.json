@@ -21,8 +21,8 @@
         "smiles"
     ],
     "smiles_col": "smiles",
-    "value_col": null,
-    "class_col": "p_np",
+    "value_col": "p_np",
+    "class_col": "num",
     "class_map": {
         "p_np": {
             "p": 1,
@@ -60,5 +60,6 @@
         "p_np",
         "smiles"
     ],
-    "curated_utc_fix": 1593535581
+    "curated_utc_fix": 1593535581,
+    "relation_col": "name"
 }
