@@ -15,12 +15,12 @@ def standardize_op(invalid_op, valid_ops):
     :list valid_ops: list of options for assignment
     """
     op_list = '[' + ', '.join(valid_ops) + ']'
-    assign = input('Assign {} to one of the following values: {}:'.format
+    assignment = input('Assign {} to one of the following values: {}:'.format
                    (invalid_op, op_list))
-    while assign not in valid_ops:
-        assign = input('Assign {} to one of the following values: {}:'.format
+    while assignment not in valid_ops:
+        assignment = input('Assign {} to one of the following values: {}:'.format
                        (invalid_op, op_list))
-    return assign
+    return assignment
 
 
 def get_relation_map(df, relation_col):
@@ -32,7 +32,7 @@ def get_relation_map(df, relation_col):
     """
 
     relation_map = {}
-    valid_relations = ['<', '>', '>=', '<=', '=', '==']
+    valid_relations = ['<', '>', '>=', '<=', '=']
 
     relation_vals = get_unique_values(df, relation_col)
 
@@ -47,8 +47,8 @@ def get_relation_map(df, relation_col):
             if not warned:
                 print(warning)
                 warned = True
-            assign = standardize_op(op, valid_relations)
-            relation_map[op] = assign
+            assignment = standardize_op(op, valid_relations)
+            relation_map[op] = assignment
 
     return relation_map
 
