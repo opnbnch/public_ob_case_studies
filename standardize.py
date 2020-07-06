@@ -60,7 +60,7 @@ def standardize(path):
 
             # Get user mapping for relation operators
             relation_map = get_relation_map(std_df, relation_col)
-            std_df = df_add_std_relation(std_df, relation_map)
+            std_df = df_add_std_relation(std_df, relation_map, relation_col)
 
             # Store and write relation meta
             relation_meta = {'relation_map': relation_map,
@@ -70,7 +70,7 @@ def standardize(path):
             add_meta(meta_path, relation_meta)
             default_cols.append('std_relation')
 
-        # TODO: Add any more value_col logic
+        # TODO: ADD std_values
         add_meta(meta_path, {'value_col': value_col})
         default_cols.append('value_col')
 
