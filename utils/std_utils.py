@@ -298,12 +298,12 @@ def get_valid_col(prompt, valid_cols, optional=False):
     :bool optional: If selection is optional
     """
 
-    col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+    col = input(prompt.format('[' + ', '.join(valid_cols) + ']'))
     while col not in valid_cols:
         if optional and col == 'none':
             return None
         print('\tEnter a valid column name.')
-        col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+        col = input(prompt.format('[' + ', '.join(valid_cols) + ']'))
     return col
 
 
@@ -325,6 +325,26 @@ def get_smiles_col(free_cols):
         Please select the SMILES column from the list: {}:
         """
     return get_valid_col(prompt, free_cols)
+
+
+def get_rel_col(free_cols):
+    """
+    Get input from the user to discern the relation
+    column if data contains values.
+    :list free_cols: list of unassigned df columns
+    """
+
+    prompt = \
+        """
+        Please select the relationship column from the list: {}:
+        Enter "none" if there is not a relationship column.
+        """
+
+    rel_col = get_valid_col(prompt, free_cols, True)
+
+    if rel_col is not None:
+        free_cols.remove(rel_col)
+    return rel_col
 
 
 def get_col_types(free_cols):
@@ -360,3 +380,15 @@ def get_col_types(free_cols):
     if value_col is not None:
         free_cols.remove(value_col)
     return class_col, value_col
+
+
+def df_add_value(df, value_col):
+    """
+    Add the value column to a df.
+    :pd.DataFrame df: The dataframe of interest
+    :str value_col: value column in DF
+    """
+
+    df['value_col'] = df[value_col]
+
+    return df
