@@ -32,13 +32,9 @@ def standardize(path):
     # Get column types
     class_col, value_col = get_col_types(free_cols)
 
-    if value_col is not None:
-        relation_col = get_rel_col(free_cols)
-
-        # add_meta(meta_path, {'value_col': value_col})
-
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
+    default_cols = ['std_smiles']  # Initialize default columns to keep
 
     invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
 
@@ -55,20 +51,30 @@ def standardize(path):
                       'std_class_col': 'std_class'}
 
         add_meta(meta_path, class_meta)
+        default_cols.append('std_class')
 
-    if relation_col is not None:
-        valid_relations = ['<', '>', '>=', '<=', '=']
+    if value_col is not None:
 
-        # Get user mapping for relation operators
-        relation_map = get_relation_map(std_df, relation_col, valid_relations)
-        std_df = df_add_std_relation(std_df, relation_map)
+        relation_col = get_rel_col(free_cols)
+        if relation_col is not None:
+            valid_relations = ['<', '>', '>=', '<=', '=']
 
-        # Store and write relation meta
-        relation_meta = {'relation_map': relation_map,
-                         'relation_col': relation_col,
-                         'std_relation_col': 'std_relation'}
+            # Get user mapping for relation operators
+            relation_map = get_relation_map(std_df,
+                                            relation_col, valid_relations)
+            std_df = df_add_std_relation(std_df, relation_map)
 
-        add_meta(meta_path, relation_meta)
+            # Store and write relation meta
+            relation_meta = {'relation_map': relation_map,
+                             'relation_col': relation_col,
+                             'std_relation_col': 'std_relation'}
+
+            add_meta(meta_path, relation_meta)
+            default_cols.append('std_relation')
+
+        # TODO: Add any more value_col logic
+        add_meta(meta_path, {'value_col': value_col})
+        default_cols.append('value_col')
 
     std_meta = {'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',
@@ -77,7 +83,6 @@ def standardize(path):
     add_meta(meta_path, std_meta)
 
     # List of columns to retain for final csv
-    default_cols = ['std_smiles', 'std_class', 'std_relation', 'value_col']
     kept_cols, removed = select_cols(std_df, default_cols)
     cur_df = subset_data(std_df, kept_cols)
     std_data_path = write_std(cur_df, path, prefix='std_')
