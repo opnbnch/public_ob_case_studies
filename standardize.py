@@ -29,7 +29,7 @@ def standardize(path):
 
     add_meta(meta_path, {'smiles_col': smiles_col})
 
-    # Get column types
+    # Get column names
     class_col, value_col = get_col_types(free_cols)
 
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
@@ -78,6 +78,7 @@ def standardize(path):
                 'std_key_col': 'inchi_key',
                 'invalid_smiles': invalids}
 
+    default_cols.append('inchi_key')
     add_meta(meta_path, std_meta)
 
     # List of columns to retain for final csv
