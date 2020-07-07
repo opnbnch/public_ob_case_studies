@@ -78,6 +78,7 @@ def standardize(path):
                 'std_key_col': 'inchi_key',
                 'invalid_smiles': invalids}
 
+    default_cols.append('inchi_key')
     add_meta(meta_path, std_meta)
 
     # List of columns to retain for final csv
