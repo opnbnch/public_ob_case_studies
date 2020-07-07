@@ -23,7 +23,8 @@ def resolve_class(path, threshold):
     relation_col = meta.get('std_relation_col')
 
     # Read standardized data and remove invalid smiles
-    # TODO: Fix bug with inchi_keys not being in
+    # TODO: Handle user removing inchi_keys from std
+    # possibly by throwing error or re-doing it
     std_data = read_data(std_data_path)
     resolved_data = df_filter_invalid_smi(std_data, std_smiles_col)
 
@@ -32,20 +33,22 @@ def resolve_class(path, threshold):
         filter_fn = process_filter_input(filters)
         idx_keep_dict = class_keep_indices(resolved_data,
                                            std_key_col, filter_fn)
+        resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
+        add_meta(meta_path, {'resolution_function': filter_fn.__name__})
 
-    # TODO: Implement threshold; handle both class + value; include relation_col
+    # TODO: include relation_col
     # Filter value column if relevant
     if value_col is not None:
         idx_keep_dict = value_keep_indices(resolved_data, std_key_col,
                                            relation_col, threshold)
+        resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
+
     # Filter replicates and write data to curated data path
-    resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
     resolved_data_path = write_std(resolved_data, path, prefix='resolved_')
 
     resolved_meta = {'resolved_data_path': resolved_data_path,
                      'resolved_indices': idx_keep_dict,
                      'resolved_rows': int(resolved_data.shape[0]),
-                     'resolution_function': filter_fn.__name__,
                      'resolved_version': __version__,
                      'resolved_utc_fix': int(time.time())}
 

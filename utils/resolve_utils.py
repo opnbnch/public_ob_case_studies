@@ -118,15 +118,50 @@ def class_keep_indices(df, key_col, filter_fn):
     return idx_keep_dict
 
 
+def get_val_idx(group, threshold):
+    """
+    Handle replicate groups for value column.
+    :pdf.DataFrame group: group of replicates
+    :float threshold: maximum distance between two replicates
+    """
+    if group.shape[0] == 1:
+        return int(group.index[0])
+    else:
+        val_list = list(group.value_col)
+        if len(val_list) == 2:
+            if np.absolute(val_list[1] - val_list[0]) <= threshold:
+                return int(group.loc[lambda x:x.value_col ==
+                                     np.random.choice(
+                                         group.value_col)].index[0])
+            else:
+                return None
+        else:
+            avg = np.mean(val_list)
+            nearest = min(val_list, key=lambda x: np.absolute(x-avg))
+            return int(group.loc[lambda x:x.value_col == nearest].index[0])
+
+
 def value_keep_indices(df, key_col, relation_col, threshold):
+    """
+    For a a value column, grab indices to keep.
+    :pd.DataFrame df: DataFrame to curate
+    :str key_col: name of column holding group keys
+    :str relation_col: name of column holding relations
+    :float threshold: maximum distance between two replicates
+    """
 
     unique_keys = list(set(df[key_col]))
     idx_keep_dict = {}
 
     for key in unique_keys:
         group = df.loc[lambda x:x[key_col] == key]
+        # TODO: if relation_col is None:
+        idx = get_val_idx(group, threshold)
 
-    return None
+        idx_keep_dict[key] = idx
+
+    return idx_keep_dict
+
 
 def df_filter_replicates(df, idx_keep_dict):
     """
