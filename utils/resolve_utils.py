@@ -4,19 +4,13 @@ import numpy as np
 __version__ = 'v1.0.0 (07-01-2020)'
 
 
-def process_filter_input(filter_arg, filters):
+def process_filter_input(filters):
     """
     Process filter input from the command line
-    :str filter_arg: filter argument provided in command line
     :dict filters: dict holding all availabe filter methods
     """
 
-    # Only check for existence, because choices in argparse enforce value
-    if filter_arg:
-        filter_fn = filters[filter_arg]
-    else:
-        print('Filter unspecified or invalid.')
-        filter_fn = ask_for_filter(filters)
+    filter_fn = ask_for_filter(filters)
 
     return filter_fn
 
@@ -124,7 +118,7 @@ def class_keep_indices(df, key_col, filter_fn):
     return idx_keep_dict
 
 
-def value_keep_indices(df, key_col, relation_col):
+def value_keep_indices(df, key_col, relation_col, threshold):
 
     unique_keys = list(set(df[key_col]))
     idx_keep_dict = {}

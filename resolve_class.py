@@ -10,7 +10,7 @@ from utils.resolve_utils import process_filter_input, filters
 from utils.resolve_utils import value_keep_indices
 
 
-def resolve_class(path, filter_fn=None):
+def resolve_class(path, threshold):
 
     # Read meta and extra necessary elements
     meta = read_meta(path)
@@ -23,19 +23,21 @@ def resolve_class(path, filter_fn=None):
     relation_col = meta.get('std_relation_col')
 
     # Read standardized data and remove invalid smiles
+    # TODO: Fix bug with inchi_keys not being in
     std_data = read_data(std_data_path)
     resolved_data = df_filter_invalid_smi(std_data, std_smiles_col)
 
     # Filter the class column if relevant
     if class_col is not None:
-        filter_fn = process_filter_input(filter_fn, filters)
+        filter_fn = process_filter_input(filters)
         idx_keep_dict = class_keep_indices(resolved_data,
                                            std_key_col, filter_fn)
 
+    # TODO: Implement threshold; handle both class + value; include relation_col
     # Filter value column if relevant
     if value_col is not None:
-        idx_keep_dict = value_keep_indices(resolved_data,
-                                           std_key_col, relation_col)
+        idx_keep_dict = value_keep_indices(resolved_data, std_key_col,
+                                           relation_col, threshold)
     # Filter replicates and write data to curated data path
     resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
     resolved_data_path = write_std(resolved_data, path, prefix='resolved_')
@@ -58,9 +60,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str,
                         help='path to directory with data to curate')
-    parser.add_argument('--filter_fn', '-f', type=str, default=None,
-                        choices=list(filters.keys()),
-                        help='specify a filter function for curation')
+    parser.add_argument('--threshold', '-t', type=float, default=0.01,
+                        help='specify a threshold for value curation')
     args = parser.parse_args()
 
-    resolve_class(args.path, args.filter_fn)
+    resolve_class(args.path, args.threshold)
