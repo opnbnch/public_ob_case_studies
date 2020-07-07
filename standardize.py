@@ -29,7 +29,7 @@ def standardize(path):
 
     add_meta(meta_path, {'smiles_col': smiles_col})
 
-    # Get column types
+    # Get column names
     class_col, value_col = get_col_types(free_cols)
 
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...

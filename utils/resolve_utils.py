@@ -103,7 +103,7 @@ def _simple_majority_filter(group):
             return int(group.loc[lambda x:x.std_class == maj_class].index[0])
 
 
-def get_keep_indices(df, key_col, filter_fn):
+def class_keep_indices(df, key_col, filter_fn):
     """
     For a given filter function, grab the indices to keep
     :pd.DataFrame df: DataFrame to curate
@@ -123,6 +123,16 @@ def get_keep_indices(df, key_col, filter_fn):
 
     return idx_keep_dict
 
+
+def value_keep_indices(df, key_col, relation_col):
+
+    unique_keys = list(set(df[key_col]))
+    idx_keep_dict = {}
+
+    for key in unique_keys:
+        group = df.loc[lambda x:x[key_col] == key]
+
+    return None
 
 def df_filter_replicates(df, idx_keep_dict):
     """
