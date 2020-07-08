@@ -125,13 +125,12 @@ def replicate_rmsd(df, smiles_col, value_col, relation_col):
     """
     This function has been adapted with few changes from ATOM Consortium's
     AMPL. Check it out here:
-    https://github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
-    Compute RMS deviation of all replicate uncensored measurements in df from
-    their means.
-    :param df: A pandas df of SMILES and assay data
-    :param smiles_col: str - name of the column of smiles representations
-    :param value_col: str - name of column containing assay values
-    :param relation_col: str - name of column containing relations
+    github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
+    Compute RMSD of all uncesored replicate measurements in df from their means.
+    :pd.DataFrame df: A pandas df of SMILES and assay data
+    :str smiles_col: name of the column of smiles representations
+    :str value_col: name of column containing assay values
+    :str relation_col: name of column containing relations
     """
     dset_df = df[~(df[relation_col].isin(['<', '<=', '>', '>=']))]
     uniq_smiles, uniq_counts = np.unique(dset_df[smiles_col].values,
@@ -150,15 +149,15 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
     """
     This function has been adapted with few changes from ATOM Consortium's
     AMPL. Check it out here:
-    https://github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
+    github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
     Compute a maximum likelihood estimate of the true mean value underlying
     the distribution of replicate assay measurements for a single compound.
     The data may be a mix of censored and uncensored measurements,
     as indicated by the 'relation' column in the input data frame cmpd_df.
-    :param cmpd_df: a pandas dataframe of data for a single compound.
-    :param std_est: An estimate for the standard deviation of the distribution.
-    :param value_col: str - name of column containing assay values.
-    :param relation_col: str - name of column containing relations.
+    :pd.DataFrame cmpd_df: data for a single compound.
+    :float std_est: An estimate for the standard deviation of the distribution.
+    :str value_col: name of column containing assay values.
+    :str relation_col: name of column containing relations.
     """
     left_censored = np.array(cmpd_df[relation_col].isin(['<', '<=']),
                              dtype=bool)
