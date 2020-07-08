@@ -126,7 +126,7 @@ def replicate_rmsd(df, key_col, value_col, relation_col):
     This function has been adapted with few changes from ATOM Consortium's
     AMPL. Check it out here:
     github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
-    Compute RMSD of all uncesored replicate measurements in df from their means.
+    Compute RMSD of all uncesored replicate measurements in df from their means
     :pd.DataFrame df: A pandas df of SMILES and assay data
     :str key_col: name of the column representing compound keys
     :str value_col: name of column containing assay values
@@ -134,14 +134,15 @@ def replicate_rmsd(df, key_col, value_col, relation_col):
     """
 
     uncensored_df = df[~df[relation_col].isin(['<', '<=', '>', '>='])]
-    
+
     replicate_keys = pd.DataFrame(uncensored_df[key_col].value_counts()) \
         .loc[lambda x:x[key_col] > 1] \
         .index.to_list()
 
     unique_devs = []
     for key in replicate_keys:
-        values = uncensored_df.loc[lambda x:x[key_col] == key][value_col].values
+        values = uncensored_df \
+            .loc[lambda x:x[key_col] == key, value_col].values
         unique_devs.extend(values - values.mean())
 
     rmsd = np.sqrt(np.mean([dev ** 2 for dev in unique_devs]))
@@ -163,36 +164,37 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
     :str value_col: name of column containing assay values.
     :str relation_col: name of column containing relations.
     """
+
     left_censored = np.array(cmpd_df[relation_col].isin(['<', '<=']),
                              dtype=bool)
     right_censored = np.array(cmpd_df[relation_col].isin(['>', '>=']),
                               dtype=bool)
     not_censored = ~(left_censored | right_censored)
-    n_left_cens = sum(left_censored)
-    n_right_cens = sum(right_censored)
     nreps = cmpd_df.shape[0]
     values = cmpd_df[value_col].values
-    nan = float('nan')
 
     # If all the replicate values are left- or right-censored,
     # return the smallest or largest reported (threshold) value accordingly.
-    if n_left_cens == nreps:
+    if sum(left_censored) == nreps:
         mle_value = min(values)
-    elif n_right_cens == nreps:
+    elif sum(right_censored) == nreps:
         mle_value = max(values)
-    elif n_left_cens + n_right_cens == 0:
-        # If no values are censored, the MLE is the actual mean.
+    elif sum(left_censored) + sum(right_censored) == 0:
         mle_value = np.mean(values)
     else:
         # Some, but not all observations are censored.
         # First, define the negative log likelihood function
         def loglik(mu):
+
             ll = -sum(norm.logpdf(values[not_censored], loc=mu, scale=std_est))
+
             if n_left_cens > 0:
-                ll -= sum(norm.logcdf(values[left_censored], loc=mu,
+                ll -= sum(norm.logcdf(values[left_censored],
+                                      loc=mu,
                                       scale=std_est))
             if n_right_cens > 0:
-                ll -= sum(norm.logsf(values[right_censored], loc=mu,
+                ll -= sum(norm.logsf(values[right_censored],
+                                     loc=mu,
                                      scale=std_est))
             return ll
 
@@ -201,9 +203,10 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
         if not opt_res.success:
             print('Likelihood maximization failed, message is: "%s"'
                   % opt_res.message)
-            mle_value = nan
+            mle_value = np.nan
         else:
             mle_value = opt_res.x
+
     return mle_value
 
 
