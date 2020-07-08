@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 
+from scipy.stats import norm
+from scipy.optimize import minimize_scalar
+
 __version__ = 'v1.0.0 (07-01-2020)'
 
 
@@ -116,6 +119,90 @@ def class_keep_indices(df, key_col, filter_fn):
         idx_keep_dict[key] = idx
 
     return idx_keep_dict
+
+
+def replicate_rmsd(df, smiles_col, value_col, relation_col):
+    """
+    This function has been adapted with few changes from ATOM Consortium's
+    AMPL. Check it out here:
+    https://github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
+    Compute RMS deviation of all replicate uncensored measurements in df from
+    their means.
+    :param df: A pandas df of SMILES and assay data
+    :param smiles_col: str - name of the column of smiles representations
+    :param value_col: str - name of column containing assay values
+    :param relation_col: str - name of column containing relations
+    """
+    dset_df = df[~(df[relation_col].isin(['<', '<=', '>', '>=']))]
+    uniq_smiles, uniq_counts = np.unique(dset_df[smiles_col].values,
+                                         return_counts=True)
+    smiles_with_reps = uniq_smiles[uniq_counts > 1]
+    uniq_devs = []
+    for smiles in smiles_with_reps:
+        values = dset_df[dset_df[smiles_col] == smiles][value_col].values
+        uniq_devs.extend(values - values.mean())
+    uniq_devs = np.array(uniq_devs)
+    rmsd = np.sqrt(np.mean(uniq_devs ** 2))
+    return rmsd
+
+
+def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
+    """
+    This function has been adapted with few changes from ATOM Consortium's
+    AMPL. Check it out here:
+    https://github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
+    Compute a maximum likelihood estimate of the true mean value underlying
+    the distribution of replicate assay measurements for a single compound.
+    The data may be a mix of censored and uncensored measurements,
+    as indicated by the 'relation' column in the input data frame cmpd_df.
+    :param cmpd_df: a pandas dataframe of data for a single compound.
+    :param std_est: An estimate for the standard deviation of the distribution.
+    :param value_col: str - name of column containing assay values.
+    :param relation_col: str - name of column containing relations.
+    """
+    left_censored = np.array(cmpd_df[relation_col].values == '<', dtype=bool)
+    right_censored = np.array(cmpd_df[relation_col].values == '>', dtype=bool)
+    not_censored = ~(left_censored | right_censored)
+    n_left_cens = sum(left_censored)
+    n_right_cens = sum(right_censored)
+    nreps = cmpd_df.shape[0]
+    values = cmpd_df[value_col].values
+    nan = float('nan')
+
+    relation = ''
+    # If all the replicate values are left- or right-censored,
+    # return the smallest or largest reported (threshold) value accordingly.
+    if n_left_cens == nreps:
+        mle_value = min(values)
+        relation = '<'
+    elif n_right_cens == nreps:
+        mle_value = max(values)
+        relation = '>'
+    elif n_left_cens + n_right_cens == 0:
+        # If no values are censored, the MLE is the actual mean.
+        mle_value = np.mean(values)
+    else:
+        # Some, but not all observations are censored.
+        # First, define the negative log likelihood function
+        def loglik(mu):
+            ll = -sum(norm.logpdf(values[not_censored], loc=mu, scale=std_est))
+            if n_left_cens > 0:
+                ll -= sum(norm.logcdf(values[left_censored], loc=mu,
+                                      scale=std_est))
+            if n_right_cens > 0:
+                ll -= sum(norm.logsf(values[right_censored], loc=mu,
+                                     scale=std_est))
+            return ll
+
+        # Then minimize it
+        opt_res = minimize_scalar(loglik, method='brent')
+        if not opt_res.success:
+            print('Likelihood maximization failed, message is: "%s"'
+                  % opt_res.message)
+            mle_value = nan
+        else:
+            mle_value = opt_res.x
+    return mle_value, relation
 
 
 def get_val_idx(group, threshold):
