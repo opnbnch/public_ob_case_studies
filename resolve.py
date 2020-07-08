@@ -26,14 +26,6 @@ def resolve_class(path, threshold):
     std_data = read_data(std_data_path)
     resolved_data = df_filter_invalid_smi(std_data, std_smiles_col)
 
-    # Filter the class column if relevant
-    if class_col is not None:
-        filter_fn = process_filter_input(filters)
-        idx_keep_dict = class_keep_indices(resolved_data,
-                                           std_key_col, filter_fn)
-        resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
-        add_meta(meta_path, {'resolution_function': filter_fn.__name__})
-        add_meta(meta_path, {'class_resolved_indices': idx_keep_dict})
 
     # Filter value column if relevant
     if value_col is not None:
@@ -42,6 +34,15 @@ def resolve_class(path, threshold):
                                            value_col, threshold)
         resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
         add_meta(meta_path, {'value_resolved_indices': idx_keep_dict})
+    
+    # Filter the class column if relevant
+    if class_col is not None:
+        filter_fn = process_filter_input(filters)
+        idx_keep_dict = class_keep_indices(resolved_data,
+                                           std_key_col, filter_fn)
+        resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
+        add_meta(meta_path, {'resolution_function': filter_fn.__name__})
+        add_meta(meta_path, {'class_resolved_indices': idx_keep_dict})
 
     # Filter replicates and write data to curated data path
     resolved_data_path = write_std(resolved_data, path, prefix='resolved_')

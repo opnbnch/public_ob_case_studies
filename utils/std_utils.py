@@ -343,7 +343,7 @@ def get_rel_col(free_cols):
 
     rel_col = get_valid_col(prompt, free_cols, True)
 
-    if rel_col is not None:
+    if rel_col:
         free_cols.remove(rel_col)
     return rel_col
 
