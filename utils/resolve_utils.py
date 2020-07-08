@@ -121,27 +121,31 @@ def class_keep_indices(df, key_col, filter_fn):
     return idx_keep_dict
 
 
-def replicate_rmsd(df, smiles_col, value_col, relation_col):
+def replicate_rmsd(df, key_col, value_col, relation_col):
     """
     This function has been adapted with few changes from ATOM Consortium's
     AMPL. Check it out here:
     github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
     Compute RMSD of all uncesored replicate measurements in df from their means.
     :pd.DataFrame df: A pandas df of SMILES and assay data
-    :str smiles_col: name of the column of smiles representations
+    :str key_col: name of the column representing compound keys
     :str value_col: name of column containing assay values
     :str relation_col: name of column containing relations
     """
-    dset_df = df[~(df[relation_col].isin(['<', '<=', '>', '>=']))]
-    uniq_smiles, uniq_counts = np.unique(dset_df[smiles_col].values,
-                                         return_counts=True)
-    smiles_with_reps = uniq_smiles[uniq_counts > 1]
-    uniq_devs = []
-    for smiles in smiles_with_reps:
-        values = dset_df[dset_df[smiles_col] == smiles][value_col].values
-        uniq_devs.extend(values - values.mean())
-    uniq_devs = np.array(uniq_devs)
-    rmsd = np.sqrt(np.mean(uniq_devs ** 2))
+
+    uncensored_df = df[~df[relation_col].isin(['<', '<=', '>', '>='])]
+    
+    replicate_keys = pd.DataFrame(uncensored_df[key_col].value_counts()) \
+        .loc[lambda x:x[key_col] > 1] \
+        .index.to_list()
+
+    unique_devs = []
+    for key in replicate_keys:
+        values = uncensored_df.loc[lambda x:x[key_col] == key][value_col].values
+        unique_devs.extend(values - values.mean())
+
+    rmsd = np.sqrt(np.mean([dev ** 2 for dev in unique_devs]))
+
     return rmsd
 
 
