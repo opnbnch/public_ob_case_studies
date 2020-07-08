@@ -231,14 +231,15 @@ def get_yes_no(prompt):
     return False
 
 
-def get_subset_cols(cols):
+def get_subset_cols(remaining, default_cols):
     """
     Get a subset of columns to keep and columns to discard by
     repeatedly prompting for user input.
     :list cols: a list of all column names strings
+    :list default_cols: list of forced keep columns
     """
-
-    all_cols = cols.copy()
+    cols = list(set(remaining) - set(default_cols))
+    all_cols = remaining.copy()
     kept_cols = []
 
     prompt = \
@@ -258,7 +259,7 @@ def get_subset_cols(cols):
 
     if ans == 'all':
         return all_cols, []
-    return kept_cols, cols
+    return kept_cols + default_cols, cols
 
 
 def select_cols(std_df, default_cols):
@@ -286,7 +287,7 @@ def select_cols(std_df, default_cols):
         return default_cols, list(set(std_df.columns) - set(default_cols))
     else:
         all_cols = list(std_df.columns)
-        return get_subset_cols(all_cols)
+        return get_subset_cols(all_cols, default_cols)
 
 
 def get_valid_col(prompt, valid_cols, optional=False):
@@ -342,7 +343,7 @@ def get_rel_col(free_cols):
 
     rel_col = get_valid_col(prompt, free_cols, True)
 
-    if rel_col is not None:
+    if rel_col:
         free_cols.remove(rel_col)
     return rel_col
 

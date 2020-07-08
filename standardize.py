@@ -39,7 +39,7 @@ def standardize(path):
     invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
 
     # If a class col is specified,
-    if class_col is not None:
+    if class_col:
 
         # Ask the user for a mapping from their class to integers
         class_map = get_class_map(std_df, class_col)
@@ -53,26 +53,31 @@ def standardize(path):
         add_meta(meta_path, class_meta)
         default_cols.append('std_class')
 
-    if value_col is not None:
+    if value_col:
 
         relation_col = get_rel_col(free_cols)
-        if relation_col is not None:
+        if relation_col:
 
             # Get user mapping for relation operators
             relation_map = get_relation_map(std_df, relation_col)
             std_df = df_add_std_relation(std_df, relation_map, relation_col)
 
-            # Store and write relation meta
+            # Store relation meta
             relation_meta = {'relation_map': relation_map,
                              'relation_col': relation_col,
                              'std_relation_col': 'std_relation'}
 
-            add_meta(meta_path, relation_meta)
-            default_cols.append('std_relation')
+        else:
+            std_df = std_df.assign(std_relation = '=')
+            relation_meta = {'std_relation_col': 'std_relation'}
+
+        # Write relation meta
+        add_meta(meta_path, relation_meta)
+        default_cols.append('std_relation')
 
         std_df = df_add_value(std_df, value_col)
         add_meta(meta_path, {'value_col': value_col})
-        default_cols.append('value_col')
+        default_cols.append(value_col)
 
     std_meta = {'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',

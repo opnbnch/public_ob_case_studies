@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 
+from scipy.stats import norm
+from scipy.optimize import minimize_scalar
+
 __version__ = 'v1.0.0 (07-01-2020)'
 
 
@@ -118,45 +121,139 @@ def class_keep_indices(df, key_col, filter_fn):
     return idx_keep_dict
 
 
-def get_val_idx(group, threshold):
+def replicate_rmsd(df, key_col, value_col, relation_col):
     """
-    Handle replicate groups for value column.
+    This function has been adapted with few changes from ATOM Consortium's
+    AMPL. Check it out here:
+    github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
+    Compute RMSD of all uncesored replicate measurements in df from their means
+    :pd.DataFrame df: A pandas df of SMILES and assay data
+    :str key_col: name of the column representing compound keys
+    :str value_col: name of column containing assay values
+    :str relation_col: name of column containing relations
+    """
+
+    uncensored_df = df[~df[relation_col].isin(['<', '<=', '>', '>='])]
+
+    replicate_keys = pd.DataFrame(uncensored_df[key_col].value_counts()) \
+        .loc[lambda x:x[key_col] > 1] \
+        .index.to_list()
+
+    unique_devs = []
+    for key in replicate_keys:
+        values = uncensored_df \
+            .loc[lambda x:x[key_col] == key, value_col].values
+        unique_devs.extend(values - values.mean())
+
+    rmsd = np.sqrt(np.mean([dev ** 2 for dev in unique_devs]))
+
+    return rmsd
+
+
+def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
+    """
+    This function has been adapted with few changes from ATOM Consortium's
+    AMPL. Check it out here:
+    github.com/ATOMconsortium/AMPL/blob/master/atomsci/ddm/utils/curate_data.py
+    Compute a maximum likelihood estimate of the true mean value underlying
+    the distribution of replicate assay measurements for a single compound.
+    The data may be a mix of censored and uncensored measurements,
+    as indicated by the 'relation' column in the input data frame cmpd_df.
+    :pd.DataFrame cmpd_df: data for a single compound.
+    :float std_est: An estimate for the standard deviation of the distribution.
+    :str value_col: name of column containing assay values.
+    :str relation_col: name of column containing relations.
+    """
+
+    left_censored = np.array(cmpd_df[relation_col].isin(['<', '<=']),
+                             dtype=bool)
+    right_censored = np.array(cmpd_df[relation_col].isin(['>', '>=']),
+                              dtype=bool)
+    not_censored = ~(left_censored | right_censored)
+    nreps = cmpd_df.shape[0]
+    values = cmpd_df[value_col].values
+
+    # If all the replicate values are left- or right-censored,
+    # return the smallest or largest reported (threshold) value accordingly.
+    if sum(left_censored) == nreps:
+        mle_value = min(values)
+    elif sum(right_censored) == nreps:
+        mle_value = max(values)
+    elif sum(left_censored) + sum(right_censored) == 0:
+        mle_value = np.mean(values)
+    else:
+        # Some, but not all observations are censored.
+        # First, define the negative log likelihood function
+        def loglik(mu):
+
+            ll = -sum(norm.logpdf(values[not_censored], loc=mu, scale=std_est))
+
+            if sum(left_censored) > 0:
+                ll -= sum(norm.logcdf(values[left_censored],
+                                      loc=mu,
+                                      scale=std_est))
+            if sum(right_censored) > 0:
+                ll -= sum(norm.logsf(values[right_censored],
+                                     loc=mu,
+                                     scale=std_est))
+            return ll
+
+        # Then minimize it
+        opt_res = minimize_scalar(loglik, method='brent')
+        if not opt_res.success:
+            print('Likelihood maximization failed, message is: "%s"'
+                  % opt_res.message)
+            mle_value = np.nan
+        else:
+            mle_value = opt_res.x
+
+    return mle_value
+
+
+def get_val_idx(group, value_col, mle, rmsd):
+    """
+    Handle replicate groups for value column if we have relations too.
     :pdf.DataFrame group: group of replicates
-    :float threshold: maximum distance between two replicates
+    :str value_col: name of column containing regression values
+    :float mle: maximum likelihood estimate of mean value
+    :float rmsd: rmsd for the dataset
     """
     if group.shape[0] == 1:
         return int(group.index[0])
     else:
-        val_list = list(group.value_col)
+        val_list = list(group[value_col])
         if len(val_list) == 2:
-            if np.absolute(val_list[1] - val_list[0]) <= threshold:
-                return int(group.loc[lambda x:x.value_col ==
+            if np.absolute(val_list[1] - val_list[0]) <= 0.25 * rmsd:
+                return int(group.loc[lambda x:x[value_col]==
                                      np.random.choice(
-                                         group.value_col)].index[0])
+                                         group[value_col])].index[0])
             else:
                 return None
         else:
-            avg = np.mean(val_list)
-            nearest = min(val_list, key=lambda x: np.absolute(x-avg))
-            return int(group.loc[lambda x:x.value_col == nearest].index[0])
+            nearest = min(val_list, key=lambda x: np.absolute(x-mle))
+            return int(group.loc[lambda x:x[value_col] == nearest].index[0])
 
 
-def value_keep_indices(df, key_col, relation_col, threshold):
+def value_keep_indices(df, key_col, relation_col, smiles_col, value_col,
+                       threshold):
     """
     For a a value column, grab indices to keep.
     :pd.DataFrame df: DataFrame to curate
     :str key_col: name of column holding group keys
     :str relation_col: name of column holding relations
+    :str smiles_col: name of column holding std_smiles
+    :str value_col: name of column holding our values
     :float threshold: maximum distance between two replicates
     """
 
     unique_keys = list(set(df[key_col]))
+    std_est = replicate_rmsd(df, smiles_col, value_col, relation_col)
     idx_keep_dict = {}
 
     for key in unique_keys:
         group = df.loc[lambda x:x[key_col] == key]
-        # TODO: if relation_col is None:
-        idx = get_val_idx(group, threshold)
+        mle = mle_censored_mean(group, std_est, value_col, relation_col)
+        idx = get_val_idx(group, value_col, mle, std_est)
 
         idx_keep_dict[key] = idx
 
