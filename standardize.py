@@ -71,7 +71,7 @@ def standardize(path):
             default_cols.append('std_relation')
 
         std_df = df_add_value(std_df, value_col)
-        add_meta(meta_path, {'value_col': value_col})
+        add_meta(meta_path, {'value_col': 'value_col'})
         default_cols.append('value_col')
 
     std_meta = {'std_smiles_col': 'std_smiles',

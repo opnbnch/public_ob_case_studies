@@ -39,7 +39,8 @@ def resolve_class(path, threshold):
     # Filter value column if relevant
     if value_col is not None:
         idx_keep_dict = value_keep_indices(resolved_data, std_key_col,
-                                           relation_col, threshold)
+                                           relation_col, std_smiles_col,
+                                           value_col, threshold)
         resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
         add_meta(meta_path, {'value_resolved_indices': idx_keep_dict})
 

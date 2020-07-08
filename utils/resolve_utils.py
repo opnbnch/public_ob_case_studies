@@ -228,22 +228,28 @@ def get_val_idx(group, threshold):
             return int(group.loc[lambda x:x.value_col == nearest].index[0])
 
 
-def value_keep_indices(df, key_col, relation_col, threshold):
+def value_keep_indices(df, key_col, relation_col, smiles_col, value_col,
+                       threshold):
     """
     For a a value column, grab indices to keep.
     :pd.DataFrame df: DataFrame to curate
     :str key_col: name of column holding group keys
     :str relation_col: name of column holding relations
+    :str smiles_col: name of column holding std_smiles
+    :str value_col: name of column holding our values
     :float threshold: maximum distance between two replicates
     """
 
     unique_keys = list(set(df[key_col]))
+    std_est = replicate_rmsd(df, smiles_col, value_col, relation_col)
     idx_keep_dict = {}
 
     for key in unique_keys:
         group = df.loc[lambda x:x[key_col] == key]
-        # TODO: if relation_col is None:
-        idx = get_val_idx(group, threshold)
+        if relation_col is None:
+            idx = get_val_idx(group, threshold)
+        else:
+            idx = get_val_idx(group, threshold)
 
         idx_keep_dict[key] = idx
 
