@@ -23,8 +23,6 @@ def resolve_class(path, threshold):
     relation_col = meta.get('std_relation_col')
 
     # Read standardized data and remove invalid smiles
-    # TODO: Handle user removing inchi_keys from std
-    # possibly by throwing error or re-doing it
     std_data = read_data(std_data_path)
     resolved_data = df_filter_invalid_smi(std_data, std_smiles_col)
 
