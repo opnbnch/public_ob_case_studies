@@ -62,13 +62,18 @@ def standardize(path):
             relation_map = get_relation_map(std_df, relation_col)
             std_df = df_add_std_relation(std_df, relation_map, relation_col)
 
-            # Store and write relation meta
+            # Store relation meta
             relation_meta = {'relation_map': relation_map,
                              'relation_col': relation_col,
                              'std_relation_col': 'std_relation'}
 
-            add_meta(meta_path, relation_meta)
-            default_cols.append('std_relation')
+        else:
+            std_df.assign('std_relation') = '='
+            relation_meta = {'std_relation_col': 'std_relation'}
+
+        # Write relation meta
+        add_meta(meta_path, relation_meta)
+        default_cols.append('std_relation')
 
         std_df = df_add_value(std_df, value_col)
         add_meta(meta_path, {'value_col': value_col})
