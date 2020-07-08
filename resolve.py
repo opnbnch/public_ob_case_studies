@@ -35,7 +35,6 @@ def resolve_class(path, threshold):
         add_meta(meta_path, {'resolution_function': filter_fn.__name__})
         add_meta(meta_path, {'class_resolved_indices': idx_keep_dict})
 
-    # TODO: include relation_col
     # Filter value column if relevant
     if value_col is not None:
         idx_keep_dict = value_keep_indices(resolved_data, std_key_col,

@@ -160,8 +160,10 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
     :param value_col: str - name of column containing assay values.
     :param relation_col: str - name of column containing relations.
     """
-    left_censored = np.array(cmpd_df[relation_col].values == '<', dtype=bool)
-    right_censored = np.array(cmpd_df[relation_col].values == '>', dtype=bool)
+    left_censored = np.array(cmpd_df[relation_col].isin(['<', '<=']),
+                             dtype=bool)
+    right_censored = np.array(cmpd_df[relation_col].isin(['>', '>=']),
+                              dtype=bool)
     not_censored = ~(left_censored | right_censored)
     n_left_cens = sum(left_censored)
     n_right_cens = sum(right_censored)
@@ -169,15 +171,12 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
     values = cmpd_df[value_col].values
     nan = float('nan')
 
-    relation = ''
     # If all the replicate values are left- or right-censored,
     # return the smallest or largest reported (threshold) value accordingly.
     if n_left_cens == nreps:
         mle_value = min(values)
-        relation = '<'
     elif n_right_cens == nreps:
         mle_value = max(values)
-        relation = '>'
     elif n_left_cens + n_right_cens == 0:
         # If no values are censored, the MLE is the actual mean.
         mle_value = np.mean(values)
@@ -202,7 +201,7 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
             mle_value = nan
         else:
             mle_value = opt_res.x
-    return mle_value, relation
+    return mle_value
 
 
 def get_val_idx(group, threshold):
@@ -228,6 +227,30 @@ def get_val_idx(group, threshold):
             return int(group.loc[lambda x:x.value_col == nearest].index[0])
 
 
+def get_rel_val_idx(group, threshold, mle, RMSD):
+    """
+    Handle replicate groups for value column if we have relations too.
+    :pdf.DataFrame group: group of replicates
+    :float threshold: maximum distance between two replicates
+    :float mle: mle_censored_mean for >2 replicates
+    :float RMSD: rmsd for the dataset
+    """
+    if group.shape[0] == 1:
+        return int(group.index[0])
+    else:
+        val_list = list(group.value_col)
+        if len(val_list) == 2:
+            if np.absolute(val_list[1] - val_list[0]) <= 0.25 * RMSD:
+                return int(group.loc[lambda x:x.value_col ==
+                                     np.random.choice(
+                                         group.value_col)].index[0])
+            else:
+                return None
+        else:
+            nearest = min(val_list, key=lambda x: np.absolute(x-mle))
+            return int(group.loc[lambda x:x.value_col == nearest].index[0])
+
+
 def value_keep_indices(df, key_col, relation_col, smiles_col, value_col,
                        threshold):
     """
@@ -249,7 +272,8 @@ def value_keep_indices(df, key_col, relation_col, smiles_col, value_col,
         if relation_col is None:
             idx = get_val_idx(group, threshold)
         else:
-            idx = get_val_idx(group, threshold)
+            mle = mle_censored_mean(group, std_est, value_col, relation_col)
+            idx = get_rel_val_idx(group, threshold, mle, std_est)
 
         idx_keep_dict[key] = idx
 
