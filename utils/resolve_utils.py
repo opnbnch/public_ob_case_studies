@@ -188,11 +188,11 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
 
             ll = -sum(norm.logpdf(values[not_censored], loc=mu, scale=std_est))
 
-            if n_left_cens > 0:
+            if sum(left_censored) > 0:
                 ll -= sum(norm.logcdf(values[left_censored],
                                       loc=mu,
                                       scale=std_est))
-            if n_right_cens > 0:
+            if sum(right_censored) > 0:
                 ll -= sum(norm.logsf(values[right_censored],
                                      loc=mu,
                                      scale=std_est))
@@ -221,17 +221,17 @@ def get_val_idx(group, value_col, mle, rmsd):
     if group.shape[0] == 1:
         return int(group.index[0])
     else:
-        val_list = list(group.value_col)
+        val_list = list(group[value_col])
         if len(val_list) == 2:
             if np.absolute(val_list[1] - val_list[0]) <= 0.25 * rmsd:
-                return int(group.loc[lambda x:x.value_col ==
+                return int(group.loc[lambda x:x[value_col]==
                                      np.random.choice(
-                                         group.value_col)].index[0])
+                                         group[value_col])].index[0])
             else:
                 return None
         else:
             nearest = min(val_list, key=lambda x: np.absolute(x-mle))
-            return int(group.loc[lambda x:x.value_col == nearest].index[0])
+            return int(group.loc[lambda x:x[value_col] == nearest].index[0])
 
 
 def value_keep_indices(df, key_col, relation_col, smiles_col, value_col,
