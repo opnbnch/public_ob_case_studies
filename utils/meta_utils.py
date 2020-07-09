@@ -5,6 +5,7 @@ import pandas as pd
 import time
 
 from bs4 import BeautifulSoup
+from crossrefs.restful import Works
 
 __version__ = 'v1.1.0 (07-01-2020)'
 
@@ -131,6 +132,55 @@ def produce_dataset_meta(data_path):
                  'class_col': None}
 
     return(meta_dict)
+
+
+def ask_for_doi():
+    """
+    Ask for the DOI source and format if full URL is given
+    """
+
+    doi_prompt = \
+        """
+        Please input the DOI for this data source. Enter 'none' if there is no
+        DOI source:
+        """
+
+    doi = input(doi_prompt)
+
+    if 'doi.org/' in doi:
+        doi = doi.split('doi.org/')[1]
+    elif doi == 'none':
+        doi = None
+
+    return doi
+
+
+def get_doi():
+    """
+    Get the DOI by looping through asks if necessary
+    """
+
+    doi = ask_for_doi()
+
+    while doi and not check_doi_validity(doi):
+        print("Sorry, the DOI you input is not valid or not in our system.")
+        doi = ask_for_doi()
+
+    return doi
+
+
+def check_doi_validity(doi):
+    """
+    Check if a DOI is valid and accessible through CrossRef
+    :str doi: A DOI string
+    """
+
+    works = Works()
+
+    if works.doi(doi):
+        return True
+    else:
+        return False
 
 
 def add_meta(meta_path, new_data_dict):
