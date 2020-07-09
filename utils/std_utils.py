@@ -361,22 +361,22 @@ def get_col_types(free_cols):
         """
     print(text1)
 
-    prompt = \
+    class_prompt = \
         """
         Please select the class column from the list: {}:
         Enter "none" if there is not a class column.
         """
-    class_col = get_valid_col(prompt, free_cols, True)
+    class_col = get_valid_col(class_prompt, free_cols, True)
 
     if class_col is not None:
         free_cols.remove(class_col)
 
-    prompt = \
+    value_prompt = \
         """
         Please select the value column from the list: {}:
         Enter "none" if there is not a value column.
         """
-    value_col = get_valid_col(prompt, free_cols, True)
+    value_col = get_valid_col(value_prompt, free_cols, True)
 
     if value_col is not None:
         free_cols.remove(value_col)
