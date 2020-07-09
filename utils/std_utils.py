@@ -434,6 +434,12 @@ def df_add_units(df, unit_col, unit_type):
     return df
 
 
+def df_add_std_units(df, units_map):
+    # TODO: replace (multiply) matching df vals in map
+    # to CREATE new std_units col
+    return df
+
+
 def df_add_value(df, value_col):
     """
     Add the value column to a df.
