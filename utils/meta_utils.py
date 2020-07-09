@@ -89,9 +89,10 @@ def produce_article_meta(doi):
     :str doi: The url for a DOI "Digital Object Signifier"
     """
 
-    works = Works()
-    record = works.doi(doi)
+    works = Works() # Initialize crossref API
+    record = works.doi(doi) # Grab record for our paper
 
+    # Scrape all relevant info and store in the meta_dict
     title = scrape_article_meta(record, 'title')
     doi_link = scrape_article_meta(record, 'URL')
     publisher = scrape_article_meta(record, 'publisher')
