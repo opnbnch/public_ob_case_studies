@@ -120,7 +120,7 @@ def df_units_to_vals(df, unit_col, value_col, unit_map):
     # Remove non standardizable rows
     df = df[~(df[unit_col].isin(non_std))]
 
-    df.loc[::, 'std_values'] = df[value_col]
+    df.loc[::, 'std_value_col'] = df[value_col]
 
     # Need to filter value rows now
 
