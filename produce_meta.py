@@ -16,8 +16,10 @@ def produce_meta(data_path):
     # Extract outpath from data path provided
     outpath = os.path.dirname(data_path)
 
+    # Ask for DOI
     doi = get_doi()
 
+    # If a valid DOI exists, scrape article meta and initate meta
     if doi:
         article_meta = produce_article_meta(doi)
         fullpath = init_meta(article_meta, outpath)
@@ -31,7 +33,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('data_path', type=str,
-                        help="path to data source for paper")
+                        help="path to dataset we will be cleaning")
     args = parser.parse_args()
 
     produce_meta(args.data_path)

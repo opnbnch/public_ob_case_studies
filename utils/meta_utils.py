@@ -1,6 +1,5 @@
 import json
 import os
-import requests
 import pandas as pd
 import time
 
@@ -43,7 +42,8 @@ def init_meta(meta_dict, outpath=None, filename=None):
             ts = meta_dict.get('published_timestamp')
             year = str(datetime.utcfromtimestamp(ts).year)
             prefixes.extend([first_author_last_name, '_et_al_', year, '_'])
-        except:
+
+        except Exception:
             if outpath:
                 prefixes = [os.path.basename(outpath), '_']
 
@@ -86,7 +86,6 @@ def scrape_article_meta(record, meta_name):
 def produce_article_meta(doi):
     """
     Ingest a doi link and produces a metadata dict.
-    Currently limited support for links that resolve to ACS.
     :str doi: The url for a DOI "Digital Object Signifier"
     """
 
@@ -101,7 +100,7 @@ def produce_article_meta(doi):
     created = scrape_article_meta(record, 'created')
     timestamp = int(created['timestamp']) / 1000.0
     authors = scrape_article_meta(record, 'author')
-    formatted_authors = [x['given'] + ' ' +  x['family'] for x in authors]
+    formatted_authors = [x['given'] + ' ' + x['family'] for x in authors]
 
     meta_dict = {'title': title[0],
                  'authors': formatted_authors,
