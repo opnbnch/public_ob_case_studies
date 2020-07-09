@@ -415,7 +415,7 @@ def get_unit_col(df, free_cols):
             unit_type = input('\tWhat units should be assigned to this data?')
             df = df_add_units(df, unit_col, unit_type)
         else:
-            return None
+            return None, df
     else:
         free_cols.remove(unit_col)
     return unit_col, df
