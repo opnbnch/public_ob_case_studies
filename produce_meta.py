@@ -25,7 +25,7 @@ def produce_meta(data_path):
         fullpath = init_meta(article_meta, outpath)
         dataset_meta = produce_dataset_meta(data_path)
         add_meta(fullpath, dataset_meta)
-    else:
+    else: # If not, just initialize with dataset_meta
         dataset_meta = produce_dataset_meta(data_path)
         fullpath = init_meta(dataset_meta, outpath)
 
