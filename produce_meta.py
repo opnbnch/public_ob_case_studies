@@ -7,7 +7,6 @@ from utils.meta_utils import init_meta, add_meta, get_doi
 def produce_meta(data_path):
     """
     Produces initial meta data for a database to be cleaned and curated
-    :str doi: ACS doi URL
     :str data_path: filepath to dataset to be cleaned and curated
     """
 
