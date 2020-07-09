@@ -4,8 +4,8 @@ import requests
 import pandas as pd
 import time
 
-from bs4 import BeautifulSoup
-from crossrefs.restful import Works
+from crossref.restful import Works
+from datetime import datetime
 
 __version__ = 'v1.1.0 (07-01-2020)'
 
@@ -36,12 +36,20 @@ def init_meta(meta_dict, outpath=None, filename=None):
 
     # Compose filename from meta_dict if none provided
     if filename is None:
-        first_author_last_name = str(meta_dict.get('authors')[0]
-                                              .split(' ')[-1])
-        year = str(meta_dict.get('date').split(' ')[-1])
-        filename = first_author_last_name + '_et_al_' + year + "_metadata.json"
+        prefixes = []
+        try:
+            first_author_last_name = str(meta_dict.get('authors')[0]
+                                         .split(' ')[-1])
+            ts = meta_dict.get('published_timestamp')
+            year = str(datetime.utcfromtimestamp(ts).year)
+            prefixes.extend([first_author_last_name, '_et_al_', year, '_'])
+        except:
+            if outpath:
+                prefixes = [os.path.basename(outpath), '_']
 
-    if outpath is not None:
+        filename = "".join(prefixes) + "metadata.json"
+
+    if outpath:
         if not os.path.isdir(outpath):
             os.makedirs(outpath)
 
@@ -60,7 +68,7 @@ def init_meta(meta_dict, outpath=None, filename=None):
     return fullpath
 
 
-def scrape_article_meta(request, meta_name):
+def scrape_article_meta(record, meta_name):
     """
     scrape_meta is a worker function for scraping metadata from DOI links
     :param request: a requests request
@@ -68,18 +76,9 @@ def scrape_article_meta(request, meta_name):
     :return: list of scraped strings
     """
 
-    content_list = []
-
     try:
-        soup = BeautifulSoup(request.text, "html.parser")
-        for meta in soup.find_all("meta", {"name": meta_name}):
-            content_list.append(meta.get("content"))
-
-        # Notify if no content for a given meta
-        if len(content_list) == 0:
-            print("No data scraped for", str(meta_name))
-
-        return content_list
+        content = record[meta_name]
+        return content
     except Exception:
         print("Scraping metadata failed on", str(meta_name))
 
@@ -91,20 +90,26 @@ def produce_article_meta(doi):
     :str doi: The url for a DOI "Digital Object Signifier"
     """
 
-    with requests.get(doi) as r:
+    works = Works()
+    record = works.doi(doi)
 
-        title = scrape_article_meta(r, 'dc.Title')
-        authors = scrape_article_meta(r, 'dc.Creator')
-        doi_link = "https://doi.org/" + \
-            str(scrape_article_meta(r, 'dc.Identifier')[0])
-        publisher = scrape_article_meta(r, 'dc.Publisher')
-        date = scrape_article_meta(r, 'dc.Date')
+    title = scrape_article_meta(record, 'title')
+    doi_link = scrape_article_meta(record, 'URL')
+    publisher = scrape_article_meta(record, 'publisher')
+    container = scrape_article_meta(record, 'container-title')
+    issue = scrape_article_meta(record, 'issue')
+    created = scrape_article_meta(record, 'created')
+    timestamp = int(created['timestamp']) / 1000.0
+    authors = scrape_article_meta(record, 'author')
+    formatted_authors = [x['given'] + ' ' +  x['family'] for x in authors]
 
     meta_dict = {'title': title[0],
-                 'authors': authors,
+                 'authors': formatted_authors,
                  'doi': doi_link,
-                 'publisher': publisher[0],
-                 'date': date[0],
+                 'publisher': publisher,
+                 'container': container[0],
+                 'issue': issue,
+                 'published_timestamp': int(timestamp),
                  'meta_version': __version__,
                  'meta_utc_fix': int(time.time())}
 
