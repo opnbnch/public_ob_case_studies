@@ -8,6 +8,7 @@ from utils.class_utils import get_class_map, df_add_std_class
 from utils.std_utils import select_cols, subset_data, df_add_value
 from utils.std_utils import get_col_types, get_smiles_col, get_rel_col
 from utils.relation_utils import get_relation_map, df_add_std_relation
+from utils.std_utils import get_unit_col
 
 
 def standardize(path):
@@ -32,9 +33,13 @@ def standardize(path):
     # Get column names
     class_col, value_col = get_col_types(free_cols)
 
+    # Get unit column
+    unit_col, df = get_unit_col(df, free_cols)
+
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
     default_cols = ['std_smiles']  # Initialize default columns to keep
+    default_cols.append(unit_col)
 
     invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
 
