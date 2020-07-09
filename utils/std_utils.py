@@ -412,7 +412,7 @@ def get_unit_col(df, free_cols):
         create_unit = get_yes_no(prompt)
         if create_unit:
             unit_col = 'unit_col'
-            unit_type = input('\tWhat is the unit type of the data?')
+            unit_type = input('\tWhat units should be assigned to this data?')
             df = df_add_units(df, unit_col, unit_type)
         else:
             return None
@@ -429,7 +429,7 @@ def df_add_units(df, unit_col, unit_type):
     :str unit_type: type of units in column
     """
 
-    df[unit_col] = unit_type
+    df = df.assign(unit_col=unit_type)
 
     return df
 
@@ -441,6 +441,6 @@ def df_add_value(df, value_col):
     :str value_col: value column in DF
     """
 
-    df['value_col'] = df[value_col]
+    df.loc[::, 'value_col'] = df[value_col]
 
     return df

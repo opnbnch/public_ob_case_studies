@@ -1,3 +1,5 @@
+import pandas as pd
+
 def get_valid_unit(prompt, units_list):
     """
     General helper function to get a single value
@@ -30,7 +32,7 @@ def df_add_std_units(df, std_unit):
     :str std_unit: standardized unit
     """
 
-    df['std_unit_col'] = std_unit
+    df = df.assign(std_units=std_unit)
 
     return df
 
@@ -74,13 +76,14 @@ def get_unit_map(df, unit_col):
 
     text1 = \
         """
-        You have {} different unit types. Let's standardize them.
+        You have {} different unit types. Here are the most common.
         """
     print(text1.format(num_units))
+    print(pd.DataFrame(df[unit_col].value_counts()).head())
 
     prompt = \
         """
-        Enter which of the units in this column we should standardize to {}:
+        Which units should be your standard units?
         """
     std_unit = get_valid_unit(prompt, unit_values)
 
@@ -100,7 +103,7 @@ def get_unit_map(df, unit_col):
 
 def df_units_to_vals(df, unit_col, value_col, unit_map):
     """
-    Removes rows with non standardizable units and 
+    Removes rows with non standardizable units and
     filters the non_standard units to match standard units.
     :pd.DataFrame df: The dataframe of interest
     :str unit_col: column holding the units
@@ -117,7 +120,7 @@ def df_units_to_vals(df, unit_col, value_col, unit_map):
     # Remove non standardizable rows
     df = df[~(df[unit_col].isin(non_std))]
 
-    df['std_val_col'] = df[value_col]
+    df.loc[::, 'std_values'] = df[value_col]
 
     # Need to filter value rows now
 
