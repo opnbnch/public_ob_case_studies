@@ -10,6 +10,7 @@ from utils.std_utils import get_col_types, get_smiles_col, get_rel_col
 from utils.relation_utils import get_relation_map, df_add_std_relation
 from utils.std_utils import get_unit_col
 from utils.units_utils import get_unit_map, df_add_std_units
+from utils.units_utils import df_units_to_vals
 
 
 def standardize(path):
@@ -47,6 +48,7 @@ def standardize(path):
         unit_map, std_unit = get_unit_map(std_df, unit_col)
         std_df = df_add_std_units(std_df, std_unit)
         unit_meta = {'unit_map': unit_map,
+                     'std_unit': std_unit,
                      'unit_col': unit_col,
                      'std_unit_col': 'std_unit_col'}
         add_meta(meta_path, unit_meta)
@@ -89,9 +91,15 @@ def standardize(path):
         add_meta(meta_path, relation_meta)
         default_cols.append('std_relation')
 
-        std_df = df_add_value(std_df, value_col)
-        add_meta(meta_path, {'value_col': value_col})
-        default_cols.append(value_col)
+        if unit_col:
+            # TODO: remove non-standardizable rows and standardize units
+            std_df = df_units_to_vals(std_df, unit_col, value_col, unit_map)
+            add_meta(meta_path, {'std_value_col': 'std_value_col'})
+            default_cols.append('std_value_col')
+        else:
+            std_df = df_add_value(std_df, value_col)
+            add_meta(meta_path, {'value_col': value_col})
+            default_cols.append(value_col)
 
     std_meta = {'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',

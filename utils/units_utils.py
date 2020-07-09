@@ -29,6 +29,7 @@ def df_add_std_units(df, std_unit):
     :pd.DataFrame df: The dataframe of interest
     :str std_unit: standardized unit
     """
+
     df['std_unit_col'] = std_unit
 
     return df
@@ -42,6 +43,7 @@ def get_relationship(prompt, cur_unit, std_unit):
     :str cur_unit: unit to standardize
     :str std_unit: unit to standardize to
     """
+
     while True:
         relation = input(prompt.format(cur_unit, std_unit))
         if relation == 'none':
@@ -60,6 +62,7 @@ def get_unit_map(df, unit_col):
     :pd.DataFrame df: The dataframe of interest
     :str unit_col: column holding the units
     """
+
     unit_map = {}
     unit_values = get_unit_values(df, unit_col)
     unit_values = [str(x) for x in unit_values]
@@ -93,3 +96,20 @@ def get_unit_map(df, unit_col):
         unit_map[cur_unit] = mult_factor
 
     return unit_map, std_unit
+
+
+def df_units_to_vals(df, unit_col, value_col, unit_map):
+    non_std = [key for key in list(unit_map.keys()) if unit_map[key] == 'none']
+
+    # Retain only valid standard changes
+    for key in non_std:
+        unit_map.pop(key, None)
+
+    # Remove non standardizable rows
+    df = df[~(df[unit_col].isin(non_std))]
+
+    df['std_val_col'] = df[value_col]
+    
+    # Need to filter value rows now
+
+    return df
