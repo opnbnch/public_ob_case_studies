@@ -92,7 +92,7 @@ def standardize(path):
         default_cols.append('std_relation')
 
         if unit_col:
-            # TODO: remove non-standardizable rows and standardize units
+            # TODO: replace standardize units
             std_df = df_units_to_vals(std_df, unit_col, value_col, unit_map)
             add_meta(meta_path, {'std_value_col': 'std_value_col'})
             default_cols.append('std_value_col')

@@ -99,6 +99,15 @@ def get_unit_map(df, unit_col):
 
 
 def df_units_to_vals(df, unit_col, value_col, unit_map):
+    """
+    Removes rows with non standardizable units and 
+    filters the non_standard units to match standard units.
+    :pd.DataFrame df: The dataframe of interest
+    :str unit_col: column holding the units
+    :str value_col: column holding the values
+    :dict unit_map: dict mapping non_standard units to
+    multiplicative conversion to standard
+    """
     non_std = [key for key in list(unit_map.keys()) if unit_map[key] == 'none']
 
     # Retain only valid standard changes
@@ -109,7 +118,7 @@ def df_units_to_vals(df, unit_col, value_col, unit_map):
     df = df[~(df[unit_col].isin(non_std))]
 
     df['std_val_col'] = df[value_col]
-    
+
     # Need to filter value rows now
 
     return df
