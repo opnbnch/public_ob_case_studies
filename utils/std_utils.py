@@ -391,7 +391,6 @@ def get_unit_col(df, free_cols):
     :list free_cols: list of unassigned df columns
     """
 
-    created = False
     text1 = \
         """
         Is there a column storing unit values in the file?
@@ -415,12 +414,11 @@ def get_unit_col(df, free_cols):
             unit_col = 'unit_col'
             unit_type = input('\tWhat is the unit type of the data?')
             df = df_add_units(df, unit_col, unit_type)
-            created = True
         else:
             return None
     else:
         free_cols.remove(unit_col)
-    return unit_col, df, created
+    return unit_col, df
 
 
 def df_add_units(df, unit_col, unit_type):
