@@ -68,7 +68,7 @@ def standardize(path):
                              'std_relation_col': 'std_relation'}
 
         else:
-            std_df = std_df.assign(std_relation = '=')
+            std_df = std_df.assign(std_relation='=')
             relation_meta = {'std_relation_col': 'std_relation'}
 
         # Write relation meta
