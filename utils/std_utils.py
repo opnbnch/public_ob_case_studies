@@ -383,6 +383,57 @@ def get_col_types(free_cols):
     return class_col, value_col
 
 
+def get_unit_col(df, free_cols):
+    """
+    Get input from the user to get unit_col.
+    If there is no unit_col ask for creation.
+    :pd.DataFrame df: The dataframe of interest
+    :list free_cols: list of unassigned df columns
+    """
+
+    text1 = \
+        """
+        Is there a column storing unit values in the file?
+        """
+    print(text1)
+
+    prompt = \
+        """
+        Please select the unit column from the list: {}:
+        Enter "none" if there is not a unit column.
+        """
+    unit_col = get_valid_col(prompt, free_cols, True)
+
+    if unit_col is None:
+        prompt = \
+            """
+            Would you like to create a unit column? [y/n]
+            """
+        create_unit = get_yes_no(prompt)
+        if create_unit:
+            unit_col = 'unit_col'
+            unit_type = input('\tWhat units should be assigned to this data?')
+            df = df_add_units(df, unit_col, unit_type)
+        else:
+            return None, df
+    else:
+        free_cols.remove(unit_col)
+    return unit_col, df
+
+
+def df_add_units(df, unit_col, unit_type):
+    """
+    Add a unit column to a df.
+    :pd.DataFrame df: The dataframe of interest
+    :str unit_col: unit column in DF
+    :str unit_type: type of units in column
+    """
+
+    df = df.assign(unit_col=unit_type)
+
+    return df
+
+
 def df_add_value(df, value_col):
     """
     Add the value column to a df.
@@ -390,6 +441,6 @@ def df_add_value(df, value_col):
     :str value_col: value column in DF
     """
 
-    df['value_col'] = df[value_col]
+    df.loc[::, 'value_col'] = df[value_col]
 
     return df

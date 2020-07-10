@@ -8,6 +8,9 @@ from utils.class_utils import get_class_map, df_add_std_class
 from utils.std_utils import select_cols, subset_data, df_add_value
 from utils.std_utils import get_col_types, get_smiles_col, get_rel_col
 from utils.relation_utils import get_relation_map, df_add_std_relation
+from utils.std_utils import get_unit_col
+from utils.units_utils import get_unit_map, df_add_std_units
+from utils.units_utils import df_units_to_vals
 
 
 def standardize(path):
@@ -32,11 +35,24 @@ def standardize(path):
     # Get column names
     class_col, value_col = get_col_types(free_cols)
 
+    # Get unit column
+    unit_col, df = get_unit_col(df, free_cols)
+
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
     default_cols = ['std_smiles']  # Initialize default columns to keep
 
     invalids = get_invalid_smiles(df, smiles_col, 'std_smiles')
+
+    if unit_col:
+        unit_map, std_unit = get_unit_map(std_df, unit_col)
+        std_df = df_add_std_units(std_df, std_unit)
+        unit_meta = {'unit_map': unit_map,
+                     'std_unit': std_unit,
+                     'unit_col': unit_col,
+                     'std_unit_col': 'std_units'}
+        add_meta(meta_path, unit_meta)
+        default_cols.append('std_units')
 
     # If a class col is specified,
     if class_col:
@@ -68,16 +84,22 @@ def standardize(path):
                              'std_relation_col': 'std_relation'}
 
         else:
-            std_df = std_df.assign(std_relation = '=')
+            std_df = std_df.assign(std_relation='=')
             relation_meta = {'std_relation_col': 'std_relation'}
 
         # Write relation meta
         add_meta(meta_path, relation_meta)
         default_cols.append('std_relation')
 
-        std_df = df_add_value(std_df, value_col)
-        add_meta(meta_path, {'value_col': value_col})
-        default_cols.append(value_col)
+        if unit_col:
+            # TODO: replace standardize units
+            std_df = df_units_to_vals(std_df, unit_col, value_col, unit_map)
+            add_meta(meta_path, {'std_value_col': 'std_values'})
+            default_cols.append('std_values')
+        else:
+            std_df = df_add_value(std_df, value_col)
+            add_meta(meta_path, {'value_col': value_col})
+            default_cols.append(value_col)
 
     std_meta = {'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',
