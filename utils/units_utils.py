@@ -88,6 +88,7 @@ def get_unit_map(df, unit_col):
     std_unit = get_valid_unit(prompt, unit_values)
 
     unit_values.remove(std_unit)
+    unit_map[std_unit] = 1.0
 
     prompt = \
         """
@@ -117,11 +118,16 @@ def df_units_to_vals(df, unit_col, value_col, unit_map):
     for key in non_std:
         unit_map.pop(key, None)
 
-    # Remove non standardizable rows
-    df = df[~(df[unit_col].isin(non_std))]
+    std_val_df = []
 
-    df.loc[::, 'std_value_col'] = df[value_col]
+    # Remove non standardizable rows and standardize units
+    for unit, factor in unit_map.items():
+        group = df.loc[lambda x:x[unit_col] == unit]
+        std_vals = [x * factor for x in group[value_col].to_list()]
+        group = group.assign(std_values=std_vals)
+        std_val_df.append(group)
 
-    # Need to filter value rows now
+    std_val_df = pd.concat(std_val_df)
+    print(std_val_df.head())
 
-    return df
+    return std_val_df
