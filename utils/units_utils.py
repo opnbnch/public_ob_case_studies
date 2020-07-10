@@ -128,6 +128,5 @@ def df_units_to_vals(df, unit_col, value_col, unit_map):
         std_val_df.append(group)
 
     std_val_df = pd.concat(std_val_df)
-    print(std_val_df.head())
 
     return std_val_df
