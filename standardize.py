@@ -50,9 +50,9 @@ def standardize(path):
         unit_meta = {'unit_map': unit_map,
                      'std_unit': std_unit,
                      'unit_col': unit_col,
-                     'std_unit_col': 'std_unit_col'}
+                     'std_unit_col': 'std_units'}
         add_meta(meta_path, unit_meta)
-        default_cols.append('std_unit_col')
+        default_cols.append('std_units')
 
     # If a class col is specified,
     if class_col:
@@ -94,12 +94,12 @@ def standardize(path):
         if unit_col:
             # TODO: replace standardize units
             std_df = df_units_to_vals(std_df, unit_col, value_col, unit_map)
-            add_meta(meta_path, {'std_value_col': 'std_value_col'})
-            default_cols.append('std_value_col')
+            add_meta(meta_path, {'std_value_col': 'std_values'})
+            default_cols.append('std_values')
         else:
             std_df = df_add_value(std_df, value_col)
-            add_meta(meta_path, {'value_col': 'value_col'})
-            default_cols.append('value_col')
+            add_meta(meta_path, {'value_col': value_col})
+            default_cols.append(value_col)
 
     std_meta = {'std_smiles_col': 'std_smiles',
                 'std_key_col': 'inchi_key',
