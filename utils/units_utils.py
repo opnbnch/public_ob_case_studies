@@ -1,19 +1,5 @@
 import pandas as pd
 
-def get_valid_unit(prompt, units_list):
-    """
-    General helper function to get a single value
-    from a list of values.
-    :str prompt: Prompt to give to the user
-    :list units_list: units the user can choose from
-    """
-
-    std_unit = input(prompt.format('[' + ', '.join(units_list) + ']'))
-    while std_unit not in units_list:
-        print('\tEnter a valid unit.')
-        std_unit = input(prompt.format('[' + ', '.join(units_list) + ']'))
-    return std_unit
-
 
 def get_unit_values(df, unit_col):
     """
@@ -85,10 +71,11 @@ def get_unit_map(df, unit_col):
         """
         Which units should be your standard units?
         """
-    std_unit = get_valid_unit(prompt, unit_values)
+    std_unit = input(prompt)
 
-    unit_values.remove(std_unit)
-    unit_map[std_unit] = 1.0
+    if std_unit in unit_values:
+        unit_values.remove(std_unit)
+        unit_map[std_unit] = 1.0
 
     prompt = \
         """
