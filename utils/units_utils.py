@@ -114,6 +114,7 @@ def df_units_to_vals(df, unit_col, value_col, unit_map):
         group = group.assign(std_values=std_vals)
         std_val_df.append(group)
 
-    std_val_df = pd.concat(std_val_df)
+    if len(std_val_df) > 1:
+        std_val_df = pd.concat(std_val_df)
 
     return std_val_df
