@@ -116,5 +116,7 @@ def df_units_to_vals(df, unit_col, value_col, unit_map):
 
     if len(std_val_df) > 1:
         std_val_df = pd.concat(std_val_df)
+    elif len(std_val_df) == 1:
+        std_val_df = std_val_df[0]
 
     return std_val_df
