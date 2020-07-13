@@ -418,6 +418,7 @@ def get_unit_col(df, free_cols):
             return None, df
     else:
         free_cols.remove(unit_col)
+
     return unit_col, df
 
 

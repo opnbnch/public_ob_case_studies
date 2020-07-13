@@ -58,6 +58,7 @@ def get_unit_map(df, unit_col):
 
     # Everything is already the same unit
     if num_units == 1:
+        unit_map = {unit_values[0]: 1.0}
         return unit_map, unit_values[0]
 
     text1 = \
@@ -114,9 +115,6 @@ def df_units_to_vals(df, unit_col, value_col, unit_map):
         group = group.assign(std_values=std_vals)
         std_val_df.append(group)
 
-    if len(std_val_df) > 1:
-        std_val_df = pd.concat(std_val_df)
-    elif len(std_val_df) == 1:
-        std_val_df = std_val_df[0]
+    std_val_df = pd.concat(std_val_df)
 
     return std_val_df

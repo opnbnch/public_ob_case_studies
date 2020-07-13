@@ -1,0 +1,27 @@
+{
+    "title": "Trend Analysis of a Database of Intravenous Pharmacokinetic Parameters in Humans for 670 Drug Compounds",
+    "authors": [
+        "R. Scott Obach",
+        "Franco Lombardo",
+        "Nigel J. Waters"
+    ],
+    "doi": "http://dx.doi.org/10.1124/dmd.108.020479",
+    "publisher": "American Society for Pharmacology & Experimental Therapeutics (ASPET)",
+    "container": "Drug Metabolism and Disposition",
+    "issue": "7",
+    "published_timestamp": 1208824467,
+    "meta_version": "v1.1.0 (07-01-2020)",
+    "meta_utc_fix": 1594330888,
+    "meta_path": "case_studies/Martins_et_al_2012/Obach_et_al_2008_metadata.json",
+    "data_path": "case_studies/Martins_et_al_2012/martins_et_al_2012.csv",
+    "data_row_num": 2053,
+    "data_columns": [
+        "num",
+        "name",
+        "p_np",
+        "smiles"
+    ],
+    "smiles_col": null,
+    "value_col": null,
+    "class_col": null
+}
