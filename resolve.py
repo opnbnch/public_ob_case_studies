@@ -19,7 +19,7 @@ def resolve_class(path, threshold):
     std_smiles_col = meta.get('std_smiles_col')
     std_key_col = meta.get('std_key_col')
     class_col = meta.get('std_class_col')
-    value_col = meta.get('value_col')
+    value_col = meta.get('std_value_col') or meta.get('value_col')
     relation_col = meta.get('std_relation_col')
 
     # Read standardized data and remove invalid smiles
@@ -34,7 +34,7 @@ def resolve_class(path, threshold):
                                            value_col, threshold)
         resolved_data = df_filter_replicates(resolved_data, idx_keep_dict)
         add_meta(meta_path, {'value_resolved_indices': idx_keep_dict})
-    
+
     # Filter the class column if relevant
     if class_col is not None:
         filter_fn = process_filter_input(filters)
