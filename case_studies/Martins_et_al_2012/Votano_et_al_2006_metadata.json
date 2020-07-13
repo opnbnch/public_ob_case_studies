@@ -1,0 +1,31 @@
+{
+    "title": "QSAR Modeling of Human Serum Protein Binding with Several Modeling Techniques Utilizing Structure\u2212Information Representation",
+    "authors": [
+        "Joseph R. Votano",
+        "Marc Parham",
+        "L. Mark Hall",
+        "Lowell H. Hall",
+        "Lemont B. Kier",
+        "Scott Oloff",
+        "Alexander Tropsha"
+    ],
+    "doi": "http://dx.doi.org/10.1021/jm051245v",
+    "publisher": "American Chemical Society (ACS)",
+    "container": "Journal of Medicinal Chemistry",
+    "issue": "24",
+    "published_timestamp": 1162900834,
+    "meta_version": "v1.1.0 (07-01-2020)",
+    "meta_utc_fix": 1594330919,
+    "meta_path": "case_studies/Martins_et_al_2012/Votano_et_al_2006_metadata.json",
+    "data_path": "case_studies/Martins_et_al_2012/martins_et_al_2012.csv",
+    "data_row_num": 2053,
+    "data_columns": [
+        "num",
+        "name",
+        "p_np",
+        "smiles"
+    ],
+    "smiles_col": null,
+    "value_col": null,
+    "class_col": null
+}

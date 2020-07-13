@@ -58,6 +58,7 @@ def get_unit_map(df, unit_col):
 
     # Everything is already the same unit
     if num_units == 1:
+        unit_map = {unit_values[0]: 1.0}
         return unit_map, unit_values[0]
 
     text1 = \
