@@ -33,7 +33,7 @@ def standardize(path):
     add_meta(meta_path, {'smiles_col': smiles_col})
 
     # Get column names
-    class_col, value_col = get_col_types(free_cols)
+    class_col, value_col, df = get_col_types(free_cols, df)
 
     std_df = df_add_std_smiles(df, smiles_col)  # Add standardized SMILES ...
     std_df = df_add_ik(std_df, 'std_smiles')  # And InChI keys
@@ -92,7 +92,7 @@ def standardize(path):
                          'std_value_col': 'std_values'}
             add_meta(meta_path, unit_meta)
             default_cols.append('std_units')
-            default_cols.append('std_values')     
+            default_cols.append('std_values')
         else:
             std_df = df_add_value(std_df, value_col)
             add_meta(meta_path, {'value_col': value_col})
