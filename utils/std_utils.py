@@ -450,6 +450,24 @@ def df_add_units(df, unit_col, unit_type):
     return df
 
 
+def map_compliance(map, key):
+    """
+    Converts all map keys to type str to comply with
+    adding meta_data
+    :dict map: dict of keys: values
+    """
+
+    inner_map = map[key]
+
+    n_map = {str(k): v for k, v in inner_map.items()}
+
+    f_map = dict()
+    key = str(key)
+    f_map[key] = n_map
+
+    return f_map
+
+
 def df_add_value(df, value_col):
     """
     Add the value column to a df.

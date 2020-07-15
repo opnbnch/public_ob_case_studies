@@ -8,7 +8,7 @@ from utils.class_utils import get_class_map, df_add_std_class
 from utils.std_utils import select_cols, subset_data, df_add_value
 from utils.std_utils import get_col_types, get_smiles_col, get_rel_col
 from utils.relation_utils import get_relation_map, df_add_std_relation
-from utils.std_utils import get_unit_col
+from utils.std_utils import get_unit_col, map_compliance
 from utils.units_utils import get_unit_map, df_add_std_units
 from utils.units_utils import df_units_to_vals
 
@@ -48,8 +48,11 @@ def standardize(path):
         class_map = get_class_map(std_df, class_col)
         std_df = df_add_std_class(std_df, class_map)
 
+        # Keys can only be str, int, float, bool, or None
+        # Enforce keys are str for writing to meta_data only
+        compliant_class_map = map_compliance(class_map, class_col)
         # Store and write class meta
-        class_meta = {'class_map': class_map,
+        class_meta = {'class_map': compliant_class_map,
                       'class_col': class_col,
                       'std_class_col': 'std_class'}
 
