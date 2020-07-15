@@ -222,11 +222,18 @@ def get_val_idx(group, value_col, mle, rmsd):
         return int(group.index[0])
     else:
         val_list = list(group[value_col])
-        if len(val_list) == 2:
+        val_list = [x for x in val_list if str(x) != 'nan']
+
+        if len(val_list) == 0:
+            return None
+        elif len(val_list) == 1:
+            return int(group.loc[lambda x:x[value_col] ==
+                       val_list[0]].index[0])
+        elif len(val_list) == 2:
             if np.absolute(val_list[1] - val_list[0]) <= 0.25 * rmsd:
-                return int(group.loc[lambda x:x[value_col]==
+                return int(group.loc[lambda x:x[value_col] ==
                                      np.random.choice(
-                                         group[value_col])].index[0])
+                                         val_list)].index[0])
             else:
                 return None
         else:
