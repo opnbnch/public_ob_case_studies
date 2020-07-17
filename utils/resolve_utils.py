@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
+import warnings
 
 from scipy.stats import norm
 from scipy.optimize import minimize_scalar
+pd.options.mode.chained_assignment = None
 
 __version__ = 'v1.0.0 (07-01-2020)'
 
@@ -145,7 +147,9 @@ def replicate_rmsd(df, key_col, value_col, relation_col):
             .loc[lambda x:x[key_col] == key, value_col].values
         unique_devs.extend(values - values.mean())
 
-    rmsd = np.sqrt(np.nanmean([dev ** 2 for dev in unique_devs]))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        rmsd = np.sqrt(np.nanmean([dev ** 2 for dev in unique_devs]))
 
     return rmsd
 
@@ -180,7 +184,9 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
     elif sum(right_censored) == nreps:
         mle_value = max(values)
     elif sum(left_censored) + sum(right_censored) == 0:
-        mle_value = np.nanmean(values)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            mle_value = np.nanmean(values)
     else:
         # Some, but not all observations are censored.
         # First, define the negative log likelihood function
@@ -265,6 +271,18 @@ def value_keep_indices(df, key_col, relation_col, smiles_col, value_col,
         idx_keep_dict[key] = idx
 
     return idx_keep_dict
+
+
+def resolve_type(df, value_col):
+    """
+    Change the value_col values to be floats
+    in case they are of a different type
+    :pd.DataFrame df: dataframe of interest
+    :str value_col: value column to resolve
+    """
+    df.loc[::, value_col] = pd.to_numeric(df[value_col], errors='coerce')
+
+    return df
 
 
 def df_filter_replicates(df, idx_keep_dict):
