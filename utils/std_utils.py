@@ -348,11 +348,24 @@ def get_rel_col(free_cols):
     return rel_col
 
 
-def get_col_types(free_cols):
+def remove_nan(col, df):
+    """
+    Replace nan values with None in a df column
+    :str col: column to replace values
+    :pd.DataFrame df: The dataframe of interest
+    """
+    cur_col = df[col]
+    new_col = cur_col.where(pd.notnull(cur_col), None)
+    df[col] = new_col
+    return df
+
+
+def get_col_types(free_cols, df):
     """
     Get input from the user to discern the data type
     and the name of the data column.
     :list free_cols: list of unassigned df columns
+    :pd.DataFrame df: The dataframe of interest
     """
 
     text1 = \
@@ -370,6 +383,7 @@ def get_col_types(free_cols):
 
     if class_col is not None:
         free_cols.remove(class_col)
+        df = remove_nan(class_col, df)
 
     value_prompt = \
         """
@@ -380,7 +394,8 @@ def get_col_types(free_cols):
 
     if value_col is not None:
         free_cols.remove(value_col)
-    return class_col, value_col
+        df = remove_nan(value_col, df)
+    return class_col, value_col, df
 
 
 def get_unit_col(df, free_cols):
@@ -433,6 +448,24 @@ def df_add_units(df, unit_col, unit_type):
     df = df.assign(unit_col=unit_type)
 
     return df
+
+
+def map_compliance(map, key):
+    """
+    Converts all map keys to type str to comply with
+    adding meta_data
+    :dict map: dict of keys: values
+    """
+
+    inner_map = map[key]
+
+    n_map = {str(k): v for k, v in inner_map.items()}
+
+    f_map = dict()
+    key = str(key)
+    f_map[key] = n_map
+
+    return f_map
 
 
 def df_add_value(df, value_col):

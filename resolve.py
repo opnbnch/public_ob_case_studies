@@ -26,7 +26,6 @@ def resolve_class(path, threshold):
     std_data = read_data(std_data_path)
     resolved_data = df_filter_invalid_smi(std_data, std_smiles_col)
 
-
     # Filter value column if relevant
     if value_col is not None:
         idx_keep_dict = value_keep_indices(resolved_data, std_key_col,
