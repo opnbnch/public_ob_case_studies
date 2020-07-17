@@ -28,7 +28,7 @@ def resolve_class(path, threshold):
 
     # Filter value column if relevant
     if value_col is not None:
-        std_data = resolve_type(std_data, value_col)
+        resolved_data = resolve_type(resolved_data, value_col)
         idx_keep_dict = value_keep_indices(resolved_data, std_key_col,
                                            relation_col, std_smiles_col,
                                            value_col, threshold)

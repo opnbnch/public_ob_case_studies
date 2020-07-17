@@ -3,6 +3,7 @@ import numpy as np
 
 from scipy.stats import norm
 from scipy.optimize import minimize_scalar
+pd.options.mode.chained_assignment = None
 
 __version__ = 'v1.0.0 (07-01-2020)'
 
@@ -274,8 +275,10 @@ def resolve_type(df, value_col):
     :pd.DataFrame df: dataframe of interest
     :str value_col: value column to resolve
     """
-    col = df[value_col]
-    df[value_col] = pd.to_numeric(col)
+    df[value_col] = pd.to_numeric(df[value_col], errors='coerce')
+    # col = df.loc[::, value_col]
+    # num_col = pd.to_numeric(col, errors='coerce')
+    # df.loc[::, value_col] = num_col
     return df
 
 
