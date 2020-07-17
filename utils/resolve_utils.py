@@ -275,10 +275,8 @@ def resolve_type(df, value_col):
     :pd.DataFrame df: dataframe of interest
     :str value_col: value column to resolve
     """
-    df[value_col] = pd.to_numeric(df[value_col], errors='coerce')
-    # col = df.loc[::, value_col]
-    # num_col = pd.to_numeric(col, errors='coerce')
-    # df.loc[::, value_col] = num_col
+    df.loc[::, value_col] = pd.to_numeric(df[value_col], errors='coerce')
+
     return df
 
 
