@@ -267,6 +267,18 @@ def value_keep_indices(df, key_col, relation_col, smiles_col, value_col,
     return idx_keep_dict
 
 
+def resolve_type(df, value_col):
+    """
+    Change the value_col values to be floats
+    in case they are of a different type
+    :pd.DataFrame df: dataframe of interest
+    :str value_col: value column to resolve
+    """
+    col = df[value_col]
+    df[value_col] = pd.to_numeric(col)
+    return df
+
+
 def df_filter_replicates(df, idx_keep_dict):
     """
     Filter out replicates in a data frame

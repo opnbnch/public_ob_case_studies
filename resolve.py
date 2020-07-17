@@ -7,7 +7,7 @@ from utils.std_utils import read_data, write_std
 from utils.resolve_utils import df_filter_invalid_smi, df_filter_replicates
 from utils.resolve_utils import class_keep_indices, __version__
 from utils.resolve_utils import process_filter_input, filters
-from utils.resolve_utils import value_keep_indices
+from utils.resolve_utils import value_keep_indices, resolve_type
 
 
 def resolve_class(path, threshold):
@@ -28,6 +28,7 @@ def resolve_class(path, threshold):
 
     # Filter value column if relevant
     if value_col is not None:
+        std_data = resolve_type(std_data, value_col)
         idx_keep_dict = value_keep_indices(resolved_data, std_key_col,
                                            relation_col, std_smiles_col,
                                            value_col, threshold)
