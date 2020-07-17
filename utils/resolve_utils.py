@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import warnings
 
 from scipy.stats import norm
 from scipy.optimize import minimize_scalar
@@ -146,7 +147,9 @@ def replicate_rmsd(df, key_col, value_col, relation_col):
             .loc[lambda x:x[key_col] == key, value_col].values
         unique_devs.extend(values - values.mean())
 
-    rmsd = np.sqrt(np.nanmean([dev ** 2 for dev in unique_devs]))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        rmsd = np.sqrt(np.nanmean([dev ** 2 for dev in unique_devs]))
 
     return rmsd
 
@@ -181,7 +184,9 @@ def mle_censored_mean(cmpd_df, std_est, value_col, relation_col):
     elif sum(right_censored) == nreps:
         mle_value = max(values)
     elif sum(left_censored) + sum(right_censored) == 0:
-        mle_value = np.nanmean(values)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            mle_value = np.nanmean(values)
     else:
         # Some, but not all observations are censored.
         # First, define the negative log likelihood function
