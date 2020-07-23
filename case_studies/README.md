@@ -15,3 +15,4 @@ This is a case study demonstrating the opnbnchmark toolkit for the simple prepar
 
 ### [Part 1: A Simplified Open-Source Data Cleaning Workflow](https://opnbnch.substack.com/p/openbenchmark-modeling-the-blood)
 
+A jupyter notebook version of this study on cleaning a binary classification dataset from a single literature source can be found [here.](../notebooks/Martins_et_al_2012.ipynb)
