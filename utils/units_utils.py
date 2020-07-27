@@ -1,4 +1,5 @@
 import pandas as pd
+import questionary
 
 
 def get_unit_values(df, unit_col):
@@ -33,14 +34,15 @@ def get_relationship(prompt, cur_unit, std_unit):
     """
 
     while True:
-        relation = input(prompt.format(cur_unit, std_unit))
+        question = prompt.format(cur_unit, std_unit)
+        relation = questionary.text(question).ask()
         if relation == 'none':
             return relation
         try:
             val = float(relation)
             return val
         except ValueError:
-            print('\tPlease enter a valid number')
+            print('Please enter a valid number')
 
 
 def get_unit_map(df, unit_col):
@@ -61,28 +63,21 @@ def get_unit_map(df, unit_col):
         unit_map = {unit_values[0]: 1.0}
         return unit_map, unit_values[0]
 
-    text1 = \
-        """
-        You have {} different unit types. Here are the most common.
-        """
+    text1 = "You have {} different unit types. Here are the most common:"
     print(text1.format(num_units))
     print(pd.DataFrame(df[unit_col].value_counts()).head())
 
-    prompt = \
-        """
-        Which units should be your standard units?
-        """
-    std_unit = input(prompt)
+    prompt = "Which units should be your standard units?"
+
+    std_unit = questionary.autocomplete(prompt, choices=unit_values).ask()
 
     if std_unit in unit_values:
         unit_values.remove(std_unit)
         unit_map[std_unit] = 1.0
 
-    prompt = \
-        """
-        What is the multiplication factor to convert {} to {}?
-        Enter 'none' if unit is non-standardizable.
-        """
+    prompt = "What is the multiplication factor to convert {} to {}?" \
+        " Enter 'none' if unit is non-standardizable."
+
     for cur_unit in unit_values:
         mult_factor = get_relationship(prompt, cur_unit, std_unit)  # get float
         unit_map[cur_unit] = mult_factor
