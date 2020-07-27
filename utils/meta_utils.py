@@ -90,8 +90,8 @@ def produce_article_meta(doi):
     :str doi: The url for a DOI "Digital Object Signifier"
     """
 
-    works = Works() # Initialize crossref API
-    record = works.doi(doi) # Grab record for our paper
+    works = Works()  # Initialize crossref API
+    record = works.doi(doi)  # Grab record for our paper
 
     # Scrape all relevant info and store in the meta_dict
     title = scrape_article_meta(record, 'title')
@@ -145,11 +145,8 @@ def ask_for_doi():
     Ask for the DOI source and format if full URL is given
     """
 
-    doi_prompt = \
-        """
-        Please input the DOI for this data source. Enter 'none' if there is no
-        DOI source:
-        """
+    doi_prompt = "Please input the DOI for this data source." \
+        " Enter 'none' if there is no DOI source:"
 
     doi = questionary.text(doi_prompt).ask()
 
