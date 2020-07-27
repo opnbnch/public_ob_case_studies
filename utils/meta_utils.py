@@ -2,6 +2,7 @@ import json
 import os
 import pandas as pd
 import time
+import questionary
 
 from crossref.restful import Works
 from datetime import datetime
@@ -150,7 +151,7 @@ def ask_for_doi():
         DOI source:
         """
 
-    doi = input(doi_prompt)
+    doi = questionary.text(doi_prompt).ask()
 
     if 'doi.org/' in doi:
         doi = doi.split('doi.org/')[1]
