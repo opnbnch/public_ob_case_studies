@@ -60,13 +60,13 @@ def get_class_map(df, class_col):
 
     for val in class_values:
         # Ask for assignment
-        prompt = text.format(val, options).strip()
-        std_val = questionary.text(prompt).ask()
+        prompt = text.format(val, options)
+        std_val = int(questionary.text(prompt).ask())
 
         # If that fails, keep re-asking
         while std_val not in options:
             print(retry_text.format(options))
-            std_val = questionary.text(prompt).ask()
+            std_val = int(questionary.text(prompt).ask())
 
         # Finally, assign to the map and remove that option.
         user_classes[val] = std_val
