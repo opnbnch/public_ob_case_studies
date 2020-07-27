@@ -1,6 +1,7 @@
 import molvs
 import os
 import pandas as pd
+import questionary
 
 from multiprocessing import pool
 from rdkit import Chem
@@ -213,24 +214,6 @@ def subset_data(df, subset_cols):
     return df.loc[::, subset]
 
 
-def get_yes_no(prompt):
-    """
-    Turn a user input into a yes/no mapped respectively to True/False
-    :str prompt: question to prompt the user with
-    """
-
-    acc = ['yes', 'y', 'true', 'accept', 't', '1']
-    rej = ['no', 'n', 'false', 'reject', 'f', '0']
-
-    ans = input(prompt)
-    while ans.lower() not in acc + rej:
-        print('\tNot a valid response. Please enter yes or no.')
-        ans = input(prompt)
-    if ans in acc:
-        return True
-    return False
-
-
 def get_subset_cols(remaining, default_cols):
     """
     Get a subset of columns to keep and columns to discard by
@@ -276,12 +259,11 @@ def select_cols(std_df, default_cols):
         """
     print(text1)
 
-    default_q = \
-        """
-        Do you want to only keep the default columns? {}:
-        """
+    default_q = "Do you want to only keep the default columns? {}:"
+
     default_question = default_q.format('[' + ', '.join(default_cols) + ']')
-    keep_default = get_yes_no(default_question)
+    keep_default = questionary.confirm(default_question).ask()
+    # keep_default = get_yes_no(default_question)
 
     if keep_default:
         return default_cols, list(set(std_df.columns) - set(default_cols))
@@ -420,11 +402,8 @@ def get_unit_col(df, free_cols):
     unit_col = get_valid_col(prompt, free_cols, True)
 
     if unit_col is None:
-        prompt = \
-            """
-            Would you like to create a unit column? [y/n]
-            """
-        create_unit = get_yes_no(prompt)
+        prompt = "Would you like to create a unit column?"
+        create_unit = questionary.confirm(prompt).ask()
         if create_unit:
             unit_col = 'unit_col'
             unit_type = input('\tWhat units should be assigned to this data?')
