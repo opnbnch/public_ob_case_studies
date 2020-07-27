@@ -263,7 +263,6 @@ def select_cols(std_df, default_cols):
 
     default_question = default_q.format('[' + ', '.join(default_cols) + ']')
     keep_default = questionary.confirm(default_question).ask()
-    # keep_default = get_yes_no(default_question)
 
     if keep_default:
         return default_cols, list(set(std_df.columns) - set(default_cols))

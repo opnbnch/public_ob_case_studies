@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import warnings
+import questionary
 
 from scipy.stats import norm
 from scipy.optimize import minimize_scalar
@@ -28,29 +29,11 @@ def ask_for_filter(dispatcher):
 
     options = list(dispatcher.keys())
 
-    text1 =  \
-        """
-        How do you want to resolve class for multiple replicates?
-        """
-
-    retry = \
-        """
-        The method you specified is not among the options in {}. Try again:
-        """
-
+    text1 = "How do you want to resolve class for multiple replicates?"
     print(text1)
 
-    try:
-        fn_name = input('Please select one option:{}: '
-                        .format(options)).strip()
-    except Exception:
-        fn_name = -1
-
-    while fn_name not in options:
-        try:
-            fn_name = input(retry.format(options)).strip()
-        except Exception:
-            fn_name = -1
+    prompt = "Please select one option:"
+    fn_name = questionary.select(prompt, choices=options).ask()
 
     return dispatcher[fn_name]
 
