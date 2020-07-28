@@ -15,6 +15,7 @@ dependencies:
   - rdkit>=2020.03.1.0
   - requests>=2.24.0
   - scipy>=1.5.0
+  - tqdm>=4.46.1
   - pip:
     - crossrefapi>=1.5.0
-    - questionary
+    - questionary>=1.5.2
