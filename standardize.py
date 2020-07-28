@@ -83,7 +83,6 @@ def standardize(path):
 
         # Get unit column
         unit_col, std_df = get_unit_col(std_df, free_cols)
-        print(unit_col)
         if unit_col:
             unit_map, std_unit = get_unit_map(std_df, unit_col)
             std_df = df_add_std_units(std_df, std_unit)

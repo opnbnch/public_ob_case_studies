@@ -1,3 +1,6 @@
+import questionary
+
+
 def get_unique_values(df, df_col):
     """
     return unique values for the df_col
@@ -14,12 +17,11 @@ def standardize_op(invalid_op, valid_ops):
     :str invalid_op: The operator that needs to be assigned
     :list valid_ops: list of options for assignment
     """
-    op_list = '[' + ', '.join(valid_ops) + ']'
-    assignment = input('Assign {} to one of the following values: {}:'.format
-                   (invalid_op, op_list))
-    while assignment not in valid_ops:
-        assignment = input('Assign {} to one of the following values: {}:'.format
-                       (invalid_op, op_list))
+
+    prompt = "Assign {} to one of the following values:".format(invalid_op)
+
+    assignment = questionary.select(prompt, choices=valid_ops).ask()
+
     return assignment
 
 

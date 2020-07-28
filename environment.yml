@@ -17,3 +17,4 @@ dependencies:
   - scipy>=1.5.0
   - pip:
     - crossrefapi>=1.5.0
+    - questionary

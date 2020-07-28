@@ -4,6 +4,7 @@ import os
 from utils.meta_utils import produce_article_meta, produce_dataset_meta
 from utils.meta_utils import init_meta, add_meta, get_doi
 
+
 def produce_meta(data_path):
     """
     Produces initial meta data for a database to be cleaned and curated
@@ -24,9 +25,10 @@ def produce_meta(data_path):
         fullpath = init_meta(article_meta, outpath)
         dataset_meta = produce_dataset_meta(data_path)
         add_meta(fullpath, dataset_meta)
-    else: # If not, just initialize with dataset_meta
+    else:  # If not, just initialize with dataset_meta
         dataset_meta = produce_dataset_meta(data_path)
         fullpath = init_meta(dataset_meta, outpath)
+
 
 if __name__ == '__main__':
 

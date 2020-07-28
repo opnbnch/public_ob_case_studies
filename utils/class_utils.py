@@ -1,3 +1,6 @@
+import questionary
+
+
 def df_add_std_class(df, class_map):
     """
     df_add_std_class adds standardized binary class to a df
@@ -26,20 +29,6 @@ def get_class_values(df, class_col):
     return list(set(df[class_col].values))
 
 
-def _ask_for_assignment(value, options):
-    """
-    ask the user for an assignment to the option in question
-    :str value: The value that needs to be assigned
-    :list options: list of options for assignment
-    """
-
-    try:
-        text = 'Assign {} to one of the following values: {}:'
-        return int(input(text.format(value, options)).strip())
-    except Exception:
-        return 'error_val'
-
-
 def get_class_map(df, class_col):
     """
     Assign class column to appropriate values
@@ -51,38 +40,33 @@ def get_class_map(df, class_col):
     class_len = len(class_values)
     options = [x for x in range(0, class_len)]
 
-    first_text = \
-        """
-        Your class values are non-standard for classification.
-        In order for training and testing to run smoothly, let's
-        convert your classes to standard form.
-        """
+    first_text = "Your class values are non-standard for classification." \
+        " In order for training and testing to run smoothly, let's" \
+        " convert your classes to standard form."
 
-    second_text = \
-        """
-        Your class column, {} currently contains {} unique values.
-        Those class values are {}.
-        Each class will be mapped into a standard value in {}.
-        """
+    second_text = "The class column, {} currently contains {} unique values." \
+        " Those class values are {}." \
+        " Each class will be mapped into a standard value in {}."
 
-    retry_text = \
-        """
-        The value you specified is not among the values in {}. Let's try again.
-        """
+    retry_text = "The value you specified is not among the values in {}." \
+        " Let's try again."
 
     print(first_text)
     print(second_text
           .format(class_col, class_len, set(class_values), options))
 
     user_classes = dict()
+    text = "Assign {} to one of the following values: {}:"
+
     for val in class_values:
         # Ask for assignment
-        std_val = _ask_for_assignment(val, options)
+        prompt = text.format(val, options)
+        std_val = int(questionary.text(prompt).ask())
 
         # If that fails, keep re-asking
         while std_val not in options:
             print(retry_text.format(options))
-            std_val = _ask_for_assignment(val, options)
+            std_val = int(questionary.text(prompt).ask())
 
         # Finally, assign to the map and remove that option.
         user_classes[val] = std_val

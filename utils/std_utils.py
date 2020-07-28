@@ -1,6 +1,7 @@
 import molvs
 import os
 import pandas as pd
+import questionary
 
 from multiprocessing import pool
 from rdkit import Chem
@@ -213,24 +214,6 @@ def subset_data(df, subset_cols):
     return df.loc[::, subset]
 
 
-def get_yes_no(prompt):
-    """
-    Turn a user input into a yes/no mapped respectively to True/False
-    :str prompt: question to prompt the user with
-    """
-
-    acc = ['yes', 'y', 'true', 'accept', 't', '1']
-    rej = ['no', 'n', 'false', 'reject', 'f', '0']
-
-    ans = input(prompt)
-    while ans.lower() not in acc + rej:
-        print('\tNot a valid response. Please enter yes or no.')
-        ans = input(prompt)
-    if ans in acc:
-        return True
-    return False
-
-
 def get_subset_cols(remaining, default_cols):
     """
     Get a subset of columns to keep and columns to discard by
@@ -239,26 +222,10 @@ def get_subset_cols(remaining, default_cols):
     :list default_cols: list of forced keep columns
     """
     cols = list(set(remaining) - set(default_cols))
-    all_cols = remaining.copy()
-    kept_cols = []
 
-    prompt = \
-        """
-        Type columns (space-separated) to keep from the following.
-        Enter "all" to keep all. Enter "done" to stop.
-        \n\t{}:
-        """
-    ans = input(prompt.format('[' + ', '.join(cols) + ']'))
-    while len(cols) > 0 and ans.lower() != 'done' and ans.lower() != 'all':
-        ans_list = ans.split()
-        valid = [cur for cur in ans_list if cur in cols]
-        for cur in valid:
-            kept_cols.append(cur)
-            cols.remove(cur)
-        ans = input(prompt.format('[' + ', '.join(cols) + ']'))
+    prompt = "Select columns to keep from the following."
+    kept_cols = questionary.checkbox(prompt, choices=cols).ask()
 
-    if ans == 'all':
-        return all_cols, []
     return kept_cols + default_cols, cols
 
 
@@ -270,18 +237,13 @@ def select_cols(std_df, default_cols):
     :list default_cols: list of default columns to keep
     """
 
-    text1 = \
-        """
-        Let's decide which columns to keep in the final dataset.
-        """
+    text1 = "Let's decide which columns to keep in the final dataset."
     print(text1)
 
-    default_q = \
-        """
-        Do you want to only keep the default columns? {}:
-        """
+    default_q = "Do you want to only keep the default columns? {}:"
+
     default_question = default_q.format('[' + ', '.join(default_cols) + ']')
-    keep_default = get_yes_no(default_question)
+    keep_default = questionary.confirm(default_question).ask()
 
     if keep_default:
         return default_cols, list(set(std_df.columns) - set(default_cols))
@@ -299,12 +261,16 @@ def get_valid_col(prompt, valid_cols, optional=False):
     :bool optional: If selection is optional
     """
 
-    col = input(prompt.format('[' + ', '.join(valid_cols) + ']'))
-    while col not in valid_cols:
-        if optional and col == 'none':
-            return None
-        print('\tEnter a valid column name.')
-        col = input(prompt.format('[' + ', '.join(valid_cols) + ']'))
+    if optional:
+        valid_cols.append('none')
+    col = questionary.rawselect(prompt, choices=valid_cols).ask()
+
+    if optional:
+        valid_cols.remove('none')
+
+    if col == 'none':
+        return None
+
     return col
 
 
@@ -315,16 +281,11 @@ def get_smiles_col(free_cols):
     :list free_cols: list of unassigned df columns
     """
 
-    text1 = \
-        """
-        Let's select the SMILES column in the file.
-        """
+    text1 = "Let's select the SMILES column in the file."
     print(text1)
 
-    prompt = \
-        """
-        Please select the SMILES column from the list: {}:
-        """
+    prompt = "Please select the SMILES column from the list:"
+
     return get_valid_col(prompt, free_cols)
 
 
@@ -335,11 +296,8 @@ def get_rel_col(free_cols):
     :list free_cols: list of unassigned df columns
     """
 
-    prompt = \
-        """
-        Please select the relationship column from the list: {}:
-        Enter "none" if there is not a relationship column.
-        """
+    prompt = "Please select the relationship column from the list." \
+        " Select 'none' if there is not a relationship column."
 
     rel_col = get_valid_col(prompt, free_cols, True)
 
@@ -368,29 +326,22 @@ def get_col_types(free_cols, df):
     :pd.DataFrame df: The dataframe of interest
     """
 
-    text1 = \
-        """
-        Which column(s) store our classes or values?
-        """
+    text1 = "Which column(s) store our classes or values?"
     print(text1)
 
-    class_prompt = \
-        """
-        Please select the class column from the list: {}:
-        Enter "none" if there is not a class column.
-        """
-    class_col = get_valid_col(class_prompt, free_cols, True)
+    class_prompt = "Please select the class column from the list." \
+        " Select 'none' if there is not a class column."
+
+    class_col = get_valid_col(class_prompt, free_cols, optional=True)
 
     if class_col is not None:
         free_cols.remove(class_col)
         df = remove_nan(class_col, df)
 
-    value_prompt = \
-        """
-        Please select the value column from the list: {}:
-        Enter "none" if there is not a value column.
-        """
-    value_col = get_valid_col(value_prompt, free_cols, True)
+    value_prompt = "Please select the value column from the list." \
+        " Select 'none' if there is not a value column."
+
+    value_col = get_valid_col(value_prompt, free_cols, optional=True)
 
     if value_col is not None:
         free_cols.remove(value_col)
@@ -406,28 +357,21 @@ def get_unit_col(df, free_cols):
     :list free_cols: list of unassigned df columns
     """
 
-    text1 = \
-        """
-        Is there a column storing unit values in the file?
-        """
+    text1 = "Is there a column storing unit values in the file?"
     print(text1)
 
-    prompt = \
-        """
-        Please select the unit column from the list: {}:
-        Enter "none" if there is not a unit column.
-        """
-    unit_col = get_valid_col(prompt, free_cols, True)
+    prompt = "Please select the unit column from the list." \
+        " Select 'none' if there is not a unit column."
+
+    unit_col = get_valid_col(prompt, free_cols, optional=True)
 
     if unit_col is None:
-        prompt = \
-            """
-            Would you like to create a unit column? [y/n]
-            """
-        create_unit = get_yes_no(prompt)
+        prompt = "Would you like to create a unit column?"
+        create_unit = questionary.confirm(prompt).ask()
         if create_unit:
             unit_col = 'unit_col'
-            unit_type = input('\tWhat units should be assigned to this data?')
+            prompt = "What units should be assigned to this data?"
+            unit_type = questionary.text(prompt).ask()
             df = df_add_units(df, unit_col, unit_type)
         else:
             return None, df
