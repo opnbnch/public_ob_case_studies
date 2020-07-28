@@ -74,6 +74,8 @@ def _std_ik_from_smiles(smiles):
 def _list_smiles_from_smiles(smi_list, single_thread=False):
     """
     Private function for multiprocessing in multi_smiles_to_smiles
+    :list smi_list: Batch of smiles strings to process
+    :bool single_thread: If not multiprocessing
     """
     if single_thread:
         std_smiles = []
@@ -88,6 +90,8 @@ def _list_smiles_from_smiles(smi_list, single_thread=False):
 def _list_ik_from_smiles(smi_list, single_thread=False):
     """
     Private function for multiprocessing in multi_smiles_to_ik
+    :list smi_list: Batch of smiles strings to process
+    :bool single_thread: If not multiprocessing
     """
     if single_thread:
         std_ik = []
