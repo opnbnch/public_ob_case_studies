@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import warnings
 import questionary
+import tqdm
 
 from scipy.stats import norm
 from scipy.optimize import minimize_scalar
@@ -96,7 +97,8 @@ def class_keep_indices(df, key_col, filter_fn):
     unique_keys = list(set(df[key_col]))
     idx_keep_dict = {}
 
-    for key in unique_keys:
+    print('Searching for replicates.')
+    for key in tqdm.tqdm(unique_keys):
 
         group = df.loc[lambda x:x[key_col] == key]
         idx = filter_fn(group)
@@ -246,7 +248,8 @@ def value_keep_indices(df, key_col, relation_col, smiles_col, value_col,
     std_est = replicate_rmsd(df, smiles_col, value_col, relation_col)
     idx_keep_dict = {}
 
-    for key in unique_keys:
+    print('Searching for replicates.')
+    for key in tqdm.tqdm(unique_keys):
         group = df.loc[lambda x:x[key_col] == key]
         mle = mle_censored_mean(group, std_est, value_col, relation_col)
         idx = get_val_idx(group, value_col, mle, std_est)
