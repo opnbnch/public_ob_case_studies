@@ -5,9 +5,7 @@ import questionary
 import tqdm
 
 from multiprocessing import pool
-from rdkit import Chem
-
-from rdkit import rdBase
+from rdkit import Chem, rdBase
 
 import utils.meta_utils as meta_utils
 
