@@ -6,8 +6,11 @@ import questionary
 from multiprocessing import pool
 from rdkit import Chem
 
+from rdkit import rdBase
+
 import utils.meta_utils as meta_utils
 
+rdBase.DisableLog('rdApp.error')
 __version__ = 'v1.0.0 (07-01-2020)'
 
 
