@@ -2,6 +2,7 @@ import molvs
 import os
 import pandas as pd
 import questionary
+import tqdm
 
 from multiprocessing import pool
 from rdkit import Chem
@@ -100,8 +101,9 @@ def multi_smiles_to_smiles(smi_list, workers=8):
         batches = [smi_list[i:i+batchsize]
                    for i in range(0, len(smi_list), batchsize)]
 
+        n_iters = len(batches)
         with pool.Pool(workers) as p:
-            std_smiles = p.map(func, batches)
+            std_smiles = list(tqdm.tqdm(p.imap(func, batches), total=n_iters))
             std_smiles = [y for x in std_smiles for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
@@ -125,8 +127,9 @@ def multi_ik_from_smiles(smi_list, workers=8):
         batches = [smi_list[i:i+batchsize]
                    for i in range(0, len(smi_list), batchsize)]
 
+        n_iters = len(batches)
         with pool.Pool(workers) as p:
-            std_ik = p.map(func, batches)
+            std_ik = list(tqdm.tqdm(p.imap(func, batches), total=n_iters))
             std_ik = [y for x in std_ik for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
@@ -144,6 +147,7 @@ def df_add_std_smiles(df, smiles_col, workers=8):
     """
 
     df_smiles = list(df[smiles_col])
+    print('Standardizing Smiles')
     df['std_smiles'] = multi_smiles_to_smiles(df_smiles, workers)
 
     return df
@@ -158,6 +162,7 @@ def df_add_ik(df, smiles_col, workers=8):
     """
 
     df_smiles = list(df[smiles_col])
+    print('Creating Inchi Keys')
     df['inchi_key'] = multi_ik_from_smiles(df_smiles, workers)
 
     return df

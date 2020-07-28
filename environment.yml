@@ -18,3 +18,4 @@ dependencies:
   - pip:
     - crossrefapi>=1.5.0
     - questionary
+    - tqdm
