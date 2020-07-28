@@ -71,18 +71,32 @@ def _std_ik_from_smiles(smiles):
         return "invalid_smiles"
 
 
-def _list_smiles_from_smiles(smi_list):
+def _list_smiles_from_smiles(smi_list, single_thread=False):
     """
     Private function for multiprocessing in multi_smiles_to_smiles
     """
-    return [_std_smiles_from_smiles(smi) for smi in smi_list]
+    if single_thread:
+        std_smiles = []
+        for smi in tqdm.tqdm(smi_list):
+            std_smiles.append(_std_smiles_from_smiles(smi))
+
+        return std_smiles
+    else:
+        return [_std_smiles_from_smiles(smi) for smi in smi_list]
 
 
-def _list_ik_from_smiles(smi_list):
+def _list_ik_from_smiles(smi_list, single_thread=False):
     """
     Private function for multiprocessing in multi_smiles_to_ik
     """
-    return [_std_ik_from_smiles(smi) for smi in smi_list]
+    if single_thread:
+        std_ik = []
+        for smi in tqdm.tqdm(smi_list):
+            std_ik.append(_std_ik_from_smiles(smi))
+
+        return std_ik
+    else:
+        return [_std_ik_from_smiles(smi) for smi in smi_list]
 
 
 def multi_smiles_to_smiles(smi_list, workers=8):
@@ -107,7 +121,7 @@ def multi_smiles_to_smiles(smi_list, workers=8):
             std_smiles = [y for x in std_smiles for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
-        std_smiles = func(smi_list)
+        std_smiles = func(smi_list, single_thread=True)
 
     return std_smiles
 
@@ -133,7 +147,7 @@ def multi_ik_from_smiles(smi_list, workers=8):
             std_ik = [y for x in std_ik for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
-        std_ik = func(smi_list)
+        std_ik = func(smi_list, single_thread=True)
 
     return std_ik
 
