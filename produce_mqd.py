@@ -42,21 +42,16 @@ def mqd(path):
         raise ValueError('Data must contain a value column,'
                          ' class column, or both.')
     elif bool(class_col) != bool(value_col):
-        col2 = class_col if class_col in df.columns else value_col
-        if col2 == value_col:
-            df, transformation = fix_value_col(df, units_col, value_col,
-                                               relation_col)
-            add_meta(meta_path, {'value_transformation': transformation})
-
-        df = get_mqd(df, std_smiles_col, col2)
+        kept_col = class_col if class_col in df.columns else value_col
     else:
         kept_col = get_kept_col(class_col, value_col)
-        if kept_col == value_col:
-            df, transformation = fix_value_col(df, units_col, value_col,
-                                               relation_col)
-            add_meta(meta_path, {'value_transformation': transformation})
 
-        df = get_mqd(df, std_smiles_col, kept_col)
+    if kept_col == value_col:
+        df, transformation = fix_value_col(df, units_col, value_col,
+                                           relation_col)
+        add_meta(meta_path, {'value_transformation': transformation})
+
+    df = get_mqd(df, std_smiles_col, kept_col)
 
     mqd_data_path = write_std(df, path, prefix='mqd_')
     mqd_col = df.columns[1]
