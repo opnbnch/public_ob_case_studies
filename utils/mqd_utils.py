@@ -62,6 +62,19 @@ def _transform_value(df, transform, value_col):
     return df
 
 
+def _get_N_sig_figs(df, value_col, num_figs):
+    """
+    Returns a value_col cut to the proper number of sig_figs
+    :pd.DataFrame df: a pandas DF
+    :str value_col: value column in df
+    :int num_figs: number of sig figs to use
+    """
+    N = '%.' + str(num_figs) + 'g'
+
+    cut = ['%s' % float(N % x) for x in df[value_col]]
+    return [float(x) for x in cut]
+
+
 def fix_value_col(df, units_col, value_col, relation_col):
     """
     Optionally transform and handle a relation column in the df
@@ -78,6 +91,8 @@ def fix_value_col(df, units_col, value_col, relation_col):
             unit_map, std_unit = get_unit_map(df, units_col, forced_unit='M')
             df = df_units_to_vals(df, units_col, value_col, unit_map)
         df = _transform_value(df, transform, value_col)
+
+    df[value_col] = _get_N_sig_figs(df, value_col, num_figs=5)
 
     # TODO: Handle relations
 
