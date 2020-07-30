@@ -45,7 +45,7 @@ def get_relationship(prompt, cur_unit, std_unit):
             print('Please enter a valid number')
 
 
-def get_unit_map(df, unit_col):
+def get_unit_map(df, unit_col, forced_unit=None):
     """
     Gets the user map to map non-standard units
     to the standard unit.
@@ -59,7 +59,7 @@ def get_unit_map(df, unit_col):
     num_units = len(unit_values)
 
     # Everything is already the same unit
-    if num_units == 1:
+    if num_units == 1 and forced_unit is None:
         unit_map = {unit_values[0]: 1.0}
         return unit_map, unit_values[0]
 
@@ -67,9 +67,12 @@ def get_unit_map(df, unit_col):
     print(text1.format(num_units))
     print(pd.DataFrame(df[unit_col].value_counts()).head())
 
-    prompt = "Which units should be your standard units?"
+    if forced_unit is None:
+        prompt = "Which units should be your standard units?"
 
-    std_unit = questionary.autocomplete(prompt, choices=unit_values).ask()
+        std_unit = questionary.autocomplete(prompt, choices=unit_values).ask()
+    else:
+        std_unit = forced_unit
 
     if std_unit in unit_values:
         unit_values.remove(std_unit)
