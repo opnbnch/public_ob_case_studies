@@ -38,7 +38,7 @@ def mqd(path):
 
     df = read_data(resolved_data_path)
 
-    if bool(class_col) is False and bool(value_col) is False:
+    if not class_col and not value_col:
         raise ValueError('Data must contain a value column,'
                          ' class column, or both.')
     elif bool(class_col) != bool(value_col):
