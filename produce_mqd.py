@@ -4,6 +4,8 @@ import time
 from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_data, write_std
 from utils.mqd_utils import get_mqd, get_kept_col
+from utils.mqd_utils import get_value_transform, transform_value
+
 
 # TODO: Consolidate to format of SMILES | Class xor Value
 
@@ -46,8 +48,12 @@ def mqd(path):
         df = get_mqd(df, std_smiles_col, kept_col)
 
     if value_col:
-        # TODO: ask for transformations and handle relations
-        pass
+        transform = get_value_transform()
+
+        if transform:
+            df = transform_value(df, transform, value_col)
+            add_meta(meta_path, {'value_transformation': transform})
+        # TODO: Handle relations
 
     mqd_data_path = write_std(df, path, prefix='mqd_')
     mqd_col = df.columns[1]
