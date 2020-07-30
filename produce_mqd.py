@@ -37,9 +37,13 @@ def mqd(path):
 
     df = read_data(resolved_data_path)  # Now read in the raw data ...
 
+    # Hold our relation values for later
+    if relation_col:
+        relations = df[relation_col]
+
     if bool(class_col) is False and bool(value_col) is False:
         raise ValueError('Data must contain a value column,'
-                         'class column, or both.')
+                         ' class column, or both.')
     elif bool(class_col) != bool(value_col):
         col2 = class_col if class_col in df.columns else value_col
         df = get_mqd(df, std_smiles_col, col2)
@@ -53,6 +57,7 @@ def mqd(path):
         if transform:
             df = transform_value(df, transform, value_col)
             add_meta(meta_path, {'value_transformation': transform})
+
         # TODO: Handle relations
 
     mqd_data_path = write_std(df, path, prefix='mqd_')
