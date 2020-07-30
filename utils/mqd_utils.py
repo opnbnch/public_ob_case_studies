@@ -1,6 +1,8 @@
 import questionary
 import numpy as np
 
+from utils.units_utils import get_unit_map, df_units_to_vals
+
 
 def get_mqd(df, smiles_col, col2):
     """
@@ -28,7 +30,7 @@ def get_kept_col(class_col, value_col):
     return questionary.select(prompt, options).ask()
 
 
-def get_value_transform():
+def _get_value_transform():
     """
     Prompt the user on getting a transformation for the value column data
     """
@@ -44,7 +46,7 @@ def get_value_transform():
         return False
 
 
-def transform_value(df, transform, value_col):
+def _transform_value(df, transform, value_col):
     """
     Perform a transformation on the value column of a df
     :pd.DataFrame df: a pandas DF
@@ -55,6 +57,28 @@ def transform_value(df, transform, value_col):
         df[value_col] = np.log10(df[value_col])
 
     elif transform == 'pIC50 transform':
-        pass
+        df[value_col] = -1 * np.log10(df[value_col])
 
     return df
+
+
+def fix_value_col(df, units_col, value_col, relation_col):
+    """
+    Optionally transform and handle a relation column in the df
+    :pd.DataFrame df: a pandas DF
+    :str units_col: units column in df
+    :str value_col: value column in df
+    :str relation_col: relation column in df
+    """
+    transform = _get_value_transform()
+
+    if transform:
+        if transform == 'pIC50 transform':
+            print('All units must be of type M.')
+            unit_map, std_unit = get_unit_map(df, units_col, forced_unit='M')
+            df = df_units_to_vals(df, units_col, value_col, unit_map)
+        df = _transform_value(df, transform, value_col)
+
+    # TODO: Handle relations
+
+    return df, transform

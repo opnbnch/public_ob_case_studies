@@ -4,7 +4,7 @@ import time
 from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_data, write_std
 from utils.mqd_utils import get_mqd, get_kept_col
-from utils.mqd_utils import get_value_transform, transform_value
+from utils.mqd_utils import fix_value_col
 
 
 # TODO: Consolidate to format of SMILES | Class xor Value
@@ -32,33 +32,31 @@ def mqd(path):
     std_smiles_col = meta.get('std_smiles_col')
     class_col = meta.get('std_class_col')
     value_col = meta.get('std_value_col') or meta.get('value_col')
+    units_col = meta.get('std_unit_col')
     relation_col = meta.get('std_relation_col')
     resolved_data_path = meta.get('resolved_data_path')
 
-    df = read_data(resolved_data_path)  # Now read in the raw data ...
-
-    # Hold our relation values for later
-    if relation_col:
-        relations = df[relation_col]
+    df = read_data(resolved_data_path)
 
     if bool(class_col) is False and bool(value_col) is False:
         raise ValueError('Data must contain a value column,'
                          ' class column, or both.')
     elif bool(class_col) != bool(value_col):
         col2 = class_col if class_col in df.columns else value_col
+        if col2 == value_col:
+            df, transformation = fix_value_col(df, units_col, value_col,
+                                               relation_col)
+            add_meta(meta_path, {'value_transformation': transformation})
+
         df = get_mqd(df, std_smiles_col, col2)
     else:
         kept_col = get_kept_col(class_col, value_col)
+        if kept_col == value_col:
+            df, transformation = fix_value_col(df, units_col, value_col,
+                                               relation_col)
+            add_meta(meta_path, {'value_transformation': transformation})
+
         df = get_mqd(df, std_smiles_col, kept_col)
-
-    if value_col:
-        transform = get_value_transform()
-
-        if transform:
-            df = transform_value(df, transform, value_col)
-            add_meta(meta_path, {'value_transformation': transform})
-
-        # TODO: Handle relations
 
     mqd_data_path = write_std(df, path, prefix='mqd_')
     mqd_col = df.columns[1]
