@@ -92,7 +92,7 @@ def fix_value_col(df, units_col, value_col, relation_col):
             df = df_units_to_vals(df, units_col, value_col, unit_map)
         df = _transform_value(df, transform, value_col)
 
-    df[value_col] = _get_N_sig_figs(df, value_col, num_figs=5)
+    df[value_col] = _get_N_sig_figs(df, value_col, num_figs=3)
 
     # TODO: Handle relations
 
