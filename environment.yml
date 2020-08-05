@@ -7,6 +7,7 @@ channels:
 dependencies:
   - bs4>=4.9.1
   - ipykernel>=5.3.0
+  - matplotlib>=3.3.0
   - molvs>=0.1.1
   - notebook>=6.0.3
   - numpy>=1.18.1
@@ -14,3 +15,9 @@ dependencies:
   - pip>=20.0.2
   - rdkit>=2020.03.1.0
   - requests>=2.24.0
+  - scipy>=1.5.0
+  - seaborn>=0.10.1
+  - tqdm>=4.46.1
+  - pip:
+    - crossrefapi>=1.5.0
+    - questionary>=1.5.2
