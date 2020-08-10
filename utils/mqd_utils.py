@@ -75,6 +75,44 @@ def _get_N_sig_figs(df, value_col, num_figs):
     return [float(x) for x in cut]
 
 
+def _relation_display(df, relation_col, as_perc=True):
+    """
+    Displays the most common relations from the relation column.
+    :pd.DataFrame df: a pandas DF
+    :str relation_col: relation column in df
+    :bool as_perc: display as percentage instead of raw count
+    """
+    value_counts = df[relation_col].value_counts()
+    length = len(set(value_counts))
+    if as_perc:
+        print('The {} most common relations by percentage (%):'.format(length))
+        print(np.round(value_counts/df.shape[0]*100, 2))
+    else:
+        print('The {} most common relations by count (N):'.format(length))
+        print(value_counts)
+
+
+def _get_relations_choice(df, relation_col, unique_relations):
+    """
+    Prompts user to split dataset based upon relations or to keep it as is.
+    :pd.DataFrame df: a pandas DF
+    :str relation_col: relation column in df
+    :lost unique_relations: list of relations in relation_col
+    """
+    info = "We recommend limiting rx datasets to only using the '=' relation."
+    print(info)
+    _relation_display(df, relation_col)
+
+    initial_prompt = 'Do you want to subset your data based upon relation?'
+    to_change = questionary.confirm(initial_prompt).ask()
+
+    if not to_change:
+        return False
+    else:
+        # get upper if it exists
+        upper_prompt = 'Do you want to create an upper limit classifier?'
+
+
 def fix_value_col(df, units_col, value_col, relation_col):
     """
     Optionally transform and handle a relation column in the df
@@ -94,6 +132,15 @@ def fix_value_col(df, units_col, value_col, relation_col):
 
     df[value_col] = _get_N_sig_figs(df, value_col, num_figs=3)
 
-    # TODO: Handle relations
+    upper_relations = ['>', '>=']
+    lower_relations = ['<', '<=']
+
+    unique_relations = list(set(df[relation_col]))
+
+    # Nothing to change if all relations are '='
+    if len(unique_relations == 1) and unique_relations[0] == '=':
+        return df, transform
+
+    relations = _get_relations_choice(df, relation_col, unique_relations)
 
     return df, transform

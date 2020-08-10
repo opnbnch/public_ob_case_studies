@@ -7,12 +7,6 @@ from utils.mqd_utils import get_mqd, get_kept_col
 from utils.mqd_utils import fix_value_col
 
 
-# TODO (2): Handling relations
-#   1) Offer transformation into binary classification dataset
-#   2) < or > bounds
-#       - multi-tiered model
-#       - secondary dataset between threshold
-
 def mqd(path):
     """
     :str path: a directory containing metadata and csv
