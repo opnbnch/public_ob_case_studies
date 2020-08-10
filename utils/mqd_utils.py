@@ -83,7 +83,7 @@ def _relation_display(df, relation_col, as_perc=True):
     :bool as_perc: display as percentage instead of raw count
     """
     value_counts = df[relation_col].value_counts()
-    length = len(set(value_counts))
+    length = len(set(df[relation_col]))
     if as_perc:
         print('The {} most common relations by percentage (%):'.format(length))
         print(np.round(value_counts/df.shape[0]*100, 2))
@@ -92,14 +92,29 @@ def _relation_display(df, relation_col, as_perc=True):
         print(value_counts)
 
 
-def _get_relations_choice(df, relation_col, unique_relations):
+def _top_relation_vals(df, relation_col, value_col, relations):
+
+    info = 'Here are the most common values for {} relations:'
+    print(info.format(relations))
+
+    ge_df = df \
+        .loc[lambda x:x[relation_col].isin(relations)]
+    print(ge_df[value_col].value_counts().head(10))
+
+
+def _get_relation_limits(df, relation_col, value_col, unique_relations):
     """
     Prompts user to split dataset based upon relations or to keep it as is.
     :pd.DataFrame df: a pandas DF
     :str relation_col: relation column in df
+    :str value_col: value column in df
     :lost unique_relations: list of relations in relation_col
     """
-    info = "We recommend limiting rx datasets to only using the '=' relation."
+
+    upper_relations = ['>', '>=']
+    lower_relations = ['<', '<=']
+
+    info = "\nWe recommend limiting rx datasets to only the '=' relation."
     print(info)
     _relation_display(df, relation_col)
 
@@ -107,10 +122,40 @@ def _get_relations_choice(df, relation_col, unique_relations):
     to_change = questionary.confirm(initial_prompt).ask()
 
     if not to_change:
-        return False
+        return False, False
     else:
-        # get upper if it exists
-        upper_prompt = 'Do you want to create an upper limit classifier?'
+        # get upper limit if upper relations are in data
+        if any(item in upper_relations for item in unique_relations):
+            to_upper = 'Do you want to create an upper limit classifier?'
+            to_create_upper = questionary.confirm(to_upper).ask()
+            if to_create_upper:
+                _top_relation_vals(df, relation_col, value_col,
+                                   upper_relations)
+
+                upper_limit = questionary.text('Input the upper limit').ask()
+                try:
+                    upper_limit = float(upper_limit)
+                except ValueError:
+                    raise ValueError('Upper limit must be a number')
+            else:
+                upper_limit = False
+
+        # get lower limit if lower relations are in data
+        if any(item in lower_relations for item in unique_relations):
+            to_lower = 'Do you want to create a lower limit classifier?'
+            to_create_lower = questionary.confirm(to_lower).ask()
+            if to_create_lower:
+                _top_relation_vals(df, relation_col, value_col,
+                                   lower_relations)
+                lower_limit = questionary.text('Input the lower limit').ask()
+                try:
+                    lower_limit = float(lower_limit)
+                except ValueError:
+                    raise ValueError('Lower limit must be a number')
+            else:
+                lower_limit = False
+
+        return upper_limit, lower_limit
 
 
 def fix_value_col(df, units_col, value_col, relation_col):
@@ -132,15 +177,16 @@ def fix_value_col(df, units_col, value_col, relation_col):
 
     df[value_col] = _get_N_sig_figs(df, value_col, num_figs=3)
 
-    upper_relations = ['>', '>=']
-    lower_relations = ['<', '<=']
-
     unique_relations = list(set(df[relation_col]))
 
     # Nothing to change if all relations are '='
-    if len(unique_relations == 1) and unique_relations[0] == '=':
+    if len(unique_relations) == 1 and unique_relations[0] == '=':
         return df, transform
 
-    relations = _get_relations_choice(df, relation_col, unique_relations)
+    upper_limit, lower_limit = _get_relation_limits(df,
+                                                    relation_col,
+                                                    value_col,
+                                                    unique_relations)
 
+    breakpoint()
     return df, transform
