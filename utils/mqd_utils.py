@@ -160,6 +160,15 @@ def _get_relation_limits(df, relation_col, value_col, unique_relations):
 
 def tripartite(df, lower_limit, upper_limit, relation_col, value_col,
                smiles_col, truncate_reg=False):
+    """
+    Splits the data into 3 datasets depending upon upper and lower limits.
+    :pd.DataFrame df: a pandas DF
+    :float lower_limit: lower limit to filter
+    :float upper_limit: upper limit to filter
+    :str relation_col: relation column in df
+    :str value_col: value column in df
+    :smiles_col: smiles column in df
+    """
 
     # Regrssion dataframe
     regression_df = df.loc[lambda x:x[relation_col] == '='] \
