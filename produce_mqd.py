@@ -54,10 +54,12 @@ def mqd(path):
     if not split_df:
         df = get_mqd(df, std_smiles_col, kept_col)
     else:
-        upper_data_path = write_std(upper_df, path, prefix='mqd_upper_')
-        lower_data_path = write_std(lower_df, path, prefix='mqd_lower_')
-        add_meta(meta_path, {'mqd_upper_path': upper_data_path})
-        add_meta(meta_path, {'mqd_lower_path': lower_data_path})
+        if upper_limit:
+            upper_data_path = write_std(upper_df, path, prefix='mqd_upper_')
+            add_meta(meta_path, {'mqd_upper_path': upper_data_path})
+        if lower_limit:
+            lower_data_path = write_std(lower_df, path, prefix='mqd_lower_')
+            add_meta(meta_path, {'mqd_lower_path': lower_data_path})
 
     mqd_data_path = write_std(df, path, prefix='mqd_')
     mqd_col = df.columns[1]

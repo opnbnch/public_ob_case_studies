@@ -166,13 +166,17 @@ def tripartite(df, lower_limit, upper_limit, relation_col, value_col,
         .loc[::, [smiles_col, value_col]]
     if truncate_reg:
         regression_df = regression_df \
-            .loc[lambda x:x[value_col].between(lower_limit/100., upper_limit*10)]
+            .loc[lambda x:x[value_col].between(lower_limit/100.,
+                                               upper_limit * 10)]
 
     # Upper Limit df
     if upper_limit:
-        upper_class_df = df.loc[lambda x: ~((x[value_col] < upper_limit) & (x[relation_col] == '>'))]
-        is_active = ((upper_class_df[value_col].values >= upper_limit) & (upper_class_df[relation_col] != '<'))
-        upper_class_df = upper_class_df.assign(active=[int(a) for a in is_active])
+        upper_class_df = df.loc[lambda x: ~((x[value_col] < upper_limit) &
+                                (x[relation_col].isin(['>', '>='])))]
+        is_active = ((upper_class_df[value_col].values >= upper_limit) &
+                     (upper_class_df[relation_col] != '<'))
+        upper_class_df = upper_class_df.assign(
+            active=[int(a) for a in is_active])
         upper_class_df = upper_class_df \
             .loc[::, [smiles_col, 'active']]
     else:
@@ -180,9 +184,12 @@ def tripartite(df, lower_limit, upper_limit, relation_col, value_col,
 
     # Lower class df
     if lower_limit:
-        lower_class_df = df.loc[lambda x: ~((x[value_col] > lower_limit) & (x[relation_col] == '<'))]
-        is_active = ((lower_class_df[value_col].values <= lower_limit) & (lower_class_df[relation_col] != '>'))
-        lower_class_df = lower_class_df.assign(active=[int(a) for a in is_active])
+        lower_class_df = df.loc[lambda x: ~((x[value_col] > lower_limit) &
+                                (x[relation_col].isin(['<', '<='])))]
+        is_active = ((lower_class_df[value_col].values <= lower_limit) &
+                     (lower_class_df[relation_col] != '>'))
+        lower_class_df = lower_class_df.assign(
+            active=[int(a) for a in is_active])
         lower_class_df = lower_class_df \
             .loc[::, [smiles_col, 'active']]
     else:
