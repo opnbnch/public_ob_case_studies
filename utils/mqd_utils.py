@@ -158,8 +158,9 @@ def _get_relation_limits(df, relation_col, value_col, unique_relations):
         return upper_limit, lower_limit
 
 
-def _tripartite(df, lower_limit, upper_limit, relation_col, value_col,
-                smiles_col, truncate_reg=False):
+def tripartite(df, lower_limit, upper_limit, relation_col, value_col,
+               smiles_col, truncate_reg=False):
+
     # Regrssion dataframe
     regression_df = df.loc[lambda x:x[relation_col] == '='] \
         .loc[::, [smiles_col, value_col]]
@@ -190,14 +191,14 @@ def _tripartite(df, lower_limit, upper_limit, relation_col, value_col,
     return regression_df, upper_class_df, lower_class_df
 
 
-def fix_value_col(df, units_col, value_col, relation_col):
+def fix_value_col(df, units_col, value_col):
     """
     Optionally transform and handle a relation column in the df
     :pd.DataFrame df: a pandas DF
     :str units_col: units column in df
     :str value_col: value column in df
-    :str relation_col: relation column in df
     """
+
     transform = _get_value_transform()
 
     if transform:
@@ -209,17 +210,22 @@ def fix_value_col(df, units_col, value_col, relation_col):
 
     df[value_col] = _get_N_sig_figs(df, value_col, num_figs=3)
 
+    return df, transform
+
+
+def fix_relation_col(df, relation_col, value_col):
+    """
+    Optionally fixes the relation column by splitting into multiple groups
+    defined by upper and lower limits.
+    :pd.DataFrame df: a pandas DF
+    :str relation_col: relation column in df
+    :str value_col: value column in df
+    """
+
     unique_relations = list(set(df[relation_col]))
 
     # Nothing to change if all relations are '='
     if len(unique_relations) == 1 and unique_relations[0] == '=':
-        return df, transform
+        return None, None
 
-    upper_limit, lower_limit = _get_relation_limits(df,
-                                                    relation_col,
-                                                    value_col,
-                                                    unique_relations)
-
-    if upper_limit or lower_limit:
-        rx_df, upper_df, lower_df = _tripartite(df, lower_limit, upper_limit, relation_col, value_col, smiles_col)
-    return df, transform
+    return _get_relation_limits(df, relation_col, value_col, unique_relations)

@@ -4,7 +4,7 @@ import time
 from utils.meta_utils import read_meta, add_meta
 from utils.std_utils import read_data, write_std
 from utils.mqd_utils import get_mqd, get_kept_col
-from utils.mqd_utils import fix_value_col
+from utils.mqd_utils import fix_value_col, fix_relation_col, tripartite
 
 
 def mqd(path):
@@ -23,6 +23,7 @@ def mqd(path):
     resolved_data_path = meta.get('resolved_data_path')
 
     df = read_data(resolved_data_path)
+    split_df = False
 
     if not class_col and not value_col:
         raise ValueError('Data must contain a value column,'
@@ -33,11 +34,30 @@ def mqd(path):
         kept_col = get_kept_col(class_col, value_col)
 
     if kept_col == value_col:
-        df, transformation = fix_value_col(df, units_col, value_col,
-                                           relation_col)
+        df, transformation = fix_value_col(df, units_col, value_col)
         add_meta(meta_path, {'value_transformation': transformation})
 
-    df = get_mqd(df, std_smiles_col, kept_col)
+        upper_limit, lower_limit = fix_relation_col(df, relation_col,
+                                                    value_col)
+
+        if upper_limit or lower_limit:
+            df, upper_df, lower_df, = tripartite(df, lower_limit,
+                                                 upper_limit,
+                                                 relation_col,
+                                                 value_col,
+                                                 std_smiles_col)
+
+            add_meta(meta_path, {'upper_limit': upper_limit})
+            add_meta(meta_path, {'lower_limit': lower_limit})
+            split_df = True
+
+    if not split_df:
+        df = get_mqd(df, std_smiles_col, kept_col)
+    else:
+        upper_data_path = write_std(upper_df, path, prefix='mqd_upper_')
+        lower_data_path = write_std(lower_df, path, prefix='mqd_lower_')
+        add_meta(meta_path, {'mqd_upper_path': upper_data_path})
+        add_meta(meta_path, {'mqd_lower_path': lower_data_path})
 
     mqd_data_path = write_std(df, path, prefix='mqd_')
     mqd_col = df.columns[1]
