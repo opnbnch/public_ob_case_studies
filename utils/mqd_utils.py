@@ -159,7 +159,7 @@ def _get_relation_limits(df, relation_col, value_col, unique_relations):
 
 
 def tripartite(df, lower_limit, upper_limit, relation_col, value_col,
-               smiles_col, truncate_reg=False):
+               units_col, smiles_col, truncate_reg=False):
     """
     Splits the data into 3 datasets depending upon upper and lower limits.
     :pd.DataFrame df: a pandas DF
@@ -172,7 +172,7 @@ def tripartite(df, lower_limit, upper_limit, relation_col, value_col,
 
     # Regrssion dataframe
     regression_df = df.loc[lambda x:x[relation_col] == '='] \
-        .loc[::, [smiles_col, value_col]]
+        .loc[::, [smiles_col, value_col, units_col]]
     if truncate_reg:
         regression_df = regression_df \
             .loc[lambda x:x[value_col].between(lower_limit/100.,
