@@ -167,6 +167,7 @@ def tripartite(df, lower_limit, upper_limit, relation_col, value_col,
     :float upper_limit: upper limit to filter
     :str relation_col: relation column in df
     :str value_col: value column in df
+    :str units_col: units column in df
     :smiles_col: smiles column in df
     """
 
