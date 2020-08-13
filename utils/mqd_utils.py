@@ -108,7 +108,7 @@ def _get_relation_limits(df, relation_col, value_col, unique_relations):
     :pd.DataFrame df: a pandas DF
     :str relation_col: relation column in df
     :str value_col: value column in df
-    :lost unique_relations: list of relations in relation_col
+    :list unique_relations: list of relations in relation_col
     """
 
     upper_relations = ['>', '>=']

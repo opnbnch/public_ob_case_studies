@@ -45,22 +45,21 @@ def mqd(path):
                                                  units_col,
                                                  std_smiles_col)
 
-            add_meta(meta_path, {'upper_limit': upper_limit})
-            add_meta(meta_path, {'lower_limit': lower_limit})
-
         # Next we transform the rx dataset if desired
         df, transformation = fix_value_col(df, units_col, value_col)
         add_meta(meta_path, {'value_transformation': transformation})
 
-    df = get_mqd(df, std_smiles_col, kept_col)
+        # Write out upper + lower dfs if they exist
+        if upper_limit:
+            upper_data_path = write_std(upper_df, path, prefix='mqd_upper_')
+            add_meta(meta_path, {'mqd_upper_path': upper_data_path})
+            add_meta(meta_path, {'upper_limit': upper_limit})
+        if lower_limit:
+            lower_data_path = write_std(lower_df, path, prefix='mqd_lower_')
+            add_meta(meta_path, {'mqd_lower_path': lower_data_path})
+            add_meta(meta_path, {'lower_limit': lower_limit})
 
-    # Write out upper + lower dfs if they exist
-    if upper_limit:
-        upper_data_path = write_std(upper_df, path, prefix='mqd_upper_')
-        add_meta(meta_path, {'mqd_upper_path': upper_data_path})
-    if lower_limit:
-        lower_data_path = write_std(lower_df, path, prefix='mqd_lower_')
-        add_meta(meta_path, {'mqd_lower_path': lower_data_path})
+    df = get_mqd(df, std_smiles_col, kept_col)
 
     mqd_data_path = write_std(df, path, prefix='mqd_')
     mqd_col = df.columns[1]
