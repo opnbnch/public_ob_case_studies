@@ -1,12 +1,15 @@
 import molvs
 import os
 import pandas as pd
+import questionary
+import tqdm
 
 from multiprocessing import pool
-from rdkit import Chem
+from rdkit import Chem, rdBase
 
 import utils.meta_utils as meta_utils
 
+rdBase.DisableLog('rdApp.error')
 __version__ = 'v1.0.0 (07-01-2020)'
 
 
@@ -66,18 +69,36 @@ def _std_ik_from_smiles(smiles):
         return "invalid_smiles"
 
 
-def _list_smiles_from_smiles(smi_list):
+def _list_smiles_from_smiles(smi_list, single_thread=False):
     """
     Private function for multiprocessing in multi_smiles_to_smiles
+    :list smi_list: Batch of smiles strings to process
+    :bool single_thread: If not multiprocessing
     """
-    return [_std_smiles_from_smiles(smi) for smi in smi_list]
+    if single_thread:
+        std_smiles = []
+        for smi in tqdm.tqdm(smi_list):
+            std_smiles.append(_std_smiles_from_smiles(smi))
+
+        return std_smiles
+    else:
+        return [_std_smiles_from_smiles(smi) for smi in smi_list]
 
 
-def _list_ik_from_smiles(smi_list):
+def _list_ik_from_smiles(smi_list, single_thread=False):
     """
     Private function for multiprocessing in multi_smiles_to_ik
+    :list smi_list: Batch of smiles strings to process
+    :bool single_thread: If not multiprocessing
     """
-    return [_std_ik_from_smiles(smi) for smi in smi_list]
+    if single_thread:
+        std_ik = []
+        for smi in tqdm.tqdm(smi_list):
+            std_ik.append(_std_ik_from_smiles(smi))
+
+        return std_ik
+    else:
+        return [_std_ik_from_smiles(smi) for smi in smi_list]
 
 
 def multi_smiles_to_smiles(smi_list, workers=8):
@@ -96,12 +117,13 @@ def multi_smiles_to_smiles(smi_list, workers=8):
         batches = [smi_list[i:i+batchsize]
                    for i in range(0, len(smi_list), batchsize)]
 
+        n_iters = len(batches)
         with pool.Pool(workers) as p:
-            std_smiles = p.map(func, batches)
+            std_smiles = list(tqdm.tqdm(p.imap(func, batches), total=n_iters))
             std_smiles = [y for x in std_smiles for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
-        std_smiles = func(smi_list)
+        std_smiles = func(smi_list, single_thread=True)
 
     return std_smiles
 
@@ -121,12 +143,13 @@ def multi_ik_from_smiles(smi_list, workers=8):
         batches = [smi_list[i:i+batchsize]
                    for i in range(0, len(smi_list), batchsize)]
 
+        n_iters = len(batches)
         with pool.Pool(workers) as p:
-            std_ik = p.map(func, batches)
+            std_ik = list(tqdm.tqdm(p.imap(func, batches), total=n_iters))
             std_ik = [y for x in std_ik for y in x]  # Flatten results
     else:
         # Process one-by-one in list comprehension
-        std_ik = func(smi_list)
+        std_ik = func(smi_list, single_thread=True)
 
     return std_ik
 
@@ -140,6 +163,7 @@ def df_add_std_smiles(df, smiles_col, workers=8):
     """
 
     df_smiles = list(df[smiles_col])
+    print('Standardizing Smiles')
     df['std_smiles'] = multi_smiles_to_smiles(df_smiles, workers)
 
     return df
@@ -154,6 +178,7 @@ def df_add_ik(df, smiles_col, workers=8):
     """
 
     df_smiles = list(df[smiles_col])
+    print('Creating Inchi Keys')
     df['inchi_key'] = multi_ik_from_smiles(df_smiles, workers)
 
     return df
@@ -213,52 +238,19 @@ def subset_data(df, subset_cols):
     return df.loc[::, subset]
 
 
-def get_yes_no(prompt):
-    """
-    Turn a user input into a yes/no mapped respectively to True/False
-    :str prompt: question to prompt the user with
-    """
-
-    acc = ['yes', 'y', 'true', 'accept', 't', '1']
-    rej = ['no', 'n', 'false', 'reject', 'f', '0']
-
-    ans = input(prompt)
-    while ans.lower() not in acc + rej:
-        print('\tNot a valid response. Please enter yes or no.')
-        ans = input(prompt)
-    if ans in acc:
-        return True
-    return False
-
-
-def get_subset_cols(cols):
+def get_subset_cols(remaining, default_cols):
     """
     Get a subset of columns to keep and columns to discard by
     repeatedly prompting for user input.
     :list cols: a list of all column names strings
+    :list default_cols: list of forced keep columns
     """
+    cols = list(set(remaining) - set(default_cols))
 
-    all_cols = cols.copy()
-    kept_cols = []
+    prompt = "Select columns to keep from the following."
+    kept_cols = questionary.checkbox(prompt, choices=cols).ask()
 
-    prompt = \
-        """
-        Type columns (space-separated) to keep from the following.
-        Enter "all" to keep all. Enter "done" to stop.
-        \n\t{}:
-        """
-    ans = input(prompt.format('[' + ', '.join(cols) + ']'))
-    while len(cols) > 0 and ans.lower() != 'done' and ans.lower() != 'all':
-        ans_list = ans.split()
-        valid = [cur for cur in ans_list if cur in cols]
-        for cur in valid:
-            kept_cols.append(cur)
-            cols.remove(cur)
-        ans = input(prompt.format('[' + ', '.join(cols) + ']'))
-
-    if ans == 'all':
-        return all_cols, []
-    return kept_cols, cols
+    return kept_cols + default_cols, cols
 
 
 def select_cols(std_df, default_cols):
@@ -269,24 +261,19 @@ def select_cols(std_df, default_cols):
     :list default_cols: list of default columns to keep
     """
 
-    text1 = \
-        """
-        Let's decide which columns to keep in the final dataset.
-        """
+    text1 = "Let's decide which columns to keep in the final dataset."
     print(text1)
 
-    default_q = \
-        """
-        Do you want to only keep the default columns? {}:
-        """
+    default_q = "Do you want to only keep the default columns? {}:"
+
     default_question = default_q.format('[' + ', '.join(default_cols) + ']')
-    keep_default = get_yes_no(default_question)
+    keep_default = questionary.confirm(default_question).ask()
 
     if keep_default:
         return default_cols, list(set(std_df.columns) - set(default_cols))
     else:
         all_cols = list(std_df.columns)
-        return get_subset_cols(all_cols)
+        return get_subset_cols(all_cols, default_cols)
 
 
 def get_valid_col(prompt, valid_cols, optional=False):
@@ -298,12 +285,16 @@ def get_valid_col(prompt, valid_cols, optional=False):
     :bool optional: If selection is optional
     """
 
-    col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
-    while col not in valid_cols:
-        if optional and col == 'none':
-            return None
-        print('\tEnter a valid column name.')
-        col = input(prompt.format('[' + ', '.join(valid_cols) + ']')).lower()
+    if optional:
+        valid_cols.append('none')
+    col = questionary.rawselect(prompt, choices=valid_cols).ask()
+
+    if optional:
+        valid_cols.remove('none')
+
+    if col == 'none':
+        return None
+
     return col
 
 
@@ -314,49 +305,144 @@ def get_smiles_col(free_cols):
     :list free_cols: list of unassigned df columns
     """
 
-    text1 = \
-        """
-        Let's select the SMILES column in the file.
-        """
+    text1 = "Let's select the SMILES column in the file."
     print(text1)
 
-    prompt = \
-        """
-        Please select the SMILES column from the list: {}:
-        """
+    prompt = "Please select the SMILES column from the list:"
+
     return get_valid_col(prompt, free_cols)
 
 
-def get_col_types(free_cols):
+def get_rel_col(free_cols):
+    """
+    Get input from the user to discern the relation
+    column if data contains values.
+    :list free_cols: list of unassigned df columns
+    """
+
+    prompt = "Please select the relationship column from the list." \
+        " Select 'none' if there is not a relationship column."
+
+    rel_col = get_valid_col(prompt, free_cols, True)
+
+    if rel_col:
+        free_cols.remove(rel_col)
+    return rel_col
+
+
+def remove_nan(col, df):
+    """
+    Replace nan values with None in a df column
+    :str col: column to replace values
+    :pd.DataFrame df: The dataframe of interest
+    """
+    cur_col = df[col]
+    new_col = cur_col.where(pd.notnull(cur_col), None)
+    df[col] = new_col
+    return df
+
+
+def get_col_types(free_cols, df):
     """
     Get input from the user to discern the data type
     and the name of the data column.
     :list free_cols: list of unassigned df columns
+    :pd.DataFrame df: The dataframe of interest
     """
 
-    text1 = \
-        """
-        Which column(s) store our classes or values?
-        """
+    text1 = "Which column(s) store our classes or values?"
     print(text1)
 
-    prompt = \
-        """
-        Please select the class column from the list: {}:
-        Enter "none" if there is not a class column.
-        """
-    class_col = get_valid_col(prompt, free_cols, True)
+    class_prompt = "Please select the class column from the list." \
+        " Select 'none' if there is not a class column."
+
+    class_col = get_valid_col(class_prompt, free_cols, optional=True)
 
     if class_col is not None:
         free_cols.remove(class_col)
+        df = remove_nan(class_col, df)
 
-    prompt = \
-        """
-        Please select the value column from the list: {}:
-        Enter "none" if there is not a value column.
-        """
-    value_col = get_valid_col(prompt, free_cols, True)
+    value_prompt = "Please select the value column from the list." \
+        " Select 'none' if there is not a value column."
+
+    value_col = get_valid_col(value_prompt, free_cols, optional=True)
 
     if value_col is not None:
         free_cols.remove(value_col)
-    return class_col, value_col
+        df = remove_nan(value_col, df)
+    return class_col, value_col, df
+
+
+def get_unit_col(df, free_cols):
+    """
+    Get input from the user to get unit_col.
+    If there is no unit_col ask for creation.
+    :pd.DataFrame df: The dataframe of interest
+    :list free_cols: list of unassigned df columns
+    """
+
+    text1 = "Is there a column storing unit values in the file?"
+    print(text1)
+
+    prompt = "Please select the unit column from the list." \
+        " Select 'none' if there is not a unit column."
+
+    unit_col = get_valid_col(prompt, free_cols, optional=True)
+
+    if unit_col is None:
+        prompt = "Would you like to create a unit column?"
+        create_unit = questionary.confirm(prompt).ask()
+        if create_unit:
+            unit_col = 'unit_col'
+            prompt = "What units should be assigned to this data?"
+            unit_type = questionary.text(prompt).ask()
+            df = df_add_units(df, unit_col, unit_type)
+        else:
+            return None, df
+    else:
+        free_cols.remove(unit_col)
+
+    return unit_col, df
+
+
+def df_add_units(df, unit_col, unit_type):
+    """
+    Add a unit column to a df.
+    :pd.DataFrame df: The dataframe of interest
+    :str unit_col: unit column in DF
+    :str unit_type: type of units in column
+    """
+
+    df = df.assign(unit_col=unit_type)
+
+    return df
+
+
+def map_compliance(map, key):
+    """
+    Converts all map keys to type str to comply with
+    adding meta_data
+    :dict map: dict of keys: values
+    """
+
+    inner_map = map[key]
+
+    n_map = {str(k): v for k, v in inner_map.items()}
+
+    f_map = dict()
+    key = str(key)
+    f_map[key] = n_map
+
+    return f_map
+
+
+def df_add_value(df, value_col):
+    """
+    Add the value column to a df.
+    :pd.DataFrame df: The dataframe of interest
+    :str value_col: value column in DF
+    """
+
+    df.loc[::, 'value_col'] = df[value_col]
+
+    return df
