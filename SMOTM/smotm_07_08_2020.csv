@@ -1,0 +1,99 @@
+Month,Company,Program,Compound,SMILES,LogD7.4,Caco-2 A-B (nm/s),HLM (uL/min/mg protein),Solubility @ pH 7.4 (uM)
+July 2020,Sosei Heptares,HTL22562,1,NCCCC[C@H](NC(=O)[C@@H](Cc1cc(c(c(c1)Br)O)Br)NC(=O)N1CCC(CC1)N1Cc2ccccc2NC1=O)C(=O)N1CCN(CC1)c1ccncc1,,,,431
+July 2020,Sosei Heptares,HTL22562,8,Cc1cc(cc2cn[nH]c12)C[C@@H](NC(=O)N1CCC2(CC1)OC(=O)Nc1ncccc12)C(=O)N[C@@H](CC1CCNCC1)C(=O)N1CCN(CC1)c1ccncc1,-0.4,,,2462
+July 2020,Sosei Heptares,HTL22562,10,Oc1c(cc(cc1Br)C[C@@H](NC(=O)N1CCC(CC1)N1C(=O)Nc2ncccc21)C(=O)N[C@@H](CC1CCNCC1)C(=O)N1CCN(CC1)c1ccncc1)Br,,,,890
+July 2020,Sosei Heptares,HTL22562,11,Cc1cc(cc2cn[nH]c12)C[C@@H](NC(=O)N1CCC(CC1)N1C(=O)Nc2ncccc21)C(=O)N[C@@H](CC1CCNCC1)C(=O)N1CCN(CC1)c1ccncc1,,,,3222
+July 2020,Sosei Heptares,HTL22562,13,Cc1cc(cc2cn[nH]c12)C[C@@H](NC(=O)N1CCC(CC1)N1C(=O)Nc2ncccc21)C(=O)N[C@@H](Cc1ccncc1)C(=O)N1CCN(CC1)c1ccncc1,,,,230
+July 2020,Sosei Heptares,HTL22562,14,Cc1cc(cc2cn[nH]c12)C[C@@H](NC(=O)N1CCC(CC1)C1=Cc2ccccc2NC1=O)C(=O)N[C@@H](CC1CCNCC1)C(=O)N1CCN(CC1)c1ccncc1,,,,509
+July 2020,Sosei Heptares,HTL22562,15,Cc1cc(cc2cn[nH]c12)C[C@@H](NC(=O)N1CCC(CC1)N1Cc2ccccc2NC1=O)C(=O)N[C@@H](CC1CCNCC1)C(=O)N1CCN(CC1)c1ccncc1,,,,1205
+July 2020,Novartis,Compound 23,6,CC(C)c2cc(COc1ccccc1CC(O)=O)cc(c2)c4ccc3OC[C@@H](N)c3c4,,70,,
+July 2020,Novartis,Compound 23,7,CC(C)(C#N)c2cc(COc1ccccc1CC(O)=O)cc(c2)c4ccc3OC[C@@H](N)c3c4,,14,,
+July 2020,Novartis,Compound 23,11,CC3(C)COc2c(COc1ccccc1CC(O)=O)cc(cc23)c5ccc4OC[C@@H](N)c4c5,,120,,
+August 2020,Pfizer,PF-06826647,8,Cn1cc(cn1)c2cc(n3ccnc3c2)c4cnn(c4)C5(CN(C5)CC(F)(F)F)CC#N,2.1,,,
+August 2020,Pfizer,PF-06826647,9,Cn1cc(cn1)c2cc(n3c(c2)ncn3)c4cnn(c4)C5(CN(C5)CC(F)(F)F)CC#N,2.3,,,
+August 2020,Pfizer,PF-06826647,10,Cn1cc(cn1)c2cc(n3cnnc3c2)c4cnn(c4)C5(CN(C5)CC(F)(F)F)CC#N,1.2,,,
+August 2020,Pfizer,PF-06826647,11,Cn1cc(cn1)c2cn3c(ccn3)c(n2)c4cnn(c4)C5(CN(C5)CC(F)(F)F)CC#N,2.5,,18,
+August 2020,Pfizer,PF-06826647,12,CCN1CC(C1)(CC#N)n2cc(cn2)c3c4ccnn4cc(n3)c5cnn(c5)C,2.1,,21,
+August 2020,Pfizer,PF-06826647,13,Cn1cc(cn1)c2cn3c(ccn3)c(n2)c4cnn(c4)C5(CN(C5)CC6CC6)CC#N,2.6,,30,
+August 2020,Pfizer,PF-06826647,14,CC(=O)N1CC(C1)(CC#N)n2cc(cn2)c3c4ccnn4cc(n3)c5cnn(c5)C,1.2,,,
+August 2020,Pfizer,PF-06826647,15,Cn1cc(cn1)c2cn3c(ccn3)c(n2)c4cnn(c4)C5(CN(C5)CCO)CC#N,1.2,,,
+August 2020,Pfizer,PF-06826647,16,Cn1cc(cn1)c2cn3c(ccn3)c(n2)c4cnn(c4)C5(CN(C5)CC#N)CC#N,1.5,,,
+August 2020,Pfizer,PF-06826647,17,Cn1ncc(c1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@H](C5)OC)CC#N,2.2,,27,
+August 2020,Pfizer,PF-06826647,18,Cn1ncc(c1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@@H](C5)OC)CC#N,2.3,,,
+August 2020,Pfizer,PF-06826647,19,Cn1ncc(c1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@H](C5)CC#N)CC#N,1.8,,10,
+August 2020,Pfizer,PF-06826647,20,Cn1ncc(c1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@@H](C5)CC#N)CC#N,1.9,,11,
+August 2020,Pfizer,PF-06826647,21,Cn1ncc(c1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@H](C5)C#N)CC#N,1.8,,17,
+August 2020,Pfizer,PF-06826647,22,Cn1ncc(c1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@@H](C5)C#N)CC#N,1.7,,<8,
+August 2020,Pfizer,PF-06826647,23,c1c2n(nc1)cc(nc2c3cn(nc3)[C@]4(C[C@H](C4)C#N)CC#N)c5cn[nH]c5,1.6,,44,
+August 2020,Pfizer,PF-06826647,24,c1c2n(nc1)cc(nc2c3cn(nc3)[C@]4(C[C@@H](C4)C#N)CC#N)c5cn[nH]c5,1.7,,19,
+August 2020,Pfizer,PF-06826647,25,c1c(n[nH]c1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@H](C5)C#N)CC#N,1.7,,20,
+August 2020,Pfizer,PF-06826647,26,c1c(n[nH]c1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@@H](C5)C#N)CC#N,1.7,,,
+August 2020,Pfizer,PF-06826647,27,Cn1nc(cc1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@H](C5)C#N)CC#N,1.6,,23,
+August 2020,Pfizer,PF-06826647,28,Cn1nc(cc1)c2nc(c3n(c2)ncc3)c4cn(nc4)[C@]5(C[C@@H](C5)C#N)CC#N,1.6,,,
+August 2020,U Strathclyde / GSK,Compound 12 (I),12,OC(C[C@@H](C1=CC=CC(C(F)(F)F)=C1)C(N(C2)CC[C@@H]2CCC3=CC=C(CCCN4)C4=N3)=O)=O,5.05,,,
+August 2020,U Strathclyde / GSK,Compound 12 (I),17a,OC(C[C@@H](C1=CC=CC(C)=C1)C(N(C2)CC[C@@H]2CCC3=CC=C(CCCN4)C4=N3)=O)=O,4.16,,,
+August 2020,U Strathclyde / GSK,Compound 12 (I),14,OC(C[C@@H](C1=CC(C#N)=CC(C#N)=C1)C(N(C2)CC[C@@H]2CCC3=CC=C(CCCN4)C4=N3)=O)=O,3.69,,,
+August 2020,AstraZeneca,Compound 12j,1,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3Cc4ccccc4C3C(=O)NCCN(C)C,2.4,,,
+August 2020,AstraZeneca,Compound 12j,2a,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)c4ccccc4,2.1,,,
+August 2020,AstraZeneca,Compound 12j,2b,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)c4cccnc4,1.4,,,
+August 2020,AstraZeneca,Compound 12j,2c,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)c4ccnnc4,0.7,,,
+August 2020,AstraZeneca,Compound 12j,2d,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)c4cnccn4,1,,,
+August 2020,AstraZeneca,Compound 12j,2e,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)c4ccnc(c4)C,1.7,,,
+August 2020,AstraZeneca,Compound 12j,2f,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)c4cn(nc4C)C,1.4,,,
+August 2020,AstraZeneca,Compound 12j,2g,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)C4CCOCC4,1,,,
+August 2020,AstraZeneca,Compound 12j,3a,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CCN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)c4ccccc4,2.2,,,
+August 2020,AstraZeneca,Compound 12j,3b,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CCN(CC3C(=O)NCCN(C)C)S(=O)(=O)c4cccnc4,1.3,,,
+August 2020,AstraZeneca,Compound 12j,3c,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CCN(CC3C(=O)NCCN(C)C)S(=O)(=O)C4CC4,1,,,
+August 2020,AstraZeneca,Compound 12j,3d,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CCN(CC3C(=O)NCCN(C)C)S(=O)(=O)N4CCCCC4,2.3,,,
+August 2020,AstraZeneca,Compound 12j,3e,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CCN(CC3C(=O)NCCN(C)C)S(=O)(=O)N4CCOCC4,1,,,
+August 2020,AstraZeneca,Compound 12j,3f,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CCN(C[C@@H]3C(=O)NCCN(C)C)S(=O)(=O)N(C)C,1.2,,,
+August 2020,AstraZeneca,Compound 12j,3g,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CCN(CC3C(=O)NCCN(C)C)C(=O)c4cccnc4,0.7,,,
+August 2020,AstraZeneca,Compound 12j,4,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@@H]3CN(C[C@H]3C(=O)NCCN(C)C)S(=O)(=O)c4ccccc4,2.1,,,
+August 2020,AstraZeneca,Compound 12j,5,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CN(CC3C(=O)NCCN(C)C)S(=O)(=O)c4ccccc4,2.3,,,
+August 2020,AstraZeneca,Compound 12j,6,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@@H]3CCN(C[C@H]3C(=O)NCCN(C)C)S(=O)(=O)c4ccccc4,2.3,,,
+August 2020,AstraZeneca,Compound 12j,7,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CCN(CC3C(=O)NCCN(C)C)S(=O)(=O)c4ccccc4,2.1,,,
+August 2020,AstraZeneca,Compound 12j,8,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CN(CCC3C(=O)NCCN(C)C)S(=O)(=O)c4ccccc4,1.9,,,
+August 2020,AstraZeneca,Compound 12j,9,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CN(CCC3C(=O)NCCN(C)C)S(=O)(=O)c4ccccc4,1.9,,,
+August 2020,AstraZeneca,Compound 12j,10a,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NC[C@H]4CCCN4)S(=O)(=O)c5ccccc5,1,1.1,,
+August 2020,AstraZeneca,Compound 12j,10b,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NC[C@@H]4CCCN4C)S(=O)(=O)c5ccccc5,2.3,2.4,31,
+August 2020,AstraZeneca,Compound 12j,10c,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)NC[C@H]4CCCN4C)S(=O)(=O)c5ccccc5,2.3,0.8,22,
+August 2020,AstraZeneca,Compound 12j,10d,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CN(CC3C(=O)N[C@@H]4CCCN(C4)C)S(=O)(=O)c5ccccc5,2.7,7.6,50,
+August 2020,AstraZeneca,Compound 12j,10e,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CN(CC3C(=O)N[C@H]4CCCN(C4)C)S(=O)(=O)c5ccccc5,2.7,3,,
+August 2020,AstraZeneca,Compound 12j,10f,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CN(CC3C(=O)N[C@@H]4CCCNC4)S(=O)(=O)c5ccccc5,1.3,0.4,3,
+August 2020,AstraZeneca,Compound 12j,10g,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CN(CC3C(=O)N[C@H]4CCCNC4)S(=O)(=O)c5ccccc5,1.3,0.4,,
+August 2020,AstraZeneca,Compound 12j,11a,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CCN(C[C@@H]3C(=O)N[C@H]4CCCN(C4)C)S(=O)(=O)c5ccccc5Cl,3.1,2.7,244,
+August 2020,AstraZeneca,Compound 12j,11b,Cc1ccc2c(c1)cc([nH]2)C(=O)N[C@H]3CCN(C[C@@H]3C(=O)N[C@H]4CCCNC4)S(=O)(=O)c5ccccc5Cl,1.9,,25,
+August 2020,AstraZeneca,Compound 12j,12a,Cc1csc(n1)C(=O)N[C@H]2CN(C[C@@H]2C(=O)N[C@H]3CCCNC3)S(=O)(=O)c4ccccc4,0.1,1.8,9.1,847
+August 2020,AstraZeneca,Compound 12j,12b,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3cc(n[nH]3)C4CC4)C(=O)N[C@H]5CCCNC5,0.2,3.9,,861
+August 2020,AstraZeneca,Compound 12j,12c,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3cn(cn3)C4CC4)C(=O)N[C@H]5CCCNC5,-0.7,4.8,,664
+August 2020,AstraZeneca,Compound 12j,12d,c1ccc(cc1)c2cc(no2)C(=O)N[C@H]3CN(C[C@@H]3C(=O)N[C@H]4CCCNC4)S(=O)(=O)c5ccccc5,1.3,1.2,,94
+August 2020,AstraZeneca,Compound 12j,12e,Cc1c(sc(n1)c2cccc(c2)C(F)(F)F)C(=O)N[C@H]3CN(C[C@@H]3C(=O)N[C@H]4CCCNC4)S(=O)(=O)c5ccccc5,2.6,4.6,,112
+August 2020,AstraZeneca,Compound 12j,12f,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3nnc(s3)c4ccc(cc4)F)C(=O)N[C@H]5CCCNC5,1,,8.8,234
+August 2020,AstraZeneca,Compound 12j,12g,Cc1c(nc(o1)c2ccc(cc2)Cl)C(=O)N[C@H]3CN(C[C@@H]3C(=O)N[C@H]4CCCNC4)S(=O)(=O)c5ccccc5,2,1.4,4.9,15
+August 2020,AstraZeneca,Compound 12j,12h,Cc1c(nc(o1)c2ccc(cc2)C(F)(F)F)C(=O)N[C@H]3CN(C[C@@H]3C(=O)N[C@H]4CCCNC4)S(=O)(=O)c5ccccc5,2.3,1,,13
+August 2020,AstraZeneca,Compound 12j,12i,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3cc(on3)c4ccc(cc4)Cl)C(=O)N[C@H]5CCCNC5,2.1,,,12
+August 2020,AstraZeneca,Compound 12j,12j,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3cc(on3)c4ccccc4Cl)C(=O)N[C@H]5CCCNC5,1.9,3.1,,12
+August 2020,AstraZeneca,Compound 12j,12k,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3cc(on3)c4ccc(cc4Cl)Cl)C(=O)N[C@H]5CCCNC5,2.5,,,4
+August 2020,AstraZeneca,Compound 12j,12l,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3ccc(o3)c4cc(ccc4Cl)C(F)(F)F)C(=O)N[C@H]5CCCNC5,,0.7,5.5,10
+August 2020,AstraZeneca,Compound 12j,12m,Cc1c(nc(o1)c2ccccc2Cl)C(=O)N[C@H]3CN(C[C@@H]3C(=O)N[C@H]4CCCNC4)S(=O)(=O)c5ccccc5,1.6,1.3,,10
+August 2020,AstraZeneca,Compound 12j,13b,Cc1ccc2c(c1)cc([nH]2)C(=O)NC3CN(CC3(C)C(=O)N[C@H]4CCCNC4)S(=O)(=O)c5ccccc5,2,0.35,4.7,271
+August 2020,AstraZeneca,Compound 12j,14,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3cc(on3)c4ccccc4Cl)C(=O)N5C[C@@H]6[C@H]5CNCC6,1.7,5.3,7.3,265
+August 2020,AstraZeneca,Compound 12j,15,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3cc(on3)c4ccccc4Cl)C(=O)NC[C@@H]5CCCN5,1.5,4.4,9.7,503
+August 2020,AstraZeneca,Compound 12j,16a,CN([C@H]1CN(C[C@@H]1C(=O)N[C@H]2CCCNC2)S(=O)(=O)c3ccccc3)C(=O)c4cc(on4)c5ccccc5Cl,1.6,0.6,13,6.55
+August 2020,AstraZeneca,Compound 12j,16b,CN([C@H]1CCCNC1)C(=O)[C@H]2CN(C[C@@H]2NC(=O)c3cc(on3)c4ccccc4Cl)S(=O)(=O)c5ccccc5,1.7,1.1,4.2,113
+August 2020,AstraZeneca,Compound 12j,16c,CN([C@H]1CCCNC1)C(=O)[C@H]2CN(C[C@@H]2N(C)C(=O)c3cc(on3)c4ccccc4Cl)S(=O)(=O)c5ccccc5,1.6,0.75,20,553
+August 2020,AstraZeneca,Compound 12j,16d,CN1CCC[C@@H](C1)NC(=O)[C@H]2CN(C[C@@H]2NC(=O)c3cc(on3)c4ccccc4Cl)S(=O)(=O)c5ccccc5,3.1,13,106,503
+August 2020,AstraZeneca,Compound 12j,16e,c1ccc(cc1)S(=O)(=O)N2C[C@@H]([C@H](C2)NC(=O)c3cc(on3)c4ccccc4Cl)C(=O)N[C@H]5CCCN(C5)C=O,3.1,9.6,,4.5
+August 2020,AstraZeneca,Compound 12j,16f,CC(=O)N1CCC[C@@H](C1)NC(=O)[C@H]2CN(C[C@@H]2NC(=O)c3cc(on3)c4ccccc4Cl)S(=O)(=O)c5ccccc5,3.5,7.5,,
+August 2020,Daiichi Sankyo,DS34942424,3,CN1C(C(NC2=C3C=CC=C2)=C3CN4CC[C@H]1C4)=O,0.7,,,
+August 2020,Daiichi Sankyo,DS34942424,7,CN1C(C(C=CC=C2)=C2CN3CC[C@H]1C3)=O,0.3,,,
+August 2020,Daiichi Sankyo,DS34942424,11,CN1C(C(C=CC=C2)=C2C(C)N3CC[C@H]1C3)=O,0.3,,,
+August 2020,Daiichi Sankyo,DS34942424,12,O=C1N(CC)[C@H]2CCN(C2)CC3=C1C=CC=C3,0.4,,,
+August 2020,Daiichi Sankyo,DS34942424,13,CN1C(C(C=CC=C2)=C2CN3CC4(CC4)[C@H]1C3)=O,0.5,,,
+August 2020,Daiichi Sankyo,DS34942424,17,CN1C(C(C=CC=C2)=C2C[N@@]3CCC[C@H]1C3)=O,0.3,,,
+August 2020,Daiichi Sankyo,DS34942424,20,O=C1[N@@]2CCC[N@@](CC2)CC3=C1NC4=C3C=CC=C4,0.9,,,
+August 2020,Daiichi Sankyo,DS34942424,22a,CN1C(C(C=CC=C2F)=C2CN3CC4(CC4)[C@H]1C3)=O,0.5,,,
+August 2020,Daiichi Sankyo,DS34942424,22b,CN1C(C(C=CC(F)=C2)=C2CN3CC4(CC4)[C@H]1C3)=O,0.9,,,
+August 2020,Daiichi Sankyo,DS34942424,22c,CN1C(C(C=C(F)C=C2)=C2CN3CC4(CC4)[C@H]1C3)=O,0.9,,,
+August 2020,Daiichi Sankyo,DS34942424,22d,CN1C(C(C(F)=CC=C2)=C2CN3CC4(CC4)[C@H]1C3)=O,1,,,
+August 2020,Janssen,Compound 12 (II),12,CN1C(=O)N(CC(=O)N2CCC2)c3cc(cnc13)c4ccc(s4)C(F)(F)F,,,5.4,
